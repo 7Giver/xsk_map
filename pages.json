@@ -1,0 +1,58 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				// "navigationBarTitleText": "搜搜地图标注中心"
+			}
+		}, {
+			"path": "pages/guest/guest",
+			"style": {
+				// "navigationBarTitleText": "增加客源"
+			}
+		}, {
+			"path": "pages/about/about",
+			"style": {
+				// "navigationBarTitleText": "关于我们"
+			}
+		}
+	    ,{
+            "path" : "pages/outweb/outweb",
+            "style" : {}
+        }
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "搜搜地图标注中心",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8",
+		"app-plus": {
+			"titleNView": false
+		}
+	},
+	"tabBar": {
+		"color": "#A3A5B4",
+		"selectedColor": "#115AA4",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [{
+				"pagePath": "pages/index/index",
+				"iconPath": "/static/01.png",
+				"selectedIconPath": "/static/01.png",
+				"text": "地图标注"
+			},
+			{
+				"pagePath": "pages/guest/guest",
+				"iconPath": "/static/02.png",
+				"selectedIconPath": "/static/02.png",
+				"text": "增加客源"
+			},
+			{
+				"pagePath": "pages/about/about",
+				"iconPath": "/static/03.png",
+				"selectedIconPath": "/static/03.png",
+				"text": "关于我们"
+			}
+		]
+	}
+}
