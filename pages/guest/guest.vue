@@ -66,10 +66,10 @@
 					</view>
 				</view>
 				<view class="input-content">
-					<view class="my_item">
+					<!-- <view class="my_item">
 						<view class="label">真实姓名</view>
 						<input type="text" v-model="guest.name" maxlength="16" placeholder="请填写真实有效姓名" />
-					</view>
+					</view> -->
 					<view class="my_item">
 						<view class="label">手机号码</view>
 						<input type="number" v-model="guest.phone" maxlength="11" placeholder="请填写真实有效的手机号码" />
@@ -78,16 +78,24 @@
 						<view class="label">店铺/公司名称</view>
 						<input type="text" v-model="guest.message" placeholder="请填写真实有效店铺/公司名称" />
 					</view>
+					<view class="my_item">
+						<view class="label">店铺/公司地址</view>
+						<input type="text" v-model="guest.address" placeholder="请填写真实有效店铺/公司地址" />
+					</view>
 					<!-- <view class="form-btn1" @click="submit">立即开通地图定位</view> -->
-					<view class="form-btn" @click="submit">
+					<!-- <view class="form-btn" @click="submit">
 						<view class="left">
 							<view>限时优惠<br>￥299</view>
 							<view>剩余9个名额</view>
 						</view>
 						<view class="right">
-							<view>立即开通地图定位</view>
-							<view>让客户上门更轻松</view>
+							<view>立即标注地图</view>
+							<view>客户轻松上门</view>
 						</view>
+					</view> -->
+					<view class="form-btn2" @click="submit">
+						<view>立即标注地图</view>
+						<view>客户轻松上门</view>
 					</view>
 				</view>
 				<image class="close" src="/static/index/close.png" mode="" @click="cancel"></image>
@@ -104,13 +112,10 @@
 		},
 		data() {
 			return {
+				setObj: {}, // 授权后用户信息对象
 				showDailog: false, // 是否显示信息弹窗
 				current: 0, // 轮播index
-				guest: {
-					name: '',
-					phone: '',
-					message: ''
-				},
+				guest: {},  //用户信息
 				noticeList: [{
 					title: '138****1906'
 				}, {
@@ -143,6 +148,8 @@
 			}
 		},
 		onShow() {
+			this.setObj = uni.getStorageSync('testshow');
+			console.log(this.setObj)
 			this.getShow()
 		},
 		onTabItemTap() {
@@ -199,13 +206,6 @@
 			},
 			// 提交信息
 			submit() {
-				if (!this.guest.name) {
-					uni.showToast({
-						title: '请输入姓名',
-						icon: 'none'
-					});
-					return false
-				}
 				if (!this.guest.phone) {
 					uni.showToast({
 						title: '请输入手机号',
@@ -227,14 +227,28 @@
 					});
 					return false
 				}
+				if (!this.guest.address) {
+					uni.showToast({
+						title: '请输入详细地址',
+						icon: 'none'
+					});
+					return false
+				}
+				this.getMapUserInfo()
+			},
+			// 获取用户信息3.0
+			getMapUserInfo() {
+				var str = "1,2,3,4,5,6";
 				this.$http
-					.post(`/api/saveMember`, {
-						name: this.guest.name,
+					.post(`/api/saveMapMember`, {
+						// name: "Heiz",
+						name: this.setObj.nickname,
 						tel: this.guest.phone,
-						company_name: this.guest.message
+						company_name: this.guest.message,
+						address: this.guest.address
 					})
 					.then(response => {
-						console.log(response)
+						// console.log(response)
 						if (response.code === 200) {
 							uni.showToast({
 								title: '提交成功',
@@ -243,31 +257,37 @@
 							var query = {
 								mid: response.data,
 								money: 299,
-								map: '1,2,3,4,5,6'
+								map: str,
+								// nickname: "Heiz",
+								nickname: this.setObj.nickname,
+								openid: this.setObj.openid,
+								// openid: "oS4oIwn9CQfFy6Ivpcchf6UlHqAk",
+								address: this.guest.address
 							}
-							this.createOrder(query)
+							// 3.0
+							// console.log(query)
+							this.creatMapOrder(query)
+							this.guest = {}
+							this.showDailog = false
 						}
 					});
-				this.showDailog = false
-				this.guest = {}
 			},
-			// 创建订单
-			createOrder(query) {
+			// 创建订单3.0
+			creatMapOrder(query) {
 				this.$http
-					.post(`/api/createOrder`, query)
+					.post(`/api/createMapOrder`, query)
 					.then(response => {
+						// console.log(response)
 						if (response.code === 200) {
-							// var query = {
-							// 	order_sn: res.data.data.order_sn
-							// }
-							// this.payOrder(query)
-							this.goShowquan(response.data.order_sn)
+							var a = response.data.jsApiParameters
+							var b = response.data.order_sn
+							this.goPay(a, b)
 						}
 					});
 			},
-			// 跳转授权
-			goShowquan(query) {
-				window.location.href = 'http://www.aishangshi689.com/api/getWxInfo?order_sn='+ query
+			//跳转支付 3.0
+			goPay(a, b) {
+				window.location.href = `http://www.aishangshi689.com/api/go?jsApiParameters=${a}&order_sn=${b}`
 			}
 		}
 	}
@@ -625,6 +645,25 @@
 					border-radius: 40rpx;
 					margin: 30rpx auto 20rpx;
 					background: linear-gradient(90deg, #FF586E, #FF7D60);
+				}
+
+				.form-btn2 {
+					width: 80%;
+					color: #fff;
+					font-size: 30rpx;
+					padding: 10rpx 0;
+					text-align: center;
+					border-radius: 20rpx;
+					margin: 16rpx auto 20rpx;
+					background: #D92D1C;
+
+					.right {
+						flex: 1;
+						font-size: 30rpx;
+						text-align: center;
+						letter-spacing: 1px;
+						line-height: 50rpx;
+					}
 				}
 
 				.form-btn {

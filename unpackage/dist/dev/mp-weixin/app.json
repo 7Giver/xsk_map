@@ -1,0 +1,43 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/guest/guest",
+    "pages/about/about",
+    "pages/outweb/outweb"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "慕斯地图标注中心",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#A3A5B4",
+    "selectedColor": "#115AA4",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "/static/01.png",
+        "selectedIconPath": "/static/01.png",
+        "text": "地图标注"
+      },
+      {
+        "pagePath": "pages/guest/guest",
+        "iconPath": "/static/02.png",
+        "selectedIconPath": "/static/02.png",
+        "text": "增加客源"
+      },
+      {
+        "pagePath": "pages/about/about",
+        "iconPath": "/static/03.png",
+        "selectedIconPath": "/static/03.png",
+        "text": "关于我们"
+      }
+    ]
+  },
+  "usingComponents": {},
+  "sitemapLocation": "sitemap38.json"
+}

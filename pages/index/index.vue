@@ -124,7 +124,7 @@
 <script>
 	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 	var testjs = require("@/common/vconsole.min.js")
-	// new testjs()
+	new testjs()
 	export default {
 		components: {
 			UniPopup
@@ -136,11 +136,7 @@
 				showDailog1: false, // 是否显示展示弹窗
 				current: 0, // 轮播index
 				content: '', // 回退原因
-				guest: {
-					name: '',
-					phone: '',
-					message: ''
-				},
+				guest: {},
 				showItems: [],
 				noticeList: [{
 					title: '138****1906'
@@ -841,16 +837,6 @@
 					background: linear-gradient(90deg, #FF586E, #FF7D60);
 				}
 
-				.form-btn1 {
-					color: #fff;
-					font-size: 34rpx;
-					text-align: center;
-					line-height: 80rpx;
-					border-radius: 40rpx;
-					margin: 30rpx auto 20rpx;
-					background: linear-gradient(90deg, #FF586E, #FF7D60);
-				}
-
 				.form-btn2 {
 					width: 80%;
 					color: #fff;
@@ -860,6 +846,41 @@
 					border-radius: 20rpx;
 					margin: 16rpx auto 20rpx;
 					background: #D92D1C;
+
+					.right {
+						flex: 1;
+						font-size: 30rpx;
+						text-align: center;
+						letter-spacing: 1px;
+						line-height: 50rpx;
+					}
+				}
+
+				.form-btn {
+					display: flex;
+					align-items: center;
+					color: #fff;
+					font-size: 34rpx;
+					text-align: center;
+					border-radius: 20rpx;
+					margin: 30rpx auto 20rpx;
+					background: #D92D1C;
+
+					.left {
+						text-align: center;
+						margin: 20rpx auto;
+						padding: 0 20rpx;
+						border-right: 1px solid rgba(255, 255, 255, 0.6);
+
+						&:first-child {
+							color: #FFEA00;
+							font-size: 26rpx;
+						}
+
+						:last-child {
+							font-size: 22rpx;
+						}
+					}
 
 					.right {
 						flex: 1;
