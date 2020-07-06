@@ -1,1 +1,0 @@
-<view><web-view class="vue-ref" src="{{url}}" progress="{{false}}" data-ref="outweb"></web-view></view>
