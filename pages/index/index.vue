@@ -123,8 +123,6 @@
 
 <script>
 	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
-	var testjs = require("@/common/vconsole.min.js")
-	// new testjs()
 	export default {
 		components: {
 			UniPopup

@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import App from './App'
 import uni_request from 'js_sdk/songGQ-req/uni_request/uni_request.js'
+import store from './store'
+
 const http = uni_request({
-    baseURL: 'http://aishangshi689.com', // 正式地址
+    baseURL: 'http://dt.sousou.com', // 正式地址
     header:{
       'content-type':'multipart/form-data',
     },
@@ -15,7 +17,7 @@ const http = uni_request({
 import jwx from './common/jwx.js'
 Vue.prototype.$jwx = jwx
 // #endif
-
+Vue.prototype.$store = store
 Vue.prototype.$http = http
 Vue.config.productionTip = false
 

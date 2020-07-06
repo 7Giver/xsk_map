@@ -1,4 +1,6 @@
 <script>
+	var testjs = require("@/common/vconsole.min.js")
+	// new testjs()
 	export default {
 		onLaunch: function() {
 			// console.log('App Launch')
