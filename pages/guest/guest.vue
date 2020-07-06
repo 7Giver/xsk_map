@@ -149,7 +149,7 @@
 		},
 		onShow() {
 			this.setObj = uni.getStorageSync('testshow');
-			console.log(this.setObj)
+			// console.log(this.setObj)
 			this.getShow()
 		},
 		onTabItemTap() {
