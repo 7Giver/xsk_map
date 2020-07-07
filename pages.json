@@ -24,7 +24,11 @@
 				
 			}
 		}
-	],
+	    ,{
+            "path" : "pages/pay/pay",
+            "style" : {}
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "搜搜地图标注中心",

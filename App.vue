@@ -4,21 +4,10 @@
 	export default {
 		onLaunch: function() {
 			// console.log('App Launch')
-			this.goShowquan()
-
-			// 测试setStorage
-			// uni.setStorage({
-			// 	key: 'testshow',
-			// 	data: 'test'
-			// })
-			// var value = uni.getStorageSync('testshow')
-			// console.log(value)
-			// uni.getStorage({
-			// 	key: 'testshow',
-			// 	success: function(res) {
-			// 		console.log(res.data);
-			// 	}
-			// });
+			
+			// this.goShowquan()
+			this.goShowquan1()
+			
 		},
 		onShow: function() {
 			// console.log('App Show')
@@ -50,6 +39,18 @@
 						}
 					},
 				});
+			},
+			goShowquan1() {
+				var url = window.location.href;
+				var temp = url.split('?')[1]; // 通过拆分链接判断是否获取参数存储
+				if(temp) {
+					uni.setStorage({
+						key: 'testshow',
+						data: this.getUrlparam(url)
+					})
+				} else {
+					window.location.href = 'http://dt.sousou.com/api/geMapWxInfo'
+				}
 			},
 			getUrlparam(url) {
 				let askIndex = url.indexOf('?'); // ? 第一次出现的位置索引 存在 askIndex

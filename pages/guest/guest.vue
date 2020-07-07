@@ -49,9 +49,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="bottom">
-			<view class="my_btn" @click="_checkItem('all')">一键标注地图 领先同行一步</view>
-		</view>
+		<view class="my_btn" @click="_checkItem('all')">一键标注地图 领先同行一步</view>
 		<!-- 信息弹窗 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
 			<view class="uni-tip">
@@ -497,53 +495,6 @@
 
 				.right {
 					right: -20rpx;
-				}
-			}
-		}
-
-		.bottom {
-			display: flex;
-			justify-content: center;
-			height: 100rpx;
-
-			.my_btn {
-				position: fixed;
-				bottom: 11%;
-				left: 7.5%;
-				width: 85%;
-				color: #fff;
-				height: 90rpx;
-				margin-top: -20rpx;
-				text-align: center;
-				font-size: 32rpx;
-				line-height: 90rpx;
-				letter-spacing: 2px;
-				border-radius: 30rpx;
-				background: linear-gradient(90deg, #FF5764, #FF3328);
-				animation: mymove 5s infinite;
-				animation-direction: alternate;
-				/*轮流反向播放动画。*/
-				animation-timing-function: ease-in-out;
-				/*动画的速度曲线*/
-			}
-
-			@keyframes mymove {
-				0% {
-					transform: scale(1);
-					/*开始为原始大小*/
-				}
-
-				25% {
-					transform: scale(1.1);
-					/*放大1.1倍*/
-				}
-
-				50% {
-					transform: scale(1);
-				}
-
-				75% {
-					transform: scale(1.1);
 				}
 			}
 		}
