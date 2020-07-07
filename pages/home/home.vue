@@ -1,5 +1,5 @@
 <template>
-	<view id="app">
+	<view id="app" v-show="showWeb">
 		<view class="header">
 			<view>搜搜地图标注中心</view>
 			<view>标注商户：<text>{{39.6}}万户</text></view>
@@ -129,6 +129,7 @@
 		},
 		data() {
 			return {
+				showWeb: false,  // 控制页面展示
 				setObj: {}, // 授权后用户信息对象
 				showDailog: false, // 是否显示信息弹窗
 				showDailog1: false, // 是否显示展示弹窗
@@ -183,6 +184,7 @@
 			}
 		},
 		onShow() {
+			uni.hideTabBar()
 			this.getPostdata()
 		},
 		// 点击tabbar切换事件
@@ -197,11 +199,14 @@
 			getPostdata() {
 				var value = uni.getStorageSync('testshow')
 				if (value) {
+					this.showWeb = true
+					uni.showTabBar()
 					this.setObj = value
-					// console.log('has value!+++++++++')
-					// console.log(value)
-					// console.log('has value!+++++++++')
+					console.log('has value!+++++++++')
+					console.log(value)
+					console.log('has value!+++++++++')
 				} else {
+					console.log('no value!+++++++++')
 					var url = window.location.href;
 					var temp = url.split('?')[1];  // 通过拆分链接判断是否获取参数存储
 					// console.log(temp)
@@ -212,25 +217,8 @@
 							data: this.setObj
 						})
 					}
-					
 				}
 			},
-			// 获取url参数1.0
-			// getQueryString() {
-				// var url = "http://www.test.com/index.html?nickname=Heiz&openid=oLdihh88ty#/";
-				// var temp1 = url.split('?');
-				// var pram = temp1[1];
-				// var keyValue = pram.split('&');
-				// var obj = {};
-				// for (var i = 0; i < keyValue.length; i++) {
-				// 	var result = keyValue[i].split('=');
-				// 	var key = item[0];
-				// 	var value = item[1];
-				// 	obj[key] = value;
-				// }
-				// this.setObj = obj
-				// console.log(obj)
-			// },
 			// 获取url参数2.0
 			getUrlparam(url) {
 				let askIndex = url.indexOf('?'); // ? 第一次出现的位置索引 存在 askIndex
@@ -367,36 +355,6 @@
 				// 3.0
 				this.getMapUserInfo()
 			},
-			// 获取用户信息2.0
-			// getUserInfo() {
-			// 	this.$http
-			// 		.post(`/api/saveMember`, {
-			// 			name: this.guest.name,
-			// 			tel: this.guest.phone,
-			// 			company_name: this.guest.message
-			// 		})
-			// 		.then(response => {
-			// 			console.log(response)
-			// 			if (response.code === 200) {
-			// 				uni.showToast({
-			// 					title: '提交成功',
-			// 					icon: 'none'
-			// 				});
-			// 				this.showDailog = false
-			// 				this.guest = {}
-			// 				var query = {
-			// 					nickname: this.guest.name,
-			// 					mid: response.data,
-			// 					money: 299,
-			// 					map: str,
-			// 					openid: "oS4oIwn9CQfFy6Ivpcchf6UlHqAk",
-			// 					address: "测试详细地址一号"
-			// 				}
-			// 				// 2.0
-			// 				this.createOrder(query)
-			// 			}
-			// 		});
-			// },
 			// 获取用户信息3.0
 			getMapUserInfo() {
 				let arr = this.checkItems.filter(item => {
@@ -440,16 +398,6 @@
 						}
 					});
 			},
-			// 创建订单2.0
-			// createOrder(query) {
-			// 	this.$http
-			// 		.post(`/api/createOrder`, query)
-			// 		.then(response => {
-			// 			if (response.code === 200) {
-			// 				this.goShowquan(response.data.order_sn)
-			// 			}
-			// 		});
-			// },
 			// 创建订单3.0
 			creatMapOrder(query) {
 				this.$http
@@ -463,17 +411,9 @@
 						}
 					});
 			},
-			// 跳转授权2.0
-			// goShowquan(query) {
-			// 	window.location.href = 'http://www.aishangshi689.com/api/getWxInfo?order_sn=' + query
-			// 	// var url= 'http://www.baidu.com'
-			// 	// uni.navigateTo({
-			// 	// 	url: '/pages/outweb/outweb?url='+url,
-			// 	// });
-			// },
 			//跳转支付 3.0
 			goPay(a, b) {
-				window.location.href = `http://www.aishangshi689.com/api/go?jsApiParameters=${a}&order_sn=${b}`
+				window.location.href = `http://dt.sousou.com/api/go?jsApiParameters=${a}&order_sn=${b}`
 			}
 		}
 	}
@@ -588,53 +528,6 @@
 
 			.list_box {
 				padding: 0 32rpx;
-
-				// .item {
-				// 	display: flex;
-				// 	align-items: center;
-				// 	padding: 24rpx 0;
-
-				// 	&:not(:last-child) {
-				// 		border-bottom: 1px solid #E9EAEF;
-				// 	}
-
-				// 	.radio {
-				// 		margin-right: 20rpx;
-				// 	}
-
-				// 	.label_item {
-				// 		flex: 1;
-				// 		display: flex;
-				// 		align-items: center;
-				// 		justify-content: space-between;
-
-				// 		.left {
-				// 			display: flex;
-				// 			align-items: center;
-				// 			font-size: 32rpx;
-				// 			color: #5B5B5B;
-
-				// 			>image {
-				// 				width: 60rpx;
-				// 				height: 60rpx;
-				// 				margin-right: 20rpx;
-				// 			}
-				// 		}
-
-				// 		.next {
-				// 			display: flex;
-				// 			align-items: center;
-				// 			font-size: 30rpx;
-				// 			color: #5B68AC;
-
-				// 			>image {
-				// 				width: 32rpx;
-				// 				height: 32rpx;
-				// 				margin-left: 12rpx;
-				// 			}
-				// 		}
-				// 	}
-				// }
 
 				.let_item {
 					display: flex;
@@ -977,3 +870,4 @@
 
 	}
 </style>
+

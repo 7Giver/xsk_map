@@ -91,7 +91,8 @@
         },
         "devServer" : {
             "https" : false
-        }
+        },
+		"publicPath" : "./"
     }
 }
 

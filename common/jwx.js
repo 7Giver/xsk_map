@@ -1,5 +1,5 @@
 var jweixin = require('jweixin-module')
-console.log(jweixin)
+// console.log(jweixin)
 export default {
 	//判断是否在微信中    
 	isWechat: function() {
