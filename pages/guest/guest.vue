@@ -146,8 +146,7 @@
 			}
 		},
 		onShow() {
-			this.setObj = uni.getStorageSync('testshow');
-			// console.log(this.setObj)
+			this.setObj = uni.getStorageSync('userMsg');
 			this.getShow()
 		},
 		onTabItemTap() {
@@ -157,6 +156,7 @@
 			})
 		},
 		methods: {
+			// 获取banner图
 			getShow() {
 				this.$http
 					.post(`/api/getBanner`, {})
@@ -285,7 +285,7 @@
 			},
 			//跳转支付 3.0
 			goPay(a, b) {
-				window.location.href = `http://www.aishangshi689.com/api/go?jsApiParameters=${a}&order_sn=${b}`
+				window.location.href = `${this.$baseURL}/api/go?jsApiParameters=${a}&order_sn=${b}`
 			}
 		}
 	}

@@ -195,7 +195,7 @@
 		methods: {
 			// 获取用户信息
 			getPostdata() {
-				var value = uni.getStorageSync('testshow')
+				var value = uni.getStorageSync('userMsg')
 				if (value) {
 					this.showWeb = true
 					uni.showTabBar()
@@ -211,7 +211,7 @@
 					if (temp) {
 						this.getUrlparam(url)
 						uni.setStorage({
-							key: 'testshow',
+							key: 'userMsg',
 							data: this.setObj
 						})
 					}
@@ -411,7 +411,7 @@
 			},
 			//跳转支付 3.0
 			goPay(a, b) {
-				window.location.href = `http://dt.sousou.com/api/go?jsApiParameters=${a}&order_sn=${b}`
+				window.location.href = `${this.$baseURL}/api/go?jsApiParameters=${a}&order_sn=${b}`
 			}
 		}
 	}
