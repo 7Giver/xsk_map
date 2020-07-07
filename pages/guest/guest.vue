@@ -190,7 +190,8 @@
 			},
 			// 点击按钮
 			_checkItem() {
-				this.showDailog = true;
+				var value = uni.getStorageSync('userMsg')
+				value ? this.showDailog = true : this.$getAuthorize()
 			},
 			/** 回退弹窗取消方法 */
 			cancel() {
@@ -294,7 +295,7 @@
 <style lang="scss">
 	#app {
 		background: #9ECBEE;
-		padding-bottom: 100rpx;
+		padding-bottom: 180rpx;
 
 		.header {
 			position: absolute;
