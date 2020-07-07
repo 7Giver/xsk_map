@@ -80,7 +80,7 @@
 						<view class="label">店铺/公司地址</view>
 						<input type="text" v-model="guest.address" placeholder="请填写真实有效店铺/公司地址" />
 					</view>
-					<!-- <view class="form-btn1" @click="submit">立即开通地图定位</view> -->
+					<view class="form-btn1" @click="submit">立即标注地图 客户轻松上门</view>
 					<!-- <view class="form-btn" @click="submit">
 						<view class="left">
 							<view>限时优惠<br>￥299</view>
@@ -91,10 +91,10 @@
 							<view>客户轻松上门</view>
 						</view>
 					</view> -->
-					<view class="form-btn2" @click="submit">
+					<!-- <view class="form-btn2" @click="submit">
 						<view>立即标注地图</view>
 						<view>客户轻松上门</view>
-					</view>
+					</view> -->
 				</view>
 				<image class="close" src="/static/index/close.png" mode="" @click="cancel"></image>
 			</view>
@@ -590,7 +590,7 @@
 
 				.form-btn1 {
 					color: #fff;
-					font-size: 34rpx;
+					font-size: 32rpx;
 					text-align: center;
 					line-height: 80rpx;
 					border-radius: 40rpx;

@@ -73,7 +73,7 @@
 						<view class="label">店铺/公司地址</view>
 						<input type="text" v-model="guest.address" placeholder="请填写真实有效店铺/公司地址" />
 					</view>
-					<!-- <view class="form-btn1" @click="submit">立即开通地图定位</view> -->
+					<view class="form-btn1" @click="submit">立即标注地图 客户轻松上门</view>
 					<!-- <view class="form-btn" @click="submit">
 						<view class="left">
 							<view>限时优惠<br>￥299</view>
@@ -84,10 +84,10 @@
 							<view>客户轻松上门</view>
 						</view>
 					</view> -->
-					<view class="form-btn2" @click="submit">
+					<!-- <view class="form-btn2" @click="submit">
 						<view>立即标注地图</view>
 						<view>客户轻松上门</view>
-					</view>
+					</view> -->
 				</view>
 				<image class="close" src="/static/index/close.png" mode="" @click="cancel"></image>
 			</view>
@@ -95,24 +95,24 @@
 		<!-- 展示弹窗 -->
 		<uni-popup :show="showDailog1" type="center" :animation="true" :custom="true" :mask-click="true" @change="change1">
 			<view class="container">
-				<image class="title" src="/static/guest/title.png" mode="widthFix"></image>
+				<!-- <image class="title" src="/static/guest/title.png" mode="widthFix"></image> -->
 				<view class="show_box">
-					<swiper class="show_swiper" indicator-dots="true" indicator-active-color="#6E7FD2" :current="current" v-if="showItems.length>1">
-						<swiper-item class="item" v-for="(item, index) in showItems" :key="index" @click="fullImg(item.cover)">
-							<image :src="item.cover" mode="widthFix"></image>
+					<swiper class="show_swiper" indicator-dots="true" circular="true" indicator-active-color="#6E7FD2" :current="current" v-if="showItems.length>1">
+						<swiper-item class="item" v-for="(item, index) in showItems" :key="index">
+							<image :src="item.cover" mode=""></image>
 						</swiper-item>
 					</swiper>
-					<swiper class="show_swiper1" indicator-dots="true" indicator-active-color="#6E7FD2" :current="current" v-else>
-						<swiper-item class="item1" v-for="(item, index) in showItems" :key="index" @click="fullImg(item.cover)">
-							<image :src="item.cover" mode="widthFix"></image>
+					<swiper class="show_swiper1" :current="current" v-else>
+						<swiper-item class="item1" v-for="(item, index) in showItems" :key="index">
+							<image :src="item.cover" mode=""></image>
 						</swiper-item>
 					</swiper>
-					<view class="swiper-btn left" @click="prev">
+					<!-- <view class="swiper-btn left" v-if="showItems.length>1" @click="prev">
 						<image src="/static/guest/left.png" mode=""></image>
 					</view>
-					<view class="swiper-btn right" @click="next">
+					<view class="swiper-btn right" v-if="showItems.length>1" @click="next">
 						<image src="/static/guest/right.png" mode=""></image>
-					</view>
+					</view> -->
 				</view>
 			</view>
 		</uni-popup>
@@ -132,7 +132,6 @@
 				showDailog: false, // 是否显示信息弹窗
 				showDailog1: false, // 是否显示展示弹窗
 				current: 0, // 轮播index
-				content: '', // 回退原因
 				guest: {},
 				showItems: [],
 				noticeList: [{
@@ -183,7 +182,7 @@
 		},
 		onShow() {
 			uni.hideTabBar()
-			this.getPostdata()
+			this.getUserdata()
 		},
 		// 点击tabbar切换事件
 		onTabItemTap() {
@@ -194,7 +193,7 @@
 		},
 		methods: {
 			// 获取用户信息
-			getPostdata() {
+			getUserdata() {
 				var value = uni.getStorageSync('userMsg')
 				if (value) {
 					this.showWeb = true
@@ -233,9 +232,8 @@
 				});
 				// result['HASH'] = wellText  // 带hash
 				this.setObj = result
-				// console.log(result);
 			},
-			// 多选点击事件
+			// 多选点击事件 展示信息弹窗
 			_checkItem(index) {
 				let checkList = this.checkItems;
 				if (index === 'all') {
@@ -249,9 +247,19 @@
 						checkList[index].checked = true
 				}
 			},
+			// 关闭信息弹窗
+			cancel() {
+				this.showDailog = false;
+			},
+			// 监听信息弹窗状态
+			change(e) {
+				// console.log(e.show)
+				if (!e.show) {
+					this.showDailog = false
+				}
+			},
 			// 展示效果图事件
 			_showItem(id) {
-				this.showDailog1 = true
 				this.$http
 					.post(`/api/getPoster`, {
 						type: id
@@ -260,8 +268,17 @@
 						if (response.code === 200) {
 							// console.log(response)
 							this.showItems = response.data
+							this.showDailog1 = true
 						}
 					});
+			},
+			// 监听展示弹窗状态
+			change1(e) {
+				if (!e.show) {
+					this.showDailog1 = false;
+					this.current = 0;
+					this.showItems = []
+				}
 			},
 			// 全屏展示图片
 			fullImg(url) {
@@ -283,23 +300,6 @@
 			next() {
 				let showItems = this.showItems;
 				this.current = this.current < (showItems.length - 1) ? this.current + 1 : 0;
-			},
-			/** 回退弹窗取消方法 */
-			cancel() {
-				this.showDailog = false;
-			},
-			/** 监听弹窗状态是否打开 */
-			change(e) {
-				// console.log(e.show)
-				if (!e.show) {
-					this.showDailog = false
-				}
-			},
-			change1(e) {
-				if (!e.show) {
-					this.showDailog1 = false;
-					this.current = 0;
-				}
 			},
 			// 提交信息
 			submit() {
@@ -348,9 +348,6 @@
 					});
 					return false
 				}
-				// 2.0
-				// this.getUserInfo()
-				// 3.0
 				this.getMapUserInfo()
 			},
 			// 获取用户信息3.0
@@ -583,7 +580,7 @@
 		}
 
 		::v-deep.uni-popup__wrapper.center {
-			height: 90%;
+			height: 86%;
 		}
 
 		.uni-tip {
@@ -673,7 +670,7 @@
 
 				.form-btn1 {
 					color: #fff;
-					font-size: 34rpx;
+					font-size: 32rpx;
 					text-align: center;
 					line-height: 80rpx;
 					border-radius: 40rpx;
@@ -737,11 +734,12 @@
 			}
 		}
 
+		// 展示弹窗
+		
 		.container {
 			height: 1040rpx;
-			padding-top: 64rpx;
 			border-radius: 20rpx;
-			background: #D6ECFF;
+			// background: #D6ECFF;
 			position: relative;
 
 			.title {
@@ -759,40 +757,42 @@
 				.show_swiper {
 					width: 100%;
 					height: 100%;
-					padding-left: 30rpx;
+					padding-top: 78rpx;
 
 					.item {
 						width: 80% !important;
-						padding-right: 30rpx;
+						padding-right: 40rpx;
 
 						image {
 							width: 100%;
-							// border-radius: 26rpx;
+							height: 100%;
+							border-radius: 26rpx;
 						}
 					}
 
-					&::after {
-						content: '';
-						position: absolute;
-						right: 0;
-						top: 0;
-						display: block;
-						width: 132rpx;
-						height: 926rpx;
-						background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.2));
-					}
+					// &::after {
+					// 	content: '';
+					// 	position: absolute;
+					// 	right: 0;
+					// 	top: 0;
+					// 	display: block;
+					// 	width: 132rpx;
+					// 	height: 926rpx;
+					// 	background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.2));
+					// }
 				}
 
 				.show_swiper1 {
 					width: 100%;
 					height: 100%;
-					margin: 0 auto;
+					padding-top: 40rpx;
 
 					.item1 {
-						padding: 0rpx 90rpx;
+						padding: 0rpx 42rpx;
 
 						image {
 							width: 100%;
+							height: 100%;
 							border-radius: 26rpx;
 						}
 					}
