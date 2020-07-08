@@ -204,6 +204,38 @@
 					console.log('has value!+++++++++')
 				} else {
 					console.log('no value!+++++++++')
+					this.goShowquan()
+				}
+			},
+			// 判断缓存存储
+			goShowquan() {
+				var url = window.location.href;
+				var temp = url.split("?")[1]; // 通过拆分链接判断是否获取参数存储
+				if (temp) {
+					uni.setStorage({
+						key: "userMsg",
+						data: getUrlparam(url),
+					});
+					this.setObj = uni.getStorageSync('userMsg');
+					this.$nextTick(() => {
+						this.showDailog = true;
+					})
+					console.log(uni.getStorageSync('userMsg'))
+				}
+
+				function getUrlparam(url) {
+					let askIndex = url.indexOf("?");
+					let wellIndex = url.indexOf("#");
+					let askText = url.substring(askIndex + 1, wellIndex);
+					let result = {};
+					let askAry = askText.split("&");
+					askAry.forEach((item) => {
+						let n = item.split("=");
+						let key = n[0];
+						let value = n[1];
+						result[key] = value;
+					});
+					return result;
 				}
 			},
 			// 多选点击事件 展示信息弹窗
