@@ -5,14 +5,16 @@
 				<image :src="user.headimgurl" mode=""></image>
 				<view class="right">
 					<view class="nickname">{{ user.nickname }}</view>
-					<view class="icon_block" v-for="(item, index) in user.icon" :key="index">
-						<image :src="item.image" mode=""></image>
+					<view class="icon_block">
+						<view class="item" v-for="(item, index) in user.icon" :key="index">
+							<image :src="item.image" mode=""></image>
+						</view>
 					</view>
 				</view>
 			</view>
 			<view class="message">
-				<view>联系电话：{{ getMsg.phone }}</view>
-				<view>商户名称：{{ getMsg.message }}</view>
+				<view>联系电话：{{ getMsg.tel }}</view>
+				<view>商户名称：{{ getMsg.company_name }}</view>
 				<view>商户地址：{{ getMsg.address }}</view>
 			</view>
 		</view>
@@ -28,6 +30,27 @@
 			<view class="coupon_block">
 				<view>优惠券</view>
 				<view><text>{{ -1000 }}</text>元</view>
+			</view>
+			<!-- 赠品 -->
+			<view class="gift_block">
+				<view class="left">赠品</view>
+				<view class="right">
+					<view class="item">
+						<image src="/static/pay/p_card.png" mode="widthFix"></image>
+						<view class="text">
+							<view>电子名片</view>
+							<view>（点击预览）</view>
+						</view>
+					</view>
+					<view class="and"></view>
+					<view class="item">
+						<image src="/static/pay/c_card.png" mode="widthFix"></image>
+						<view class="text">
+							<view>潜在客源</view>
+							<view>（点击预览）</view>
+						</view>
+					</view>
+				</view>
 			</view>
             <!-- 支付方式 -->
 			<view class="payway_block">
@@ -53,20 +76,35 @@
 					<view class="text">{{ item.msg }}</view>
 				</view>
 			</view>
+			<!-- 协议 -->
+			<view class="agreement" @click="checkagree">
+				<view class="checked">
+					<image v-if="agreement" src="/static/pay/check.png" mode=""></image>
+					<image v-else src="/static/pay/nocheck.png" mode=""></image>
+				</view>
+				<view>我已阅读并同意《地图标注支付服务协议》</view>
+			</view>
+		</view>
+		<!-- 底部 -->
+		<view class="bottom">
+			<view class="left">
+				<view>实付:<text>￥299</text></view>
+				<view>当前名额仅剩 6 名</view>
+			</view>
+			<view class="right" @click="submit">立即支付</view>
 		</view>
 	</view>
 </template>
 
 <script>
+	import Json from '@/Json';
 	export default {
 		data() {
 			return {
 				user: {},
-				getMsg: {
-					phone: 13023367769,
-					message: "大庆书店",
-					address: "哈尔滨北大街28号",
-				},
+				getMsg: {},
+				agreement: true, // 同意协议
+				checkItems: [],
 				showlist: [
                     {
 						image: "/static/pay/address.png",
@@ -84,7 +122,7 @@
 						image: "/static/pay/card.png",
 						title: "名片解锁",
 						text: "电子名片",
-						msg: "带信息带地图,易传播"
+						msg: "带信息地图易传播"
 					},
 					{
 						image: "/static/pay/data.png",
@@ -109,13 +147,98 @@
 		},
 		onShow() {
 			this.user = uni.getStorageSync("userMsg");
+			this.getMsg = uni.getStorageSync("postMsg");
+			this.checkItems = Json.checkItems;
+			this.getMap()
+			console.log('user', this.user)
+			console.log('getMsg', this.getMsg)
 		},
-		methods: {},
+		methods: {
+			// 同意协议
+			checkagree() {
+				this.agreement = !this.agreement;
+			},
+			// 获取选中地图
+			getMap() {
+				let str = uni.getStorageSync('mapStr')
+				let arr = str.split(',')
+				let newArr = []
+				arr.forEach(item => {
+					let result = Json.checkItems.filter(val => {
+						return val.id == item
+					})
+					newArr.push(result)
+				});
+				this.user.icon = newArr.flat(2)
+			},
+			// 点击支付
+			submit() {
+				if (!this.agreement) {
+					uni.showToast({
+						title: '请阅读服务协议',
+						icon: 'none'
+					});
+					return false
+				}
+				this.postMapUserInfo()
+			},
+			// 提交用户信息
+			postMapUserInfo() {
+				let str = uni.getStorageSync('mapStr')
+				this.$http
+					.post(`/api/saveMapMember`, {
+						wxid: this.user.wxid,
+						name: this.user.nickname,
+						tel: this.getMsg.tel,
+						company_name: this.getMsg.company_name,
+						address: this.getMsg.address
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							uni.showToast({
+								title: '提交成功',
+								icon: 'none'
+							});
+							var query = {
+								mid: response.data,
+								money: 299,
+								map: str,
+								nickname: this.user.nickname,
+								openid: this.user.openid,
+								address: this.getMsg.address
+							}
+							this.creatMapOrder(query)
+							this.user = {}
+							this.getMsg = {}
+						}
+					});
+			},
+			// 创建订单
+			creatMapOrder(query) {
+				this.$http
+					.post(`/api/createMapOrder`, query)
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							var a = response.data.jsApiParameters
+							var b = response.data.order_sn
+							this.goPay(a, b)
+						}
+					});
+			},
+			//跳转支付
+			goPay(a, b) {
+				window.location.href = `${this.$baseURL}/api/go?jsApiParameters=${a}&order_sn=${b}`
+			}
+		},
 	};
 </script>
 
 <style lang="scss">
 	#app {
+		padding-bottom: 120rpx;
+
 		.header {
 			color: #fff;
 			padding: 30rpx 50rpx;
@@ -127,16 +250,33 @@
 				margin-bottom: 30rpx;
 
 				>image {
-					width: 80rpx;
-					height: 80rpx;
+					width: 100rpx;
+					height: 100rpx;
 					border-radius: 50%;
-					margin-right: 30rpx;
+					margin-right: 22rpx;
 				}
 
 				.right {
 					flex: 1;
 
-					.icon_block {}
+					.nickname {
+						font-size: 36rpx;
+					}
+
+					.icon_block {
+						display: flex;
+						margin-top: 10rpx;
+
+						.item {
+							margin-right: 10rpx;
+
+							image {
+								display: block;
+								width: 50rpx;
+								height: 50rpx;
+							}
+						}
+					}
 				}
 			}
 
@@ -151,7 +291,7 @@
 		}
 
 		.content {
-			padding: 40rpx 40rpx;
+			padding: 40rpx 40rpx 30rpx;
 
 			.cash_block {
 				position: relative;
@@ -198,7 +338,7 @@
 				align-items: center;
 				justify-content: space-between;
 				font-size: 32rpx;
-				margin: 38rpx auto 48rpx;
+				margin: 36rpx auto;
 				padding: 30rpx 20rpx;
 				border: 1px solid #f5f5f5;
 				border-radius: 22rpx;
@@ -206,6 +346,69 @@
 				text {
 					color: #FF423A;
 					padding-right: 10rpx;
+				}
+			}
+
+			.gift_block {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 40rpx;
+				padding: 30rpx 20rpx;
+				border-radius: 22rpx;
+				border: 1px solid #f5f5f5;
+
+				.left {
+					flex: 1;
+					font-size: 34rpx;
+				}
+
+				.right {
+					flex: 4;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+
+					.item {
+						display: flex;
+						align-items: center;
+
+						>image {
+							width: 60rpx;
+						}
+
+						.text {
+							font-size: 24rpx;
+							line-height: 30rpx;
+							text-align: center;
+
+							>:last-child {
+								color: #249BFA;
+							}
+						}
+					}
+
+					.and {
+						width: 20px;
+						height: 20px;
+						margin-right: 24rpx;
+						position: relative;
+
+						&::before,
+						&::after {
+							content: "";
+							position: absolute;
+							height: 26rpx;
+							width: 1px;
+							top: 2px;
+							left: 50%;
+							background: #8D8D8F;
+						}
+
+						&::after {
+							transform: rotate(90deg);
+						}
+					}
 				}
 			}
 
@@ -239,7 +442,7 @@
                                 width: 60rpx;
                                 height: 60rpx;
                                 border-radius: 50%;
-                                margin-right: 20rpx;
+                                margin-right: 12rpx;
                             }
 
                             >view {
@@ -287,6 +490,69 @@
                     }
                 }
             }
+
+			.agreement {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding-top: 40rpx;
+
+				.checked {
+					padding-right: 10rpx;
+
+					image {
+						display: block;
+						width: 28rpx;
+						height: 28rpx;
+						border-radius: 50%;
+					}
+				}
+
+				>view {
+					color: #333;
+					font-size: 24rpx;
+				}
+			}
+		}
+
+		.bottom {
+			position: fixed;
+			bottom: 0;
+			display: flex;
+			width: 100%;
+			text-align: center;
+			line-height: 120rpx;
+			background: #fff;
+			border-top: 1px solid #F0F0F0;
+
+			.left {
+				flex: 2;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 30rpx 0 40rpx;
+
+				>:first-child {
+					font-size: 32rpx;
+
+					text {
+						color: #FF423A;
+						padding-left: 8rpx;
+					}
+				}
+
+				>:last-child {
+					color: #FF423A;
+					font-size: 25rpx;
+				}
+			}
+
+			.right {
+				flex: 1;
+				color: #fff;
+				font-size: 32rpx;
+				background: linear-gradient(90deg,#FF5664,#FF3D2F);
+			}
 		}
 	}
 </style>

@@ -70,15 +70,15 @@
 					</view> -->
 					<view class="my_item">
 						<view class="label">手机号码</view>
-						<input type="number" v-model="guest.phone" maxlength="11" placeholder="请填写真实有效的手机号码" />
+						<input id="tel" type="number" v-model="guest.tel" @blur="saveMsg" maxlength="11" placeholder="请填写真实有效的手机号码" />
 					</view>
 					<view class="my_item">
 						<view class="label">店铺/公司名称</view>
-						<input type="text" v-model="guest.message" placeholder="请填写真实有效店铺/公司名称" />
+						<input type="text" v-model="guest.company_name" @blur="saveMsg" placeholder="请填写真实有效店铺/公司名称" />
 					</view>
 					<view class="my_item">
 						<view class="label">店铺/公司地址</view>
-						<input type="text" v-model="guest.address" placeholder="请填写真实有效店铺/公司地址" />
+						<input type="text" v-model="guest.address" @blur="saveMsg" placeholder="请填写真实有效店铺/公司地址" />
 					</view>
 					<view class="form-btn1" @click="submit">立即标注地图 客户轻松上门</view>
 					<!-- <view class="form-btn" @click="submit">
@@ -104,6 +104,7 @@
 
 <script>
 	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
+	import Json from '@/Json';
 	export default {
 		components: {
 			UniPopup
@@ -111,16 +112,10 @@
 		data() {
 			return {
 				setObj: {}, // 授权后用户信息对象
+				guest: {},  // 表单信息对象
 				showDailog: false, // 是否显示信息弹窗
 				current: 0, // 轮播index
-				guest: {},  //用户信息
-				noticeList: [{
-					title: '138****1906'
-				}, {
-					title: '139****7789'
-				}, {
-					title: '158****4876'
-				}],
+				noticeList: [],
 				iconItems: [{
 						image: '/static/guest/guest.png',
 						title: '客户',
@@ -146,7 +141,9 @@
 			}
 		},
 		onShow() {
-			this.setObj = uni.getStorageSync('userMsg');
+			this.noticeList = Json.noticeList
+			this.setObj = uni.getStorageSync('userMsg')
+			this.guest = uni.getStorageSync('postMsg')
 			this.getShow()
 		},
 		onTabItemTap() {
@@ -203,25 +200,63 @@
 					this.showDailog = false
 				}
 			},
+			// 监听input输入
+			saveMsg(e) {
+				let type = e.target.id
+				if (type == 'tel') {
+					if (!(/^1[3456789]\d{9}$/.test(this.guest.tel))) {
+						uni.showToast({
+							title: '请输入正确的手机号',
+							icon: 'none',
+							duration: 1000
+						});
+						// return false
+					}
+					let obj = {
+						tel: this.guest.tel,
+						company_name: this.guest.company_name,
+						address: this.guest.address
+					}
+					uni.setStorage({
+						key: "postMsg",
+						data: obj
+					});
+					console.log("set success")
+				} else {
+					if (!(/^1[3456789]\d{9}$/.test(this.guest.tel))) {
+						return false
+					}
+					let obj = {
+						tel: this.guest.tel,
+						company_name: this.guest.company_name,
+						address: this.guest.address
+					}
+					uni.setStorage({
+						key: "postMsg",
+						data: obj
+					});
+					console.log("set success1")
+				}
+			},
 			// 提交信息
 			submit() {
-				if (!this.guest.phone) {
+				if (!this.guest.tel) {
 					uni.showToast({
 						title: '请输入手机号',
 						icon: 'none'
 					});
 					return false
 				}
-				if (!(/^1[3456789]\d{9}$/.test(this.guest.phone))) {
+				if (!(/^1[3456789]\d{9}$/.test(this.guest.tel))) {
 					uni.showToast({
 						title: '请输入正确的手机号',
 						icon: 'none'
 					});
 					return false
 				}
-				if (!this.guest.message) {
+				if (!this.guest.company_name) {
 					uni.showToast({
-						title: '请输入信息',
+						title: '请输入店铺名称',
 						icon: 'none'
 					});
 					return false
@@ -235,58 +270,20 @@
 				}
 				this.getMapUserInfo()
 			},
-			// 获取用户信息3.0
+			// 获取用户信息
 			getMapUserInfo() {
-				var str = "1,2,3,4,5,6";
-				this.$http
-					.post(`/api/saveMapMember`, {
-						// name: "Heiz",
-						name: this.setObj.nickname,
-						tel: this.guest.phone,
-						company_name: this.guest.message,
-						address: this.guest.address
-					})
-					.then(response => {
-						// console.log(response)
-						if (response.code === 200) {
-							uni.showToast({
-								title: '提交成功',
-								icon: 'none'
-							});
-							var query = {
-								mid: response.data,
-								money: 299,
-								map: str,
-								// nickname: "Heiz",
-								nickname: this.setObj.nickname,
-								openid: this.setObj.openid,
-								// openid: "oS4oIwn9CQfFy6Ivpcchf6UlHqAk",
-								address: this.guest.address
-							}
-							// 3.0
-							// console.log(query)
-							this.creatMapOrder(query)
-							this.guest = {}
-							this.showDailog = false
-						}
-					});
-			},
-			// 创建订单3.0
-			creatMapOrder(query) {
-				this.$http
-					.post(`/api/createMapOrder`, query)
-					.then(response => {
-						// console.log(response)
-						if (response.code === 200) {
-							var a = response.data.jsApiParameters
-							var b = response.data.order_sn
-							this.goPay(a, b)
-						}
-					});
-			},
-			//跳转支付 3.0
-			goPay(a, b) {
-				window.location.href = `${this.$baseURL}/api/go?jsApiParameters=${a}&order_sn=${b}`
+				let obj = {
+					tel: this.guest.tel,
+					company_name: this.guest.company_name,
+					address: this.guest.address,
+				}
+				uni.setStorage({
+					key: "postMsg",
+					data: obj
+				});
+				uni.navigateTo({
+					url: '/pages/pay/pay'
+				})
 			}
 		}
 	}

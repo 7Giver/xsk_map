@@ -4,6 +4,7 @@ var testjs = require("@/common/vconsole.min.js");
 export default {
     onLaunch: function () {
         // console.log('App Launch')
+        uni.removeStorageSync('postMsg');
 
         // 测试用
         // this.testSet()
@@ -28,10 +29,19 @@ export default {
 				nickname: "Heiz",
 				openid: "o8MX9wwt5ozZ033IVjTqqNsM4c1A",
 				wxid: "wpxgorng"
-            };
+			};
+			let msg = {
+				address: "士大夫大师傅",
+				company_name: "对方的",
+				tel: "13026689953"
+			};
             uni.setStorage({
                 key: "userMsg",
                 data: obj,
+			});
+			uni.setStorage({
+                key: "postMsg",
+                data: msg,
             });
         },
         // 断缓存存储
