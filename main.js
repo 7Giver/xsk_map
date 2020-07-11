@@ -58,6 +58,11 @@ Vue.prototype.$getAuthorize = () => {
   }
 }
 
+/*注册全局自定义组件*/
+import connection from '@/pages/sousou/connection.vue';
+
+Vue.component('connection', connection);
+
 Vue.prototype.$baseURL = baseURL
 Vue.prototype.$store = store
 Vue.prototype.$http = http

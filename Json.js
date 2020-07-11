@@ -49,7 +49,67 @@ const noticeList = [
     }
 ]
 
+const userList = [
+    {
+        id: 1,
+        image: '/static/guest/save.png',
+        nickname: '王晓雪',
+        phone: '189****7509',
+        company_name: '无锡哇哈哈果乳饮料',
+        area: '江苏 苏州'
+    },
+    {
+        id: 2,
+        image: '/static/guest/save.png',
+        nickname: '王晓雪',
+        phone: '189****7509',
+        company_name: '无锡哇哈哈果乳饮料',
+        area: '江苏 苏州'
+    },
+    {
+        id: 3,
+        image: '/static/guest/save.png',
+        nickname: '王晓雪',
+        phone: '189****7509',
+        company_name: '无锡哇哈哈果乳饮料',
+        area: '江苏 苏州'
+    },
+    {
+        id: 4,
+        image: '/static/guest/save.png',
+        nickname: '王晓雪',
+        phone: '189****7509',
+        company_name: '无锡哇哈哈果乳饮料',
+        area: '江苏 苏州'
+    },
+    {
+        id: 5,
+        image: '/static/guest/save.png',
+        nickname: '王晓雪',
+        phone: '189****7509',
+        company_name: '无锡哇哈哈果乳饮料',
+        area: '江苏 苏州'
+    },
+    {
+        id: 6,
+        image: '/static/guest/save.png',
+        nickname: '王晓雪',
+        phone: '189****7509',
+        company_name: '无锡哇哈哈果乳饮料',
+        area: '江苏 苏州'
+    },
+    {
+        id: 7,
+        image: '/static/guest/save.png',
+        nickname: '王晓雪',
+        phone: '189****7509',
+        company_name: '无锡哇哈哈果乳饮料',
+        area: '江苏 苏州'
+    }
+]
+
 export default {
     checkItems,
-    noticeList
+    noticeList,
+    userList
 }

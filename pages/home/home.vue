@@ -43,6 +43,7 @@
 			</view>
 		</view>
 		<view class="my_btn" @click="_checkItem('all')">一键批量标注 获得海量曝光</view>
+		<view @click="gonext">跳转sousou</view>
 		<!-- 信息弹窗 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
 			<view class="uni-tip">
@@ -380,6 +381,11 @@
 				});
 				uni.navigateTo({
 					url: '/pages/pay/pay'
+				})
+			},
+			gonext() {
+				uni.navigateTo({
+					url: '/pages/sousou/sousou'
 				})
 			}
 		}

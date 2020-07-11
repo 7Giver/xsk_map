@@ -32,7 +32,7 @@
 				<view><text>{{ -1000 }}</text>元</view>
 			</view>
 			<!-- 赠品 -->
-			<view class="gift_block">
+			<view class="gift_block" @click="_showItem">
 				<view class="left">赠品</view>
 				<view class="right">
 					<view class="item">
@@ -93,18 +93,37 @@
 			</view>
 			<view class="right" @click="submit">立即支付</view>
 		</view>
+		<!-- 展示弹窗 -->
+		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
+			<view class="container">
+				<view class="show_box">
+					<swiper class="show_swiper" indicator-dots="false" circular="true" indicator-active-color="#6E7FD2" :current="current">
+						<swiper-item class="item" v-for="(item, index) in showItems" :key="index">
+							<image :src="item.cover" mode=""></image>
+						</swiper-item>
+					</swiper>
+				</view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
+	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 	import Json from '@/Json';
 	export default {
+		components: {
+			UniPopup
+		},
 		data() {
 			return {
 				user: {},
 				getMsg: {},
+				current: 0, // 轮播index
+				showDailog: false, // 展示弹窗
 				agreement: true, // 同意协议
-				checkItems: [],
+				checkItems: [],  // 选中地图
+				showItems: [],  // 展示数据
 				showlist: [
                     {
 						image: "/static/pay/address.png",
@@ -160,7 +179,7 @@
 			},
 			// 获取选中地图
 			getMap() {
-				let str = uni.getStorageSync('mapStr')
+				let str = uni.getStorageSync('mapStr')  // '1,3,4'
 				let arr = str.split(',')
 				let newArr = []
 				arr.forEach(item => {
@@ -170,6 +189,28 @@
 					newArr.push(result)
 				});
 				this.user.icon = newArr.flat(2)
+			},
+			// 监听展示弹窗状态
+			change(e) {
+				if (!e.show) {
+					this.showDailog = false;
+					this.current = 0;
+					this.showItems = []
+				}
+			},
+			// 展示效果图事件
+			_showItem() {
+				this.$http
+					.post(`/api/getPoster`, {
+						type: 1
+					})
+					.then(response => {
+						if (response.code === 200) {
+							// console.log(response)
+							this.showItems = response.data
+							this.showDailog = true
+						}
+					});
 			},
 			// 点击支付
 			submit() {
@@ -552,6 +593,37 @@
 				color: #fff;
 				font-size: 32rpx;
 				background: linear-gradient(90deg,#FF5664,#FF3D2F);
+			}
+		}
+
+		// 展示弹窗
+		
+		.container {
+			height: 1040rpx;
+			border-radius: 20rpx;
+			// background: #D6ECFF;
+			position: relative;
+
+			.show_box {
+				height: 100%;
+				position: relative;
+
+				.show_swiper {
+					width: 100%;
+					height: 100%;
+					padding-top: 40rpx;
+
+					.item {
+						padding: 0rpx 42rpx;
+
+						image {
+							width: 100%;
+							height: 100%;
+							border-radius: 26rpx;
+						}
+					}
+
+				}
 			}
 		}
 	}

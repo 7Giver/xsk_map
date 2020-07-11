@@ -7,7 +7,7 @@ export default {
         uni.removeStorageSync('postMsg');
 
         // 测试用
-        // this.testSet()
+        this.testSet()
 
         // 进入应用授权
         // this.$getAuthorize()
