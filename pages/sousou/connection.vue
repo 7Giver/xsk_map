@@ -154,7 +154,6 @@ export default {
 				checkList.push(id)
 				this.$set(this.userList[index], 'checked', true)
 			}
-			console.log(checkList)
 		},
 		// 取消人脉
 		goCancel(id, index) {

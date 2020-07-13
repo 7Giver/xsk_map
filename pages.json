@@ -36,6 +36,18 @@
             "path" : "pages/sousou/sousou",
             "style" : {}
         }
+        ,{
+            "path" : "pages/mine/editmsg",
+            "style" : {
+				// "navigationBarTitleText": "编辑信息"
+			}
+        }
+        ,{
+            "path" : "pages/mine/service",
+            "style" : {
+				// "navigationBarTitleText": "专属客服"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

@@ -52,7 +52,7 @@ const noticeList = [
 const userList = [
     {
         id: 1,
-        image: '/static/guest/save.png',
+        image: '/static/sousou/user.png',
         nickname: '王晓雪',
         phone: '189****7509',
         company_name: '无锡哇哈哈果乳饮料',
@@ -60,7 +60,7 @@ const userList = [
     },
     {
         id: 2,
-        image: '/static/guest/save.png',
+        image: '/static/sousou/user.png',
         nickname: '王晓雪',
         phone: '189****7509',
         company_name: '无锡哇哈哈果乳饮料',
@@ -68,7 +68,7 @@ const userList = [
     },
     {
         id: 3,
-        image: '/static/guest/save.png',
+        image: '/static/sousou/user.png',
         nickname: '王晓雪',
         phone: '189****7509',
         company_name: '无锡哇哈哈果乳饮料',
@@ -76,7 +76,7 @@ const userList = [
     },
     {
         id: 4,
-        image: '/static/guest/save.png',
+        image: '/static/sousou/user.png',
         nickname: '王晓雪',
         phone: '189****7509',
         company_name: '无锡哇哈哈果乳饮料',
@@ -84,7 +84,7 @@ const userList = [
     },
     {
         id: 5,
-        image: '/static/guest/save.png',
+        image: '/static/sousou/user.png',
         nickname: '王晓雪',
         phone: '189****7509',
         company_name: '无锡哇哈哈果乳饮料',
@@ -92,7 +92,7 @@ const userList = [
     },
     {
         id: 6,
-        image: '/static/guest/save.png',
+        image: '/static/sousou/user.png',
         nickname: '王晓雪',
         phone: '189****7509',
         company_name: '无锡哇哈哈果乳饮料',
@@ -100,7 +100,7 @@ const userList = [
     },
     {
         id: 7,
-        image: '/static/guest/save.png',
+        image: '/static/sousou/user.png',
         nickname: '王晓雪',
         phone: '189****7509',
         company_name: '无锡哇哈哈果乳饮料',
@@ -108,8 +108,39 @@ const userList = [
     }
 ]
 
+const iconList = [
+    {
+        icon: '/static/mine/map.png',
+        title: '地图标注'
+    },
+    {
+        icon: '/static/mine/edit.png',
+        title: '编辑信息',
+        url: '/pages/mine/editmsg'
+    },
+    {
+        icon: '/static/mine/client.png',
+        title: '我的人脉'
+    },
+    {
+        icon: '/static/mine/card.png',
+        title: '名片管理'
+    },
+    {
+        icon: '/static/mine/service.png',
+        title: '专属客服',
+        url: '/pages/mine/service'
+    },
+    {
+        icon: '/static/mine/about.png',
+        title: '关于我们',
+        url: '/pages/about/about'
+    }
+]
+
 export default {
     checkItems,
     noticeList,
-    userList
+    userList,
+    iconList
 }

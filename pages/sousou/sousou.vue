@@ -1,6 +1,7 @@
 <template>
 	<view>
-		<connection></connection>
+		<!-- <connection></connection> -->
+		<mine></mine>
 	</view>
 </template>
 
