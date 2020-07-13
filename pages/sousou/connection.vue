@@ -9,9 +9,9 @@
 					@columnchange="columnchange"
 					:value="classifyIndex"
 					:range="classifyArr"
-					range-key="value"
+					range-key="name"
 				>
-                    <view>{{areaList[index].value}}</view>
+                    <view>{{name}}</view>
                 </picker>
 				<image class="more" src="/static/sousou/more.png" mode="widthFix">
 			</view>
@@ -67,47 +67,47 @@ export default {
     data() {
         return {
 			classifyIndex: [0, 0],
-			classifyArr:[[], []],  // picker - 数据源
-			childArr:[], // 二级分类数据源
+			classifyArr: [[], []],  // picker - 数据源
+			childArr: [], // 二级分类数据源
 			index: 0,  // picker展示值下标
+			name: '全国', // 选中的名称
 			showDailog: false, // 弹窗隐藏
-			array: ['全国', '美国', '巴西', '日本'],
 			areaList: [
 				{
-					label: '全国',
-					value: '全国'
+					name: '全国',
+					child: []
 				},
 				{
-					label: '江苏',
+					name: '江苏',
 					child: [
 						{
 							id: 1,
-							value: '南京'
+							name: '南京'
 						},
 						{
 							id: 2,
-							value: '无锡'
+							name: '无锡'
 						},
 						{
 							id: 3,
-							value: '苏州'
+							name: '苏州'
 						},
 					]
 				},
 				{
-					label: '浙江',
+					name: '浙江',
 					child: [
 						{
 							id: 1,
-							value: '南京'
+							name: '杭州'
 						},
 						{
 							id: 2,
-							value: '无锡'
+							name: '宁波'
 						},
 						{
 							id: 3,
-							value: '苏州'
+							name: '温州'
 						},
 					]
 				},
@@ -171,21 +171,30 @@ export default {
 		// 获取数据源并分出一级二级
 		getAllClassify() {
 			this.areaList.forEach((item, index) => {
-				// 将数据源中的二级分类 push 进 childArr，作为二级分类的数据源
+				// 将数据源中的二级 push 进 childArr，作为二级的数据源
 				this.childArr.push(this.areaList[index].child)
 			})
-			// 一级分类的数据源
+			// 一级的数据源
 			this.classifyArr[0] = this.areaList;
 			// 第一次打开时，默认给一级分类添加它的二级分类
 			this.classifyArr[1] = this.childArr[0]
 		},
-		// 选择商品分类
+		// 选择地区
 		classifyChange(e) {
-			console.log(e)
+			let value = e.target.value;
+			this.classifyIndex = value;
+			if (this.classifyArr[0].length != 0) {
+				this.name = this.classifyArr[0][this.classifyIndex[0]].name
+			};
+			if (this.classifyArr[1].length != 0) {
+				this.name = this.classifyArr[1][this.classifyIndex[1]].name
+			}
 		},
-		// 获取二级分类
+		// 获取二级
 		columnchange(e) {
-			console.log(e)
+			if (e.detail.column == 0) {
+				this.classifyArr[1] = this.childArr[e.detail.value]
+			}
 		}
 		
 	},
