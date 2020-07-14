@@ -48,6 +48,10 @@
 				// "navigationBarTitleText": "专属客服"
 			}
         }
+        ,{
+            "path" : "pages/mine/card",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

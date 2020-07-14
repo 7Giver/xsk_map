@@ -124,7 +124,8 @@ const iconList = [
     },
     {
         icon: '/static/mine/card.png',
-        title: '名片管理'
+        title: '名片管理',
+        url: '/pages/mine/card'
     },
     {
         icon: '/static/mine/service.png',
