@@ -56,6 +56,10 @@
             "path" : "pages/train/train",  // 直通车
             "style" : {}
         }
+        ,{
+            "path" : "pages/train/detail",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

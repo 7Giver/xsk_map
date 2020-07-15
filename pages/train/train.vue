@@ -137,9 +137,12 @@
 				.left {
 					display: flex;
 					white-space: nowrap;
+					font-weight: bold;
 
 					>text {
 						color: #9CA1B4;
+						font-weight: normal;
+						line-height: 40rpx;
 						text-overflow: ellipsis;
 						display: -webkit-box;
 						-webkit-line-clamp: 2;
