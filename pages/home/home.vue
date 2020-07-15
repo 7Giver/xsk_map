@@ -385,7 +385,7 @@
 			},
 			gonext() {
 				uni.navigateTo({
-					url: '/pages/sousou/sousou'
+					url: '/pages/train/train'
 				})
 			}
 		}

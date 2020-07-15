@@ -52,6 +52,10 @@
             "path" : "pages/mine/card",
             "style" : {}
         }
+        ,{
+            "path" : "pages/train/train",  // 直通车
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
