@@ -25,31 +25,53 @@
 		<view class="content">
 			<view class="title">选择要投放的区域<text>(最多三个区域)</text></view>
 			<view class="area_block">
-				<view class="item">
+				<view class="item" v-for="(item, index) in putInList" :key="index">
 					<view class="main">
-						<text>区域一</text>
+						<text v-if="index==0">区域一</text>
+						<text v-else-if="index==1">区域二</text>
+						<text v-else>区域三</text>
 						<view>
-							<picker @change="pickerChange" :value="index" :range="array">
-                        		<view class="uni-input">{{array[index]}}</view>
-                    		</picker>
+							<picker
+								:id="index"
+								mode="multiSelector"
+								@change="classifyChange"
+								@columnchange="columnchange"
+								:value="item.classifyIndex"
+								:range="item.classifyArr"
+								range-key="province"
+							>
+								<view>{{item.name}}</view>
+							</picker>
 							<image src="/static/sousou/more.png" mode="widthFix">
 						</view>
 					</view>
 					<view class="btn">
-						<image src="/static/train/add.png" mode="widthFix">
+						<image src="/static/train/add.png" mode="widthFix" v-if="index==0 && putInList.length<3" @click="addArea">
+						<image src="/static/train/minus.png" mode="widthFix" v-else @click="delArea(index)">
 					</view>
 				</view>
 			</view>
 			<view class="title">您希望增加多少客源？</view>
 			<view class="tip_block">
-				<view class="item">20+</view>
-				<view class="item">100+</view>
+				<view
+					:class="{'on':clientIndex == index}"
+					v-for="(item, index) in clientList"
+					:key="index"
+					@click="selectClient(index)"
+				>
+					{{item}}
+				</view>
 			</view>
 			<view class="title">您希望投放的时长？</view>
 			<view class="tip_block">
-				<view class="item">1个月</view>
-				<view class="item">2个月</view>
-				<view class="item">3个月</view>
+				<view
+					:class="{'on':timeIndex == index}"
+					v-for="(item, index) in timeList"
+					:key="index"
+					@click="selectTime(index)"
+				>
+					{{item}}
+				</view>
 			</view>
 		</view>
 		<!-- 协议 -->
@@ -69,22 +91,86 @@
 </template>
 
 <script>
+	import Json from '@/Json';
 	export default {
 		data() {
 			return {
+				clientIndex: 1,
+				timeIndex: 1,
 				agreement: true, // 同意协议
-				array: ['中国', '美国', '巴西', '日本'],
-            	index: 0,
+				clientList: ['20+','100+'],
+				timeList: ['1个月','2个月','3个月'],
+				childArr: [], // 二级分类数据源
+				areaList: [],  // 地区数据
+				putInList: [
+					{
+						name: '选择区域',
+						classifyIndex: [0, 0],
+						classifyArr: [[], []]
+					}
+				]
 			}
+		},
+		onShow() {
+			this.areaList = Json.areaList
+			this.getAllClassify()
 		},
 		methods: {
 			// 同意协议
 			checkagree() {
-				this.agreement = !this.agreement;
+				this.agreement = !this.agreement
 			},
-			// picker监听事件
-			pickerChange(e) {
-				this.index = e.target.value
+			// 初始化数据
+			getAllClassify() {
+				this.areaList.forEach((item, index) => {
+					this.childArr.push(item.city)
+				})
+				this.putInList.forEach((item, index) => {
+					item.classifyArr[0] = this.areaList
+					item.classifyArr[1] = this.childArr[0]
+				})
+			},
+			// 选择地区index
+			classifyChange(e) {
+				let index = Number(e.target.id)
+				let value = e.target.value
+				let item = this.putInList[index]
+				item.classifyIndex = value
+				if (item.classifyArr[0].length !== 0) {
+					item.name = item.classifyArr[0][item.classifyIndex[0]].province
+				}
+				if (item.classifyArr[1].length !== 0) {
+					item.name += ' ' + item.classifyArr[1][item.classifyIndex[1]]
+				}
+			},
+			// 获取二级
+			columnchange(e) {
+				let index = Number(e.target.id)
+				let item = this.putInList[index]
+				if (e.detail.column == 0) {
+					item.classifyArr[1] = this.childArr[e.detail.value]
+				}
+			},
+			// 选择客源数
+			selectClient(index) {
+				this.clientIndex = index
+			},
+			// 选择投放时长
+			selectTime(index) {
+				this.timeIndex = index
+			},
+			// 添加地区
+			addArea() {
+				this.putInList.push({
+					name: '选择区域',
+					classifyIndex: [0, 0],
+					classifyArr: [[], []]
+				})
+				this.getAllClassify()
+			},
+			// 删除地区
+			delArea(index) {
+				this.putInList.splice(index, 1)
 			},
 			// 立即支付
 			submit() {
@@ -168,7 +254,7 @@
 	}
 
 	.content {
-		padding: 30rpx 38rpx;
+		padding: 26rpx 38rpx;
 
 		.title {
 			display: flex;
@@ -199,7 +285,7 @@
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				margin: 20rpx auto;
+				margin: 26rpx auto;
 
 				.main {
 					flex: 1;
@@ -207,17 +293,14 @@
 					align-items: center;
 					justify-content: space-between;
 					border: 1px solid #F0F0F0;
-					font-size: 30rpx;
-					padding: 10rpx 20rpx;
+					font-size: 28rpx;
+					padding: 16rpx 20rpx;
 					border-radius: 10rpx;
-
-					>text {
-						
-					}
 
 					>view {
 						display: flex;
 						align-items: center;
+						color: #4B7EF6;
 
 						>image {
 							display: block;
@@ -228,11 +311,11 @@
 				}
 
 				.btn {
-					padding-left: 20rpx;
+					padding-left: 18rpx;
 
 					>image {
 						display: block;
-						width: 46rpx;
+						width: 52rpx;
 					}
 				}
 			}
@@ -241,17 +324,22 @@
 		.tip_block {
 			display: flex;
 			align-items: center;
-			padding: 30rpx 0;
+			padding: 40rpx 0;
 
-			.item {
+			>view {
 				color: #9CA1B4;
-				width: 120rpx;
-				font-size: 28rpx;
+				width: 150rpx;
+				font-size: 30rpx;
 				text-align: center;
-				line-height: 52rpx;
-				margin-right: 40rpx;
+				line-height: 60rpx;
+				margin-right: 50rpx;
 				border-radius: 8rpx;
 				background: #F5F5F4;
+			}
+
+			.on {
+				color: #fff;
+				background: #4B7EF6;
 			}
 		}
 	}
