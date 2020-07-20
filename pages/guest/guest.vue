@@ -155,8 +155,17 @@
 		methods: {
 			// 获取banner图
 			getShow() {
-				this.$http
-					.post(`/api/getBanner`, {})
+				// this.$http
+				// 	.post(`/api/getBanner`, {})
+				// 	.then(response => {
+				// 		if (response.code === 200) {
+				// 			// console.log(response)
+				// 			this.showItems = response.data
+				// 		}
+				// 	});
+
+				this.$test
+					.post(`/?r=api/index/banner`, {})
 					.then(response => {
 						if (response.code === 200) {
 							// console.log(response)

@@ -4,7 +4,7 @@ import uni_request from 'js_sdk/songGQ-req/uni_request/uni_request.js'
 import store from './store'
 
 const baseURL = 'http://dt.sousou.com' // 正式地址
-const testURL = 'http://server.yingku878.com/?r=' // 测试地址
+const testURL = 'http://server.yingku878.com' // 测试地址
 const http = uni_request({
     baseURL: baseURL, 
     // baseURL: testURL,  // 测试

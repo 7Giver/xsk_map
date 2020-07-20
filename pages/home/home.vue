@@ -247,8 +247,20 @@
 			},
 			// 展示效果图事件
 			_showItem(id) {
-				this.$http
-					.post(`/api/getPoster`, {
+				// this.$http
+				// 	.post(`/api/getPoster`, {
+				// 		type: id
+				// 	})
+				// 	.then(response => {
+				// 		if (response.code === 200) {
+				// 			// console.log(response)
+				// 			this.showItems = response.data
+				// 			this.showDailog1 = true
+				// 		}
+				// 	});
+
+				this.$test
+					.post(`/?r=api/index/poster`, {
 						type: id
 					})
 					.then(response => {
@@ -385,7 +397,7 @@
 			},
 			gonext() {
 				uni.navigateTo({
-					url: '/pages/train/train'
+					url: '/pages/sousou/sousou'
 				})
 			}
 		}

@@ -5,19 +5,28 @@
 			<image src="/static/train/border.png" mode="widthFix">
 		</view>
 		<view class="top_block">
-			<image src="/static/index/gaode.png" mode="widthFix">
+			<image :src="setObj.headimgurl" mode="widthFix">
 			<view class="right">
 				<view class="item">
-					<view class="left">商户名称：<text>无锡哇哈哈哈果乳饮料</text></view>
-					<view>修改</view>
+					<view class="left">商户名称：
+						<text v-if="!editName">{{guest.company_name}}</text>
+						<input v-else type="text" v-model="guest.company_name" @blur="saveMsg('name')" focus placeholder="请填写店铺/公司名称" />
+					</view>
+					<view @click="eidtMsg('name')">修改</view>
 				</view>
 				<view class="item">
-					<view class="left">联系电话：<text>18701891906</text></view>
-					<view>修改</view>
+					<view class="left">联系电话：
+						<text v-if="!editTel">{{guest.tel}}</text>
+						<input v-else type="number" v-model="guest.tel" @blur="saveMsg('tel')" focus maxlength="11" placeholder="请填写真实有效的手机号码" />
+					</view>
+					<view @click="eidtMsg('tel')">修改</view>
 				</view>
 				<view class="item">
-					<view class="left">商户地址：<text>江苏省无锡市梁溪区广益街道广益路梁溪电子商务园区208号</text></view>
-					<view>修改</view>
+					<view class="left">商户地址：
+						<text v-if="!editAddress">{{guest.address}}</text>
+						<input v-else type="text" v-model="guest.address" @blur="saveMsg('address')" focus placeholder="请填写真实有效店铺/公司地址" />
+					</view>
+					<view @click="eidtMsg('address')">修改</view>
 				</view>
 			</view>
 		</view>
@@ -59,7 +68,7 @@
 					:key="index"
 					@click="selectClient(index)"
 				>
-					{{item}}
+					{{item.label}}
 				</view>
 			</view>
 			<view class="title">您希望投放的时长？</view>
@@ -70,7 +79,7 @@
 					:key="index"
 					@click="selectTime(index)"
 				>
-					{{item}}
+					{{item.label}}
 				</view>
 			</view>
 		</view>
@@ -95,13 +104,41 @@
 	export default {
 		data() {
 			return {
-				clientIndex: 1,
-				timeIndex: 1,
+				setObj: {}, //授权信息对象
+				guest: {},  // 表单信息
+				clientIndex: 1, // 增加客源
+				timeIndex: 1,  // 投放时长
+				editName: false, // 编辑名称
+				editTel: false,  // 编辑电话
+				editAddress: false, // 编辑地址
 				agreement: true, // 同意协议
-				clientList: ['20+','100+'],
-				timeList: ['1个月','3个月','6个月'],
+				clientList: [
+					{
+						label: '20+',
+						value: 20
+					},
+					{
+						label: '100+',
+						value: 100
+					}
+				],
+				timeList: [
+					{
+						label: '1个月',
+						value: 1
+					},
+					{
+						label: '3个月',
+						value: 3
+					},
+					{
+						label: '6个月',
+						value: 6
+					},
+				],
 				childArr: [], // 二级分类数据源
 				areaList: [],  // 地区数据
+				checkList: [], //选择后的区域
 				putInList: [
 					{
 						name: '选择区域',
@@ -113,12 +150,95 @@
 		},
 		onShow() {
 			this.areaList = Json.areaList
+			let value = uni.getStorageSync('userMsg')
+			let obj = uni.getStorageSync('postMsg')
+			value ? this.setObj = value : false
+			obj ? this.guest = obj : false
 			this.getAllClassify()
 		},
 		methods: {
+			// 点击编辑信息
+			eidtMsg(type) {
+				switch(type) {
+					case 'name':
+						this.editName = true;
+						break;
+					case 'tel':
+						this.editTel = true;
+						break;
+					case 'address':
+						this.editAddress = true;
+						break;
+				}
+			},
+			// 保存修改信息
+			saveMsg(type) {
+				switch(type) {
+					case 'name':
+						if (!this.guest.company_name) {
+							uni.showToast({
+								title: '请输入店铺名称',
+								icon: 'none'
+							});
+							return false
+						}
+						this.editName = false;
+						break;
+					case 'tel':
+						if (!this.guest.tel) {
+							uni.showToast({
+								title: '请输入手机号',
+								icon: 'none'
+							});
+							return false
+						}
+						if (!(/^1[3456789]\d{9}$/.test(this.guest.tel))) {
+							uni.showToast({
+								title: '请输入正确的手机号',
+								icon: 'none',
+								duration: 1000
+							});
+							return false
+						}
+						this.editTel = false;
+						break;
+					case 'address':
+						if (!this.guest.address) {
+							uni.showToast({
+								title: '请输入详细地址',
+								icon: 'none'
+							});
+							return false
+						}
+						this.editAddress = false;
+						break;
+				}
+				let obj = {
+					tel: this.guest.tel,
+					company_name: this.guest.company_name,
+					address: this.guest.address
+				}
+				uni.setStorage({
+					key: "postMsg",
+					data: obj
+				});
+			},
 			// 同意协议
 			checkagree() {
 				this.agreement = !this.agreement
+			},
+			// 添加地区
+			addArea() {
+				this.putInList.push({
+					name: '选择区域',
+					classifyIndex: [0, 0],
+					classifyArr: [[], []]
+				})
+				this.getAllClassify()
+			},
+			// 删除地区
+			delArea(index) {
+				this.putInList.splice(index, 1)
 			},
 			// 初始化数据
 			getAllClassify() {
@@ -164,6 +284,26 @@
 					});
 					this.putInList = newArr
 				}
+				this.getCheckList(newArr)
+			},
+			// 获取选中地址
+			getCheckList(res) {
+				let arr = []
+				res.forEach(item => {
+					arr.push(item.name)
+				})
+				let result = []
+				arr.forEach(item => {
+					result.push(item.split(' '))
+				})
+				let newArr = []
+				result.forEach(item => {
+					newArr.push({
+						province: item[0],
+						city: item[1]
+					})
+				})
+				this.checkList = [...new Set(newArr)]
 			},
 			// 选择客源数
 			selectClient(index) {
@@ -172,19 +312,6 @@
 			// 选择投放时长
 			selectTime(index) {
 				this.timeIndex = index
-			},
-			// 添加地区
-			addArea() {
-				this.putInList.push({
-					name: '选择区域',
-					classifyIndex: [0, 0],
-					classifyArr: [[], []]
-				})
-				this.getAllClassify()
-			},
-			// 删除地区
-			delArea(index) {
-				this.putInList.splice(index, 1)
 			},
 			// 立即支付
 			submit() {
@@ -195,6 +322,29 @@
 					});
 					return false
 				}
+				let str = uni.getStorageSync('mapStr')
+				let wxid = uni.getStorageSync('userMsg').wxid
+				let obj = {
+					company: this.guest.company_name,
+					tel: this.guest.tel,
+					address: this.guest.address,
+					map: str,
+					wxid: wxid,
+					area: this.checkList,
+					customers: this.clientList[this.clientIndex].value,
+					type: this.timeList[this.timeIndex].value
+				}
+				console.log(obj)
+				this.$test
+					.post(`/?r=api/order/direct-submit`, obj)
+					.then(response => {
+						console.log(response)
+						if (response.code === 200) {
+							uni.navigateTo({
+								url: `/pages/train/detail?order_sn=${response.data.order_sn}`
+							})
+						}
+					});
 			}
 		}
 	}
@@ -221,6 +371,7 @@
 		>image {
 			width: 100rpx;
 			height: 100rpx;
+			border-radius: 12rpx;
 		}
 		
 		.right {
@@ -239,10 +390,19 @@
 					white-space: nowrap;
 					font-weight: bold;
 
+					input {
+						height: 48rpx;
+						color: #9CA1B4;
+						font-size: 28rpx;
+						text-indent: 26rpx;
+						font-weight: normal;
+						background: #f8f8f8;
+						border-radius: 20rpx;
+					}
+
 					>text {
 						color: #9CA1B4;
 						font-weight: normal;
-						line-height: 40rpx;
 						text-overflow: ellipsis;
 						display: -webkit-box;
 						-webkit-line-clamp: 2;
