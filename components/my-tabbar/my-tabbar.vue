@@ -1,0 +1,124 @@
+<template>
+    <view class="my-tabbar">
+        <view
+            :class="[select == index ? 'item on' : 'item']"
+            v-for="(item, index) in data"
+            :key="index"
+            @click="checkItem(index, item.url)"
+        >
+            <view :class="{ hot: index == 2 }">
+                <image :src="item.icon" mode=""></image>
+            </view>
+            <text>{{ item.title }}</text>
+        </view>
+    </view>
+</template>
+
+<script>
+export default {
+    name: "myTabbar",
+    props: {
+        select: {
+            type: Number,
+            default: 3,
+        },
+    },
+    data() {
+        return {
+            checkIndex: 3,
+            data: [
+                {
+                    title: "搜搜名片",
+                    icon: "/static/sousou/home.png",
+                    url: "/pages/mine/card",
+                },
+                {
+                    title: "人脉市集",
+                    icon: "/static/sousou/friend.png",
+                    url: "/pages/sousou/connection",
+                },
+                {
+                    title: "快速获客",
+                    icon: "/static/sousou/client.png",
+                    url: "/pages/train/train",
+                },
+                {
+                    title: "我的",
+                    icon: "/static/sousou/mine.png",
+                    url: "/pages/sousou/mine",
+                },
+            ],
+        };
+    },
+    mounted() {
+        // console.log("tabbar ready!");
+    },
+    methods: {
+        checkItem(index, url) {
+            this.$emit('change', {
+				select: index
+            })
+            uni.navigateTo({
+                url: url
+            })
+        }
+    },
+};
+</script>
+
+<style lang="scss">
+.my-tabbar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 998;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    border-top: 1px solid #d8d8d8;
+    background: #fff;
+
+    .item {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        padding: 18rpx 0 6rpx;
+        color: #a3a5b4;
+
+        > view {
+            position: relative;
+            padding-bottom: 4rpx;
+
+            > image {
+                display: block;
+                width: 56rpx;
+                height: 56rpx;
+            }
+        }
+
+        > text {
+            font-size: 23rpx;
+        }
+
+        .hot::before {
+            content: "";
+            display: block;
+            position: absolute;
+            top: -20rpx;
+            right: -22rpx;
+            width: 38rpx;
+            height: 48rpx;
+            background: url("/static/sousou/hot.gif") no-repeat center / 100%
+                100%;
+            z-index: 999;
+        }
+    }
+
+    .on {
+        color: #232739;
+    }
+}
+</style>

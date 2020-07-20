@@ -99,7 +99,7 @@
 				timeIndex: 1,
 				agreement: true, // 同意协议
 				clientList: ['20+','100+'],
-				timeList: ['1个月','2个月','3个月'],
+				timeList: ['1个月','3个月','6个月'],
 				childArr: [], // 二级分类数据源
 				areaList: [],  // 地区数据
 				putInList: [
@@ -142,6 +142,7 @@
 				if (item.classifyArr[1].length !== 0) {
 					item.name += ' ' + item.classifyArr[1][item.classifyIndex[1]]
 				}
+				this.changeArray()
 			},
 			// 获取二级
 			columnchange(e) {
@@ -149,6 +150,19 @@
 				let item = this.putInList[index]
 				if (e.detail.column == 0) {
 					item.classifyArr[1] = this.childArr[e.detail.value]
+				}
+			},
+			// 区域去重
+			changeArray() {
+				let arr = this.putInList
+				let res = new Map()
+				let newArr = arr.filter((a) => !res.has(a.name) && res.set(a.name, 1))
+				if (newArr.length !== arr.length) {
+					uni.showToast({
+						title: '区域不得重复',
+						icon: 'none'
+					});
+					this.putInList = newArr
 				}
 			},
 			// 选择客源数
