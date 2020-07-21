@@ -100,7 +100,7 @@
 </template>
 
 <script>
-	import Json from '@/Json';
+	// import Json from '@/Json';
 	export default {
 		data() {
 			return {
@@ -149,14 +149,25 @@
 			}
 		},
 		onShow() {
-			this.areaList = Json.areaList
+			// this.areaList = Json.areaList
 			let value = uni.getStorageSync('userMsg')
 			let obj = uni.getStorageSync('postMsg')
 			value ? this.setObj = value : false
 			obj ? this.guest = obj : false
-			this.getAllClassify()
+			this.getAreaList()
 		},
 		methods: {
+			// 获取省市信息
+			getAreaList() {
+				this.$test
+					.post(`/?r=api/index/district`, {})
+					.then(response => {
+						if (response.code === 200) {
+							this.areaList = response.data
+							this.getAllClassify()
+						}
+					});
+			},
 			// 点击编辑信息
 			eidtMsg(type) {
 				switch(type) {

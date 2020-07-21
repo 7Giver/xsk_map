@@ -3,10 +3,10 @@
         <view class="header">
             <view class="top">
                 <view class="img">
-                    <image src="/static/sousou/user.png" mode="widthFix">
+                    <image :src="setObj.headimgurl" mode="widthFix">
                 </view>
                 <view class="right">
-                    <view class="title">江苏海底捞火锅店</view>
+                    <view class="title">{{setObj.nickname}}</view>
                     <view class="tips">
                         <text>地图标注商户</text>
                     </view>
@@ -14,13 +14,13 @@
             </view>
             <view class="bottom">
                 <view class="left">您还未标注地图</view>
-                <view class="right">点击去标注</view>
+                <view class="right" @click="goHome">点击去标注</view>
             </view>
         </view>
         <view class="content">
             <view class="title">我的功能</view>
             <view class="icon_block">
-                <view class="item" v-for="(item, index) in iconList" :key="index" @click="gonext(item.url)">
+                <view class="item" v-for="(item, index) in iconList" :key="index" @click="gonext(index, item.url)">
                     <image :src="item.icon" mode="widthFix">
                     <view>{{item.title}}</view>
                 </view>
@@ -37,19 +37,36 @@ import Json from '@/Json';
 export default {
     data() {
         return {
+            setObj: {}, // 授权信息
             iconList: []
         };
     },
     mounted() {
         this.iconList = Json.iconList
+        this.getLocal()
     },
     methods: {
+        // 获取缓存
+        getLocal() {
+            let value = uni.getStorageSync('userMsg')
+            value ? this.setObj = value : false
+        },
+        // 跳转首页
+        goHome() {
+            uni.switchTab({
+                url: '/pages/home/home'
+            })
+        },
         // 跳转页面
-        gonext(url) {
+        gonext(index, url) {
             if (url) {
-                uni.navigateTo({
-                    url: url
-                })
+                index == 5 || index == 0
+                    ? uni.switchTab({
+                        url: url
+                    })
+                    : uni.navigateTo({
+                        url: url
+                    })
             } else {
                 uni.showToast({
                     title: '正在升级中...',
@@ -84,6 +101,7 @@ export default {
                 margin-right: 26rpx;
                 border: 2px solid #72A2EC;
                 border-radius: 50%;
+                overflow: hidden;
 
                 >image {
                     display: block;

@@ -60,6 +60,10 @@
             "path" : "pages/train/detail",
             "style" : {}
         }
+        ,{
+            "path" : "pages/mine/mine",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
@@ -92,6 +96,12 @@
 				"iconPath": "/static/03.png",
 				"selectedIconPath": "/static/03.png",
 				"text": "关于我们"
+			},
+			{
+				"pagePath": "pages/mine/mine",
+				"iconPath": "/static/sousou/mine.png",
+				"selectedIconPath": "/static/sousou/mine.png",
+				"text": "我的"
 			}
 		]
 	}

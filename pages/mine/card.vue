@@ -3,26 +3,26 @@
 		<view class="header">
 			<view class="card">
 				<view class="avatar">
-					<image src="/static/sousou/user.png" mode="">
+					<image :src="setObj.headimgurl" mode="">
 				</view>
 				<view class="content">
-					<view class="nickname">江苏海底捞火锅店</view>
+					<view class="nickname">{{setObj.nickname}}</view>
 					<view class="title">正是这些平凡的人生，却构成了伟大的历史.前面的路还很远,但是一定要走下去...</view>
 					<view class="message">
 						<view class="item">
-							<view class="left">商户名<text>江苏海底捞火锅店</text></view>
+							<view class="left">商户名<text>{{guest.company_name}}</text></view>
+							<view class="right" @click="uniCopy(guest.company_name)">复制</view>
+						</view>
+						<view class="item">
+							<view class="left">手机号<text>{{guest.tel}}</text></view>
+							<view class="right" @click="goCall(guest.tel)">拨打</view>
+						</view>
+						<!-- <view class="item">
+							<view class="left">微信号<text>{{guest.address}}</text></view>
 							<view class="right">复制</view>
-						</view>
+						</view> -->
 						<view class="item">
-							<view class="left">手机号<text>18701891906</text></view>
-							<view class="right">拨打</view>
-						</view>
-						<view class="item">
-							<view class="left">微信号<text>Hello huio1906</text></view>
-							<view class="right">复制</view>
-						</view>
-						<view class="item">
-							<view class="left">地址<a>无锡市梁溪区广益路208号崇安 电子商务园区9号808室</a></view>
+							<view class="left">地址<a>{{guest.address}}</a></view>
 							<view class="right">
 								<image src="/static/mine/card/address.png" mode="widthFix">
 							</view>
@@ -37,9 +37,9 @@
 				<text>已获得地图标注</text>
 			</view>
 			<view class="map_block">
-				<view class="item" v-for="(item, index) in 5" :key="index">
-					<image src="/static/index/gaode.png" mode="widthFix">
-					<view class="right">高德地图</view>
+				<view class="item" v-for="(item, index) in mapList" :key="index">
+					<image :src="item.image" mode="widthFix"></image>
+					<view>{{item.value}}</view>
 				</view>
 			</view>
 			<view class="title">
@@ -54,14 +54,74 @@
 </template>
 
 <script>
+	import h5Copy from '@/js_sdk/junyi-h5-copy/junyi-h5-copy.js'
+	import Json from '@/Json';
 	export default {
 		data() {
 			return {
-				
+				setObj: {},
+				guest: {},
+				mapList: [] // 选中地图
 			}
 		},
+		mounted() {
+			this.getLocal()
+			this.getMap()
+		},
 		methods: {
-			
+			// 获取缓存
+			getLocal() {
+				let value = uni.getStorageSync('userMsg')
+				let obj = uni.getStorageSync('postMsg')
+				value ? this.setObj = value : false
+				obj ? this.guest = obj : false
+			},
+			// 获取选中地图
+			getMap() {
+				let str = uni.getStorageSync('mapStr')
+				let arr = str.split(',')
+				let newArr = []
+				arr.forEach(item => {
+					let result = Json.checkItems.filter(val => {
+						return val.id == item
+					})
+					newArr.push(result)
+				})
+				this.mapList = newArr.flat(2)
+			},
+			// 调起电话
+			goCall(tel) {
+				uni.makePhoneCall({
+    				phoneNumber: tel
+				})
+			},
+			// 复制到剪贴板
+			uniCopy(data) {
+				// #ifdef H5
+                const result = h5Copy(data)
+				if (result === false) {
+					uni.showToast({
+						title:'不支持'
+					})
+				} else {
+					uni.showToast({
+						title:'复制成功',
+						icon:'none'
+					})
+				}
+				// #endif
+				// #ifndef H5
+				uni.setClipboardData({
+					data: data,
+					success: function () {
+						uni.showToast({
+							title: '复制成功',
+							icon: 'none'
+                		})
+					}
+				})
+				// #endif
+			}
 		}
 	}
 </script>
@@ -219,11 +279,11 @@
 			padding-bottom: 30rpx;
 
 			.item {
-				font-size: 28rpx;
+				font-size: 22rpx;
 				text-align: center;
 
 				>image {
-					width: 70rpx;
+					width: 76rpx;
 					margin-bottom: 10rpx;
 				}
 			}

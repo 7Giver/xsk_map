@@ -114,6 +114,7 @@ const iconList = [
     {
         icon: "/static/mine/map.png",
         title: "地图标注",
+        url: "/pages/home/home",
     },
     {
         icon: "/static/mine/edit.png",

@@ -85,7 +85,7 @@ export default {
         display: flex;
         align-items: center;
         flex-direction: column;
-        padding: 18rpx 0 6rpx;
+        padding: 10rpx 0 6rpx;
         color: #a3a5b4;
 
         > view {
@@ -94,13 +94,13 @@ export default {
 
             > image {
                 display: block;
-                width: 56rpx;
-                height: 56rpx;
+                width: 52rpx;
+                height: 52rpx;
             }
         }
 
         > text {
-            font-size: 23rpx;
+            font-size: 20rpx;
         }
 
         .hot::before {
