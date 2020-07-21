@@ -1,139 +1,217 @@
 <template>
 	<view id="app">
-		<view class="banner">
-			<image src="/static/train/banner02.png" mode="widthFix">
-			<image src="/static/train/border.png" mode="widthFix">
-		</view>
-		<view class="top_block">
-			<image src="/static/index/gaode.png" mode="widthFix">
-			<view class="right">
-				<view class="item">
-					<view class="left">商户名称：<text>无锡哇哈哈哈果乳饮料</text></view>
-				</view>
-				<view class="item">
-					<view class="left">联系电话：<text>18701891906</text></view>
-				</view>
-				<view class="item">
-					<view class="left">商户地址：<text>江苏省无锡市梁溪区广益街道广益路梁溪电子商务园区208号</text></view>
+		<scroll-view class="scroll_content" scroll-y @scrolltolower="getMoreList">
+			<view class="banner">
+				<image src="/static/train/banner02.png" mode="widthFix">
+				<image src="/static/train/border.png" mode="widthFix">
+			</view>
+			<view class="top_block">
+				<image :src="setObj.headimgurl" mode="widthFix">
+				<view class="right">
+					<view class="item">
+						<view class="left">商户名称：<text>{{guest.company_name}}</text></view>
+					</view>
+					<view class="item">
+						<view class="left">联系电话：<text>{{guest.tel}}</text></view>
+					</view>
+					<view class="item">
+						<view class="left">商户地址：<text>{{guest.address}}</text></view>
+					</view>
 				</view>
 			</view>
-		</view>
-		<view class="block"></view>
-		<view class="content">
-			<view class="title">投放的区域</view>
-			<view class="area_block">
-				<view class="item">
-					<view>区域一</view>
-					<view class="area">
-						<text>江苏</text>
-						<text>无锡</text>
-					</view>
-					<view>13个</view>
-				</view>
-				<view class="item">
-					<view>区域一</view>
-					<view class="area">
-						<text>江苏</text>
-						<text>无锡</text>
-					</view>
-					<view>13个</view>
-				</view>
-				<view class="item">
-					<view>区域一</view>
-					<view class="area">
-						<text>江苏</text>
-						<text>无锡</text>
-					</view>
-					<view>13个</view>
-				</view>
-			</view>
-		</view>
-		<view class="block"></view>
-		<view class="content">
-			<view class="title">增加客源进度<text>(100+)</text></view>
-			<progress percent="20" activeColor="#FF4948" show-info stroke-width="3" />
-		</view>
-		<view class="block"></view>
-		<view class="content">
-			<view class="title">投放时长进度<text>(3个月)</text></view>
-			<progress percent="70" activeColor="#FF4948" show-info stroke-width="3" />
-		</view>
-		<view class="block"></view>
-		<view class="content">
-			<view class="title">客源列表</view>
-			<view class="list_block">
-				<view class="main_title">
-					<text>姓名</text>
-					<text>区域</text>
-					<text>日期</text>
-					<text>电话号码</text>
-					<text>拨打</text>
-				</view>
-				<view class="client_list">
-					<view class="item" v-for="(item, index) in clientList" :key="index">
-						<text>{{item.name}}</text>
-						<text>{{item.city}}</text>
-						<text>{{item.date}}</text>
-						<text>{{item.tel}}</text>
-						<view>
-							<image src="/static/train/tel.png" mode="widthFix">
+			<view class="block"></view>
+			<view class="content">
+				<view class="title">投放的区域</view>
+				<view class="area_block">
+					<view class="item" v-for="(item, index) in areaList" :key="index">
+						<view class="left">
+							<text v-if="index==0">区域一</text>
+							<text v-else-if="index==1">区域二</text>
+							<text v-else>区域三</text>
+							<text>{{item.province}}</text>
+						</view>
+						<view class="right">
+							<text>{{item.city}}</text>
+							<view>{{item.customers}}个</view>
 						</view>
 					</view>
 				</view>
-				<view class="more">加载更多</view>
 			</view>
-		</view>
-		<view class="bottom">继续投放</view>
+			<view class="block"></view>
+			<view class="content">
+				<view class="title">增加客源进度<text>(100+)</text></view>
+				<progress :percent="customer_percent" activeColor="#FF4948" show-info stroke-width="3" />
+			</view>
+			<view class="block"></view>
+			<view class="content">
+				<view class="title">投放时长进度<text>(3个月)</text></view>
+				<progress :percent="time_percent" activeColor="#FF4948" show-info stroke-width="3" />
+			</view>
+			<view class="block"></view>
+			<view class="content">
+				<view class="title">客源列表</view>
+				<view class="list_block">
+					<view class="main_title">
+						<text>姓名</text>
+						<text>区域</text>
+						<text>日期</text>
+						<text>电话号码</text>
+						<text>拨打</text>
+					</view>
+					<view class="client_list" v-if="!loadingMore && clientList.length !== 0">
+						<view class="item" v-for="(item, index) in clientList.slice(0,6)" :key="index">
+							<text>{{item.name}}</text>
+							<text>{{item.city}}</text>
+							<text>{{item.add_time}}</text>
+							<text>{{item.mobile}}</text>
+							<view @click="goCall(item.mobile)">
+								<image src="/static/train/tel.png" mode="widthFix">
+							</view>
+						</view>
+					</view>
+					<view class="more" v-if="!loadingMore && clientList.length !== 0" @click="showMore">加载更多</view>
+					<view class="client_list" v-if="loadingMore && clientList.length !== 0">
+						<view class="item" v-for="(item, index) in clientList" :key="index">
+							<text>{{item.name}}</text>
+							<text>{{item.city}}</text>
+							<text>{{item.add_time}}</text>
+							<text>{{item.mobile}}</text>
+							<view @click="goCall(item.mobile)">
+								<image src="/static/train/tel.png" mode="widthFix">
+							</view>
+						</view>
+					</view>
+					<view class="listNone" v-if="clientList.length == 0">暂无数据</view>
+				</view>
+			</view>
+			<uni-load-more v-if="clientList.length>0 && loadingMore" :status="loadingType"></uni-load-more>
+		</scroll-view>
+		<view class="bottom" @click="goNext">继续投放</view>
 	</view>
 </template>
 
 <script>
+	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	export default {
+		components: {
+			uniLoadMore
+		},
 		data() {
 			return {
-				clientList: [
-					{
-						name: '欧阳晨',
-						city: '无锡',
-						date: '2020/07/18',
-						tel: '13023367790'
-					},
-					{
-						name: '王晓华',
-						city: '南京',
-						date: '2020/07/18',
-						tel: '13023367790'
-					},
-					{
-						name: '黄丽娟',
-						city: '苏州',
-						date: '2020/07/18',
-						tel: '13023367790'
-					},
-					{
-						name: '马冬梅',
-						city: '上海',
-						date: '2020/07/18',
-						tel: '13023367790'
-					},
-					{
-						name: '肖华强',
-						city: '北京',
-						date: '2020/07/18',
-						tel: '13023367790'
-					},
-				]
+				setObj: {}, //授权信息对象
+				guest: {},  // 表单信息
+				order: '', // 订单号
+				areaList: [], // 区域列表
+				page: 1, // 分页
+				customer_percent: 0, // 增加客源进度
+				time_percent: 0,  // 投放时长进度
+				loadingMore: false, // 加载更多
+				loadingType: "more",
+				clientList: []
 			}
 		},
+		onLoad(option) {
+			let order = option.order_sn || 'D20200720154126016985'
+			this.order = order
+			this.getLocal()
+			this.getDetail()
+			this.getClientList()
+		},
 		methods: {
-			
+			// 获取缓存
+			getLocal() {
+				let value = uni.getStorageSync('userMsg')
+				let obj = uni.getStorageSync('postMsg')
+				value ? this.setObj = value : false
+				obj ? this.guest = obj : false
+			},
+			// 跳转直通车页
+			goNext() {
+				uni.redirectTo({
+    				url: '/pages/train/train'
+				});
+			},
+			// 调起电话
+			goCall(tel) {
+				uni.makePhoneCall({
+    				phoneNumber: tel
+				});
+			},
+			// 点击显示完整列表
+			showMore() {
+				this.loadingMore = true
+			},
+			// 分页加载
+			getMoreList(e) {
+				// console.log(e)
+				this.loadingMore ? this.getClientList(this.order) : false
+			},
+			// 获取订单详情
+			getDetail() {
+				this.$test
+					.post(`/?r=api/order/direct-detail`, {
+						order_sn: this.order
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							this.areaList = response.data.area
+							this.customer_percent = response.data.customer_percent
+							this.time_percent = response.data.time_percent
+						}
+					});
+			},
+			// 获取客源列表
+			getClientList() {
+				if (this.loadingType === 'noMore') {
+				  //防止重复加载
+				  return false;
+				}
+				this.loadingType = 'loading';
+				this.$test
+					.post(`/?r=api/order/customer-list`, {
+						order_sn: this.order,
+						page: this.page
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							let resultData = response.list;
+							if (resultData.length > 0) {
+								if (this.page == 1) {
+									if (resultData.length < 10) {
+										this.loadingType = 'noMore';
+									} else {
+										this.page++
+										this.loadingType = 'more';
+									}
+									this.clientList = resultData
+								} else {
+									this.page++
+									if (resultData.length < 10) {
+										this.loadingType = 'noMore';
+									} else {
+										this.loadingType = 'more';
+									}
+									this.clientList = this.clientList.concat(resultData)
+								}
+							} else {
+								this.loadingType = 'noMore';
+							}
+						}
+					});
+			},
 		}
 	}
 </script>
 
 <style lang="scss">
 #app {
-	padding-bottom: 100rpx;
+
+	.scroll_content {
+		height: 100vh;
+		padding-bottom: 100rpx;
+	}
 
 	.banner {
 		width: 100%;
@@ -152,6 +230,7 @@
 		>image {
 			width: 100rpx;
 			height: 100rpx;
+			border-radius: 12rpx;
 		}
 		
 		.right {
@@ -173,7 +252,12 @@
 					>text {
 						color: #9CA1B4;
 						font-weight: normal;
-						line-height: 40rpx;
+					}
+				}
+
+				&:last-child {
+					text {
+						font-weight: normal;
 						text-overflow: ellipsis;
 						display: -webkit-box;
 						-webkit-line-clamp: 2;
@@ -193,7 +277,7 @@
 	}
 
 	.content {
-		padding: 30rpx 38rpx 10rpx;
+		padding: 30rpx 38rpx 0;
 
 		.title {
 			display: flex;
@@ -223,20 +307,24 @@
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				margin: 20rpx auto;
-				font-size: 30rpx;
-				padding: 10rpx 20rpx;
+				margin: 22rpx auto;
+				border: 1px solid #F5F5F5;
 				border-radius: 10rpx;
-				border: 1px solid #F0F0F0;
 
-				.area {
-					>text:first-child {
-						padding-right: 40rpx;
-					}
+				>view {
+					flex: 1;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					font-size: 30rpx;
+					line-height: 66rpx;
+					padding: 0 14rpx;
 				}
 
-				>view:last-child {
-					color: #FF4948;
+				.right {
+					>view {
+						color: #FF4947;
+					}
 				}
 			}
 		}
@@ -246,6 +334,7 @@
 		}
 
 		.list_block {
+			height: calc(100% - 700px);
 			padding-top: 30rpx;
 
 			.main_title {
@@ -254,16 +343,25 @@
 				justify-content: space-around;
 				color: #774B4D;
 				font-size: 26rpx;
-				line-height: 60rpx;
+				font-weight: bold;
+				line-height: 66rpx;
 				background: #F9F1E8;
 
 				>text {
 					flex: 1;
 					text-align: center;
 
+					&:nth-child(2) {
+						flex: 1.5;
+					}
+						
 					&:nth-child(3),
 					&:nth-child(4) {
-						flex: 1.5;
+						flex: 1.8;
+					}
+
+					&:nth-child(5) {
+						flex: 0.85;
 					}
 				}
 			}
@@ -276,16 +374,24 @@
 					justify-content: space-around;
 					color: #786566;
 					font-size: 26rpx;
-					padding: 12rpx 0;
+					padding: 20rpx 0;
 					border-bottom: 1px solid #EEE7E4;
 
 					>* {
 						flex: 1;
 						text-align: center;
 
+						&:nth-child(2) {
+							flex: 1.5;
+						}
+						
 						&:nth-child(3),
 						&:nth-child(4) {
-							flex: 1.5;
+							flex: 1.8;
+						}
+
+						&:nth-child(5) {
+							flex: 0.85;
 						}
 					}
 
@@ -306,7 +412,7 @@
 				align-items: center;
 				justify-content: center;
 				color: #4B7EF6;
-				font-size: 26rpx;
+				font-size: 28rpx;
 				line-height: 90rpx;
 				text-align: center;
 				letter-spacing: 1px;
@@ -317,9 +423,19 @@
 					height: 12rpx;
 					border-top: 1px solid #4B7EF6;
 					border-right: 1px solid #4B7EF6;
-					transform: rotate(45deg);
-					margin-left: 4rpx;
+					transform: rotate(135deg);
+					margin-left: 10rpx;
+    				margin-bottom: 12rpx;
 				}
+			}
+
+			.listNone {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				height: 180rpx;
+				color: #999;
+				font-size: 28rpx;
 			}
 		}
 	}
@@ -330,7 +446,7 @@
 		width: 100%;
 		color: #fff;
 		font-size: 32rpx;
-		line-height: 90rpx;
+		line-height: 96rpx;
 		text-align: center;
 		letter-spacing: 1px;
 		background: linear-gradient(90deg, #FF5664, #FF3D2F);

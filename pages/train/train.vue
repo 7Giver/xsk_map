@@ -334,11 +334,11 @@
 					customers: this.clientList[this.clientIndex].value,
 					type: this.timeList[this.timeIndex].value
 				}
-				console.log(obj)
+				// console.log(obj)
 				this.$test
 					.post(`/?r=api/order/direct-submit`, obj)
 					.then(response => {
-						console.log(response)
+						// console.log(response)
 						if (response.code === 200) {
 							uni.navigateTo({
 								url: `/pages/train/detail?order_sn=${response.data.order_sn}`
