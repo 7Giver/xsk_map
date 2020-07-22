@@ -64,6 +64,10 @@
             "path" : "pages/mine/mine",
             "style" : {}
         }
+        ,{
+            "path" : "pages/mine/friend",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

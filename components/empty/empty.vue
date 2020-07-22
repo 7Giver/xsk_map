@@ -69,6 +69,7 @@ export default {
   
   text {
 	color: #888;
+  font-size: 32rpx;
 	line-height: 60rpx;
   }
 }

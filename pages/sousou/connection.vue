@@ -1,50 +1,61 @@
 <template>
     <view id="app">
-		<uni-nav-bar left-icon="back" @clickLeft="back" @clickRight="changeArea" title="人脉市集">
-			<view slot="right">
-				<image class="area" src="/static/sousou/address.png" mode="widthFix">
-				<picker
-					mode="multiSelector"
-					@change="classifyChange"
-					@columnchange="columnchange"
-					:value="classifyIndex"
-					:range="classifyArr"
-					range-key="name"
-				>
-                    <view>{{name}}</view>
-                </picker>
-				<image class="more" src="/static/sousou/more.png" mode="widthFix">
-			</view>
-		</uni-nav-bar>
-        <view class="banner">
-			<image src="/static/sousou/banner.png" mode="widthFix">
-		</view>
-		<view class="list_block">
-			<view class="item" v-for="(item, index) in userList" :key="index">
-				<image :src="item.image" mode="">
-				<view class="content">
-					<view class="left">
-						<view class="nickname">{{item.nickname}}</view>
-						<view class="text">手机：{{item.phone}}</view>
-						<view class="text">商户：{{item.company_name}}</view>
-						<view class="text">地区：{{item.area}}</view>
+		<scroll-view class="scroll_content" scroll-y @scrolltolower="getConnection">
+			<view class="fixed_block">
+				<uni-nav-bar title="人脉市集">
+					<view slot="right">
+						<image class="area" src="/static/sousou/address.png" mode="widthFix">
+						<picker
+							mode="multiSelector"
+							@change="classifyChange"
+							@columnchange="columnchange"
+							:value="classifyIndex"
+							:range="classifyArr"
+							range-key="province"
+						>
+							<view>{{name}}</view>
+						</picker>
+						<image class="more" src="/static/sousou/more.png" mode="widthFix">
 					</view>
-					<view class="btn" @click="goAdd(item.id, index)" v-if="!item.checked">+添加</view>
-					<view class="disabled" @click="goCancel(item.id, index)" v-else>已关注</view>
+				</uni-nav-bar>
+				<view class="banner">
+					<image src="/static/sousou/banner.png" mode="widthFix">
 				</view>
 			</view>
-		</view>
+			<empty v-if="userList.length==0"></empty>
+			<view class="list_block">
+				<view class="item" v-for="(item, index) in userList" :key="index">
+					<image :src="item.avatar" mode="">
+					<view class="content">
+						<view class="left">
+							<view class="nickname">{{item.name}}</view>
+							<view class="text">手机：{{item.mobile}}</view>
+							<view class="text">商户：{{item.company}}</view>
+							<view class="text">地区：{{item.province}} {{item.city}}</view>
+						</view>
+						<view class="btn" @click="goAdd(item.id, index)" v-if="!item.checked">+添加</view>
+						<view class="disabled" v-else>已关注</view>
+					</view>
+				</view>
+			</view>
+			<uni-load-more v-if="userList.length > 0" :status="loadingType"></uni-load-more>
+		</scroll-view>
 		<!-- 弹出层 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
 			<view class="connect_tip">
 				<view class="title">温馨提示</view>
-				<view class="content">
+				<view class="content" v-if="!is_mark">
 					<view class="main">人脉圈外人脉的可见度有限</view>
 					<view class="off_title">
 						每日<text>最多浏览1条</text>
 					</view>
 					<view class="message">开通地图标注</view>
 					<view class="message">解锁更多人脉</view>
+				</view>
+				<view class="content" v-else>
+					<view class="main" style="margin-bottom:20rpx">您今日添加人脉已到上限</view>
+					<view class="message">开通直通车</view>
+					<view class="message">无限获客</view>
 				</view>
 				<view class="bottom">
 					<view class="submit" @click="submit">去开通</view>
@@ -58,82 +69,150 @@
 <script>
 import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
+import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
+import empty from "@/components/empty/empty.vue";
 import Json from '@/Json';
 export default {
 	components: {
 		uniNavBar,
-		UniPopup
+		UniPopup,
+		uniLoadMore,
+		empty
 	},
     data() {
         return {
+			setObj: {},
+			index: 0,  // picker展示值下标
+			page: 1,
+			is_mark: 0, // 是否标注
+			name: '全国', // 选中的名称
 			classifyIndex: [0, 0],
 			classifyArr: [[], []],  // picker - 数据源
 			childArr: [], // 二级分类数据源
-			index: 0,  // picker展示值下标
-			name: '全国', // 选中的名称
 			showDailog: false, // 弹窗隐藏
-			areaList: [
-				{
-					name: '全国',
-					child: []
-				},
-				{
-					name: '江苏',
-					child: [
-						{
-							id: 1,
-							name: '南京'
-						},
-						{
-							id: 2,
-							name: '无锡'
-						},
-						{
-							id: 3,
-							name: '苏州'
-						},
-					]
-				},
-				{
-					name: '浙江',
-					child: [
-						{
-							id: 1,
-							name: '杭州'
-						},
-						{
-							id: 2,
-							name: '宁波'
-						},
-						{
-							id: 3,
-							name: '温州'
-						},
-					]
-				},
-			],
+			areaList: [],
 			userList: [],  // 用户数据
-			checkList: []  // 添加过的用户
+			checkList: [],  // 添加过的用户
+			loadingType: "more" // 加载状态
 		};
 	},
 	mounted() {
-		this.userList = Json.userList
-		// 获取数据源并分出一级二级分类
-		this.getAllClassify()
+		// this.userList = Json.userList
+		this.getLocal()
+		this.getAreaList()
 	},
     methods: {
-		// 点击更改筛选
-		changeArea() {
-			console.log('del!')
+		// 获取缓存
+		getLocal() {
+			let value = uni.getStorageSync('userMsg')
+			value ? this.setObj = value : false
+			this.getUserInfo()
+			this.getConnection()
 		},
-		// 返回上一页
-		back() {
-        	uni.navigateBack()
+		// 获取省市信息
+		getAreaList() {
+			this.$test
+				.post(`/?r=api/index/district`, {})
+				.then(response => {
+					if (response.code === 200) {
+						this.areaList = response.data
+						this.areaList.unshift({
+							province: '全国',
+							city: ['全国']
+						})
+						this.getAllClassify()
+					} else {
+						uni.showToast({
+							title: '获取省市失败',
+							icon: 'none'
+                		})
+					}
+				});
 		},
-		// 监听picker
-		bindPickerChange(e) {
-            console.log(e.target.value)
-            this.index = e.target.value
+		// 获取用户信息
+		getUserInfo() {
+			this.$test
+				.post(`/?r=api/user/info`, {
+					wxid: this.setObj.wxid
+				})
+				.then(response => {
+					if (response.code === 200) {
+						this.is_mark = response.data.is_mark
+					}
+				});
+		},
+		// 获取人脉市集
+		getConnection() {
+			if (this.loadingType === 'noMore') {
+				//防止重复加载
+				return false;
+			}
+			this.loadingType = 'loading';
+			this.$test
+				.post(`/?r=api/user/relations`, {
+					wxid: this.setObj.wxid,
+					page: this.page,
+					city: this.name == '全国' ? '' : this.name
+				})
+				.then(response => {
+					// console.log(response)
+					if (response.code === 200) {
+						let resultData = response.data;
+						if (resultData.length > 0) {
+							if (this.page == 1) {
+								if (resultData.length < 10) {
+									this.loadingType = 'noMore';
+								} else {
+									this.page++
+									this.loadingType = 'more';
+								}
+								this.userList = resultData
+							} else {
+								this.page++
+								if (resultData.length < 10) {
+									this.loadingType = 'noMore';
+								} else {
+									this.loadingType = 'more';
+								}
+								this.userList = this.userList.concat(resultData)
+							}
+						} else {
+							this.loadingType = 'noMore';
+						}
+					}
+				});
+		},
+		// 添加人脉
+		goAdd(id, index) {
+			let checkList = this.checkList
+			if(checkList.length > 0) {
+				this.showDailog = true
+			} else {
+				this.$test
+				.post(`/?r=api/user/add-relation`, {
+					wxid: this.setObj.wxid,
+					relation_id: id
+				})
+				.then(response => {
+					// console.log(response)
+					if (response.code === 200) {
+						checkList.push(id)
+						this.$set(this.userList[index], 'checked', true)
+						uni.showToast({
+							title: '添加成功',
+							icon: 'none'
+                		})
+					}
+				});
+			}
+		},
+		// 取消人脉
+		goCancel(id, index) {
+			let checkList = this.checkList
+			// 用id查找对应在checkList的index
+			let result = checkList.findIndex(item => item == id)
+			checkList.splice(result, 1)
+			this.$set(this.userList[index], 'checked', false)
 		},
 		// 监听展示弹窗状态
 		change(e) {
@@ -145,37 +224,23 @@ export default {
 		cancel() {
 			this.showDailog = false;
 		},
-		// 添加人脉
-		goAdd(id, index) {
-			let checkList = this.checkList
-			if(checkList.length > 0) {
-				this.showDailog = true
-			} else {
-				checkList.push(id)
-				this.$set(this.userList[index], 'checked', true)
-			}
-		},
-		// 取消人脉
-		goCancel(id, index) {
-			let checkList = this.checkList
-			// 用id查找对应在checkList的index
-			let result = checkList.findIndex(item => item == id)
-			checkList.splice(result, 1)
-			this.$set(this.userList[index], 'checked', false)
-		},
 		// 去开通
 		submit() {
 			this.showDailog = false;
+			this.is_mark
+				? uni.navigateTo({
+					url: '/pages/train/train'
+				})
+				: uni.switchTab({
+					url: '/pages/home/home'
+				})
 		},
 		// 获取数据源并分出一级二级
 		getAllClassify() {
 			this.areaList.forEach((item, index) => {
-				// 将数据源中的二级 push 进 childArr，作为二级的数据源
-				this.childArr.push(this.areaList[index].child)
+				this.childArr.push(item.city)
 			})
-			// 一级的数据源
 			this.classifyArr[0] = this.areaList;
-			// 第一次打开时，默认给一级分类添加它的二级分类
 			this.classifyArr[1] = this.childArr[0]
 		},
 		// 选择地区
@@ -183,18 +248,19 @@ export default {
 			let value = e.target.value;
 			this.classifyIndex = value;
 			if (this.classifyArr[0].length != 0) {
-				this.name = this.classifyArr[0][this.classifyIndex[0]].name
-			};
-			if (this.classifyArr[1].length != 0) {
-				this.name = this.classifyArr[1][this.classifyIndex[1]].name
+				this.name = this.classifyArr[0][this.classifyIndex[0]].province
 			}
+			if (this.classifyArr[1].length != 0) {
+				this.name = this.classifyArr[1][this.classifyIndex[1]]
+			}
+			this.getConnection()
 		},
 		// 获取二级
 		columnchange(e) {
 			if (e.detail.column == 0) {
 				this.classifyArr[1] = this.childArr[e.detail.value]
 			}
-		}
+		},
 		
 	},
 };
@@ -202,6 +268,14 @@ export default {
 
 <style lang="scss">
 #app {
+	position: relative;
+
+	.fixed_block {
+		position: fixed;
+		top: 0;
+		width: 100%;
+		z-index: 999;
+	}
 
 	.banner {
 		width: 100%;
@@ -212,8 +286,15 @@ export default {
 		}
 	}
 
+	.scroll_content {
+		height: 100vh;
+		
+		padding-bottom: 100rpx;
+	}
+
 	.list_block {
 		padding: 0 30rpx;
+		padding-top: 166px;
 
 		.item {
 			display: flex;
