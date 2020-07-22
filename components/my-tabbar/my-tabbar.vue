@@ -5,8 +5,9 @@
             v-for="(item, index) in data"
             :key="index"
             @click="checkItem(index, item.url)"
+            v-show="!item.hide"
         >
-            <view :class="{ hot: index == 2 }">
+            <view :class="{ hot: item.title == '快速获客' }">
                 <image :src="item.icon" mode=""></image>
             </view>
             <text>{{ item.title }}</text>
@@ -15,6 +16,7 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex';
 export default {
     name: "myTabbar",
     props: {
@@ -50,8 +52,13 @@ export default {
             ],
         };
     },
+    computed: {
+    	...mapState(['userInfo'])
+  	},
     mounted() {
-        // console.log("tabbar ready!");
+        if(!this.userInfo.is_mark) {
+            this.$set(this.data[2], 'hide', true)
+        }
     },
     methods: {
         checkItem(index, url) {

@@ -52,7 +52,7 @@ Vue.prototype.$getAuthorize = () => {
         })
       } else {
         // window.location.href = `${baseURL}/api/geMapWxInfo`  // 正式
-        window.location.href = `${testURL}api/user/authorize`  // 测试
+        window.location.href = `${testURL}?r=api/user/authorize`  // 测试
       }
     },
   });

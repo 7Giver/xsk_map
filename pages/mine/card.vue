@@ -3,10 +3,10 @@
 		<view class="header">
 			<view class="card">
 				<view class="avatar">
-					<image :src="setObj.headimgurl" mode="">
+					<image :src="userInfo.avatar" mode="">
 				</view>
 				<view class="content">
-					<view class="nickname">{{setObj.nickname}}</view>
+					<view class="nickname">{{userInfo.nick_name}}</view>
 					<view class="title">正是这些平凡的人生，却构成了伟大的历史.前面的路还很远,但是一定要走下去...</view>
 					<view class="message">
 						<view class="item">
@@ -34,7 +34,8 @@
 		<view class="show_block">
 			<view class="title">
 				<image src="/static/mine/card/title.png" mode="widthFix">
-				<text>已获得地图标注</text>
+				<text v-if="!userInfo.is_mark">获得地图标注</text>
+				<text v-else>已获得地图标注</text>
 			</view>
 			<view class="map_block">
 				<view class="item" v-for="(item, index) in mapList" :key="index">
@@ -54,6 +55,7 @@
 </template>
 
 <script>
+	import { mapState, mapMutations } from 'vuex';
 	import h5Copy from '@/js_sdk/junyi-h5-copy/junyi-h5-copy.js'
 	import Json from '@/Json';
 	export default {
@@ -64,16 +66,20 @@
 				mapList: [] // 选中地图
 			}
 		},
+		computed: {
+    		...mapState(['userInfo'])
+  		},
 		mounted() {
 			this.getLocal()
 			this.getMap()
 		},
 		methods: {
+			...mapMutations({
+				setUserInfo: 'setUserInfo'
+			}),
 			// 获取缓存
 			getLocal() {
-				let value = uni.getStorageSync('userMsg')
 				let obj = uni.getStorageSync('postMsg')
-				value ? this.setObj = value : false
 				obj ? this.guest = obj : false
 			},
 			// 获取选中地图

@@ -3,18 +3,19 @@
         <view class="header">
             <view class="top">
                 <view class="img">
-                    <image :src="setObj.headimgurl" mode="widthFix">
+                    <image :src="userInfo.avatar" mode="widthFix">
                 </view>
                 <view class="right">
-                    <view class="title">{{setObj.nickname}}</view>
-                    <view class="tips">
+                    <view class="title">{{userInfo.nick_name}}</view>
+                    <view class="tips" v-if="userInfo.is_mark">
                         <text>地图标注商户</text>
                     </view>
                 </view>
             </view>
             <view class="bottom">
-                <view class="left">您还未标注地图</view>
-                <view class="right" @click="goHome">点击去标注</view>
+                <view class="left" v-if="userInfo.is_mark">恭喜您 地图已标注</view>
+                <view class="left" v-else>您还未标注地图</view>
+                <view class="right" @click="goHome" v-if="!userInfo.is_mark">点击去标注</view>
             </view>
         </view>
         <view class="content">
@@ -33,24 +34,21 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex';
 import Json from '@/Json';
 export default {
     data() {
         return {
-            setObj: {}, // 授权信息
             iconList: []
         };
     },
+    computed: {
+    	...mapState(['userInfo'])
+  	},
     mounted() {
         this.iconList = Json.iconList
-        this.getLocal()
     },
     methods: {
-        // 获取缓存
-        getLocal() {
-            let value = uni.getStorageSync('userMsg')
-            value ? this.setObj = value : false
-        },
         // 跳转首页
         goHome() {
             uni.switchTab({

@@ -44,7 +44,7 @@
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
 			<view class="connect_tip">
 				<view class="title">温馨提示</view>
-				<view class="content" v-if="!is_mark">
+				<view class="content" v-if="!userInfo.is_mark">
 					<view class="main">人脉圈外人脉的可见度有限</view>
 					<view class="off_title">
 						每日<text>最多浏览1条</text>
@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex';
 import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
@@ -81,7 +82,6 @@ export default {
 	},
     data() {
         return {
-			setObj: {},
 			index: 0,  // picker展示值下标
 			page: 1,
 			is_mark: 0, // 是否标注
@@ -96,19 +96,15 @@ export default {
 			loadingType: "more" // 加载状态
 		};
 	},
+	computed: {
+    	...mapState(['userInfo'])
+  	},
 	mounted() {
 		// this.userList = Json.userList
-		this.getLocal()
 		this.getAreaList()
+		this.getConnection()
 	},
     methods: {
-		// 获取缓存
-		getLocal() {
-			let value = uni.getStorageSync('userMsg')
-			value ? this.setObj = value : false
-			this.getUserInfo()
-			this.getConnection()
-		},
 		// 获取省市信息
 		getAreaList() {
 			this.$test
@@ -129,18 +125,6 @@ export default {
 					}
 				});
 		},
-		// 获取用户信息
-		getUserInfo() {
-			this.$test
-				.post(`/?r=api/user/info`, {
-					wxid: this.setObj.wxid
-				})
-				.then(response => {
-					if (response.code === 200) {
-						this.is_mark = response.data.is_mark
-					}
-				});
-		},
 		// 获取人脉市集
 		getConnection() {
 			if (this.loadingType === 'noMore') {
@@ -150,7 +134,7 @@ export default {
 			this.loadingType = 'loading';
 			this.$test
 				.post(`/?r=api/user/relations`, {
-					wxid: this.setObj.wxid,
+					wxid: this.userInfo.wxid,
 					page: this.page,
 					city: this.name == '全国' ? '' : this.name
 				})
@@ -190,7 +174,7 @@ export default {
 			} else {
 				this.$test
 				.post(`/?r=api/user/add-relation`, {
-					wxid: this.setObj.wxid,
+					wxid: this.userInfo.wxid,
 					relation_id: id
 				})
 				.then(response => {

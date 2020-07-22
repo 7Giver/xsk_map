@@ -3,11 +3,13 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
-		userObj: {
-			// nickname: 'heiz'
-		}
+		userInfo: {}
 	},
-    mutations: {},
+    mutations: {
+		setUserInfo(state, userInfo) {
+			state.userInfo = userInfo || {}
+		},
+	},
     actions: {}
 })
 export default store
