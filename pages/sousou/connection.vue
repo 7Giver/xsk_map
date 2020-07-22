@@ -84,7 +84,6 @@ export default {
         return {
 			index: 0,  // picker展示值下标
 			page: 1,
-			is_mark: 0, // 是否标注
 			name: '全国', // 选中的名称
 			classifyIndex: [0, 0],
 			classifyArr: [[], []],  // picker - 数据源
@@ -166,13 +165,9 @@ export default {
 					}
 				});
 		},
-		// 添加人脉
-		goAdd(id, index) {
-			let checkList = this.checkList
-			if(checkList.length > 0) {
-				this.showDailog = true
-			} else {
-				this.$test
+		// 添加人脉请求
+		addfriend(id) {
+			this.$test
 				.post(`/?r=api/user/add-relation`, {
 					wxid: this.userInfo.wxid,
 					relation_id: id
@@ -180,7 +175,7 @@ export default {
 				.then(response => {
 					// console.log(response)
 					if (response.code === 200) {
-						checkList.push(id)
+						this.checkList.push(id)
 						this.$set(this.userList[index], 'checked', true)
 						uni.showToast({
 							title: '添加成功',
@@ -188,6 +183,26 @@ export default {
                 		})
 					}
 				});
+		},
+		// 添加人脉
+		goAdd(id, index) {
+			let checkList = this.checkList
+			if (this.userInfo.is_mark) {
+				if(this.userInfo.is_direct) {
+					this.addfriend(id)
+				} else {
+					if(checkList.length > 5) {
+						this.showDailog = true
+					} else {
+						this.addfriend(id)
+					}
+				}
+			} else {
+				if(checkList.length > 0) {
+					this.showDailog = true
+				} else {
+					this.addfriend(id)
+				}
 			}
 		},
 		// 取消人脉
@@ -211,7 +226,7 @@ export default {
 		// 去开通
 		submit() {
 			this.showDailog = false;
-			this.is_mark
+			this.userInfo.is_mark
 				? uni.navigateTo({
 					url: '/pages/train/train'
 				})
