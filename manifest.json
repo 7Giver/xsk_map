@@ -89,8 +89,19 @@
         "router" : {
             "mode" : "hash"
         },
-        "devServer" : {
-            "https" : false
+        "devServer": {
+            "port": 8000,
+            "disableHostCheck": true,
+            "proxy": {
+                "/api": {
+                    "target": "http://server.yingku878.com",
+                    "changeOrigin": true,
+                    "secure": false,
+                    "pathRewrite": {
+                      "^/api": ""
+                    }
+                }
+            }
         },
 		"publicPath" : "./"
     }

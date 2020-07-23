@@ -81,6 +81,7 @@ Vue.component('connection', connection);
 Vue.component('mine', mine);
 
 Vue.prototype.$baseURL = baseURL
+Vue.prototype.$testURL = testURL
 Vue.prototype.$store = store
 Vue.prototype.$http = http
 Vue.prototype.$test = test

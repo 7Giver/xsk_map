@@ -4,7 +4,7 @@
 			<!-- 空白页 -->
 			<empty v-if="userList.length==0"></empty>
 			<view class="list_block">
-				<view class="item" v-for="(item, index) in userList" :key="index">
+				<view class="item" v-for="(item, index) in userList" :key="index" @click="goCard(item.id)">
 					<image :src="item.avatar" mode="">
 					<view class="content">
 						<view class="left">
@@ -55,6 +55,12 @@
 				uni.makePhoneCall({
     				phoneNumber: tel
 				});
+			},
+			// 跳转名片页面
+			goCard(id) {
+				uni.navigateTo({
+					url: `/pages/mine/card?id=${id}`
+				})
 			},
 			// 获取人脉列表
 			getDataList() {

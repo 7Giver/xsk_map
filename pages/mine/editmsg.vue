@@ -1,12 +1,12 @@
 <template>
 	<view id="app">
-        <view class="block"></view>
+        <!-- <view class="block"></view> -->
 		<view class="content">
 			<view class="item">
 				<view class="label">更换头像</view>
-				<view class="right">
+				<view class="right" @tap="chooseImage()">
 					<view class="img_block">
-						<image src="/static/sousou/user.png" mode="widthFix">
+						<image :src="path" mode="">
 					</view>
 				</view>
 			</view>
@@ -28,21 +28,59 @@
 			</view>
 		</view>
 		<button class="save_btn" :disabled="disabled" @click="confirm">保存</button>
+		<kps-image-cutter @ok="onok" @cancel="oncancle" :url="url" :fixed="false" :maxWidth="500" :minHeight="300"></kps-image-cutter>
     </view>
 </template>
 
 <script>
+	import kpsImageCutter from "@/components/ksp-image-cutter/ksp-image-cutter.vue";
 	export default {
+		components: {
+			kpsImageCutter
+		},
 		data() {
 			return {
 				disabled: false, // 保存按钮禁用
+				url: "",
+                path: ""
 			}
 		},
 		methods: {
+			chooseImage() {
+				uni.chooseImage({
+					success: (res) => {
+						// 设置url的值，显示控件
+						this.url = res.tempFilePaths[0];
+						console.log(this.url)
+					}
+				});
+            },
+			onok(ev) {
+                this.path = ev.path;
+				this.url = "";
+				console.log(this.path)
+				uni.uploadFile({
+					url:  `${this.$testURL}/?r=api/index/upload`,
+					filePath: ev.path,
+					name: 'image',
+					header: {"Content-Type": "multipart/form-data"},
+					success:(res) => {
+						console.log(res)
+						if (res.data.code == 200){
+							console.log('文件上传成功')
+						}
+					}
+				});
+            },
+            oncancle() {
+                // url设置为空，隐藏控件
+                this.url = "";
+            },
 			// 保存信息
 			confirm() {
 
-			}
+			},
+			
 		}
 	}
 </script>
@@ -80,16 +118,18 @@
 
 			.right {
 				font-size: 28rpx;
+				padding-right: 10rpx;
 
 				.img_block {
 					display: flex;
 					align-items: center;
 					justify-content: space-between;
-					padding-right: 10rpx;
 
 					>image {
 						display: block;
 						width: 100rpx;
+						height: 100rpx;
+						border-radius: 50%;
 					}
 
 					&::after {

@@ -4,7 +4,7 @@
             <image src="/static/mine/service_banner.png" mode="widthFix">
         </view>
 		<view class="content">
-            <view>您好，<text>王晓雪</text></view>
+            <view>您好，<text>{{userInfo.name}}</text></view>
 			<view>我是您的专属客服，下面是我的二维码，请长按并识别添加我哦！</view>
 			<view class="img">
 				<image src="/static/mine/2_code.png" mode="widthFix">
@@ -20,20 +20,25 @@
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				
-			}
-		},
-		methods: {
+import { mapState, mapMutations } from 'vuex';
+export default {
+	data() {
+		return {
 			
 		}
+	},
+	computed: {
+    	...mapState(['userInfo'])
+  	},
+	methods: {
+		
 	}
+}
 </script>
 
 <style lang="scss">
 #app {
+	padding-bottom: 100rpx;
 
 	.banner {
 		width: 100%;
@@ -67,7 +72,7 @@
 	}
 
 	.bottom {
-		margin-top: 3rem;
+		margin-top: 2rem;
 
 		>:first-child {
 			display: flex;

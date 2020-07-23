@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view v-show="isready">
 		<connection v-if="select == 1"></connection>
 		<mine v-if="select == 3"></mine>
 		<my-tabbar :select="select" @change="change"></my-tabbar>
@@ -16,7 +16,8 @@
 		data() {
 			return {
 				select: 0,
-				setObj: {}
+				setObj: {},
+				isready: false,
 			}
 		},
 		computed: {
@@ -39,7 +40,7 @@
 				let value = uni.getStorageSync('userMsg')
 				value ? this.setObj = value : this.$getAuthorize()
 				// 根据userInfo是否为空请求
-				Object.keys(this.userInfo).length == 0 ? this.getUserInfo() : console.log('userInfo',this.userInfo)
+				Object.keys(this.userInfo).length == 0 ? this.getUserInfo() : this.isready = true
 			},
 			getUserInfo() {
 				console.log('getUserInfo')
@@ -51,6 +52,7 @@
 						if (response.code === 200) {
 							this.$set(response.data, 'wxid', this.setObj.wxid)
 							this.setUserInfo(response.data)
+							this.isready = true
 						}
 					});
 			}
