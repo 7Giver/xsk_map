@@ -2,42 +2,46 @@
 	<view id="app">
 		<view class="header">
 			<view class="card">
-				<view class="avatar">
-					<image :src="userInfo.avatar" mode="">
+				<view class="avatar" v-if="guest.avatar">
+					<image :src="guest.avatar" mode="">
 				</view>
 				<view class="content">
-					<view class="nickname">{{userInfo.nick_name}}</view>
+					<view class="nickname">{{guest.name  || '尚未完善'}}</view>
 					<view class="title">正是这些平凡的人生，却构成了伟大的历史.前面的路还很远,但是一定要走下去...</view>
 					<view class="message">
 						<view class="item">
-							<view class="left">商户名<text>{{guest.company_name}}</text></view>
-							<view class="right" @click="uniCopy(guest.company_name)">复制</view>
+							<view class="left">商户名<text>{{guest.company || '尚未完善'}}</text></view>
+							<view class="right" @click="uniCopy(guest.company)" v-if="guest.company">复制</view>
+							<view class="right" @click="goNext('edit')" v-else>去完善</view>
 						</view>
 						<view class="item">
-							<view class="left">手机号<text>{{guest.tel}}</text></view>
-							<view class="right" @click="goCall(guest.tel)">拨打</view>
+							<view class="left">手机号<text>{{guest.mobile || '尚未完善'}}</text></view>
+							<view class="right" @click="goCall(guest.mobile)" v-if="guest.mobile">拨打</view>
+							<view class="right" @click="goNext('edit')" v-else>去完善</view>
 						</view>
-						<!-- <view class="item">
-							<view class="left">微信号<text>{{guest.address}}</text></view>
-							<view class="right">复制</view>
-						</view> -->
+						<view class="item" v-if="guest.wechat_id">
+							<view class="left">微信号<text>{{guest.wechat_id || '尚未完善'}}</text></view>
+							<view class="right" @click="uniCopy(guest.wechat_id)" v-if="guest.wechat_id">复制</view>
+							<view class="right" @click="goNext('edit')" v-else>去完善</view>
+						</view>
 						<view class="item">
-							<view class="left">地址<a>{{guest.address}}</a></view>
-							<view class="right">
+							<view class="left">地址<a>{{guest.address || '尚未完善'}}</a></view>
+							<view class="address" @click="showMap(guest.map_url)" v-if="guest.map_url">
 								<image src="/static/mine/card/address.png" mode="widthFix">
 							</view>
+							<view class="right" @click="goNext('edit')" v-else>去完善</view>
 						</view>
 					</view>
 				</view>
 			</view>
 		</view>
 		<view class="show_block">
-			<view class="title">
+			<view class="title" v-if="guest.maps">
 				<image src="/static/mine/card/title.png" mode="widthFix">
 				<text v-if="!userInfo.is_mark">获得地图标注</text>
 				<text v-else>已获得地图标注</text>
 			</view>
-			<view class="map_block">
+			<view class="map_block" v-if="guest.maps">
 				<view class="item" v-for="(item, index) in mapList" :key="index">
 					<image :src="item.image" mode="widthFix"></image>
 					<view>{{item.value}}</view>
@@ -47,9 +51,14 @@
 				<image src="/static/mine/card/title.png" mode="widthFix">
 				<text>商户风采</text>
 			</view>
-			<view class="banner">
+			<view class="banner" v-if="!guest.show_pics.length" @click="goNext('card')">
 				<image src="/static/mine/card/banner.png" mode="widthFix">
 			</view>
+			<swiper class="show_swiper" :current="current" v-else>
+				<swiper-item class="item" v-for="(item, index) in guest.show_pics" :key="index" @click="fullImg()">
+					<image :src="item" mode=""></image>
+				</swiper-item>
+			</swiper>
 		</view>
 	</view>
 </template>
@@ -61,22 +70,71 @@
 	export default {
 		data() {
 			return {
-				setObj: {},
-				guest: {},
+				guest: {
+					show_pics: []
+				},
+				current: 0, // 轮播index
+				showItems: [],  //商户风采数组
 				mapList: [] // 选中地图
 			}
 		},
 		computed: {
     		...mapState(['userInfo'])
   		},
-		mounted() {
-			this.getLocal()
-			this.getMap()
+		onLoad(option) {
+			let id = option.id
+			id ? this.getClientInfo(id) : this.getMineInfo()
+			// this.getLocal()
 		},
 		methods: {
 			...mapMutations({
 				setUserInfo: 'setUserInfo'
 			}),
+			// 获取客户信息
+			getClientInfo(id) {
+				this.$test
+					.post(`/?r=api/user/card`, {
+						id: id,
+						wxid: ''
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							this.guest = response.data
+							this.getMap()
+						}
+					});
+			},
+			// 获取本人信息
+			getMineInfo() {
+				this.$test
+					.post(`/?r=api/user/card`, {
+						id: '',
+						wxid: this.userInfo.wxid
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							this.guest = response.data
+							this.getMap()
+						}
+					});
+			},
+			// 全屏展示图片
+			fullImg() {
+				let arr = []
+				this.guest.show_pics.forEach(item => {
+					arr.push(item)
+				})
+				uni.previewImage({
+					urls: arr,
+					current: 0
+				})
+			},
+			// 跳转外部地图
+			showMap(url) {
+				url ? window.location.href = url : false
+			},
 			// 获取缓存
 			getLocal() {
 				let obj = uni.getStorageSync('postMsg')
@@ -84,7 +142,7 @@
 			},
 			// 获取选中地图
 			getMap() {
-				let str = uni.getStorageSync('mapStr')
+				let str = this.guest.maps
 				let arr = str.split(',')
 				let newArr = []
 				arr.forEach(item => {
@@ -127,6 +185,23 @@
 					}
 				})
 				// #endif
+			},
+			// 跳转编辑页
+			goNext(type) {
+				let url = ''
+				switch (type) {
+					case 'card':
+						url = '/pages/mine/card_management'
+						break;
+					case 'edit':
+						url = '/pages/mine/editmsg'
+						break;
+					default:
+						url = ''	
+				}
+				uni.navigateTo({
+					url: url
+				})
 			}
 		}
 	}
@@ -134,7 +209,7 @@
 
 <style lang="scss">
 #app {
-	padding-bottom: 40rpx;
+	padding-bottom: 100rpx;
 	background: linear-gradient(70deg, #50637C, #303641);
 
 	.header {
@@ -195,10 +270,11 @@
 						display: flex;
 						align-items: center;
 						justify-content: space-between;
-						padding: 16rpx 26rpx;
+						padding: 12rpx 26rpx;
 
 						.left {
 							font-size: 30rpx;
+							white-space: nowrap;
 
 							>text {
 								color: #9CA1B4;
@@ -227,25 +303,13 @@
 							}
 						}
 
-						&:last-child {
-							.left {
-								letter-spacing: 30rpx;
+						.address {
+							padding: 0;
+							margin: 0 36rpx;
+							background: transparent;
 
-								a {
-									margin-left: -10rpx;
-									letter-spacing: 0px;
-								}
-							}
-
-							.right {
-								padding: 0;
-								margin: 0 36rpx;
-								background: transparent;
-
-								image {
-									width: 28rpx;
-									// padding: 20rpx;
-								}
+							image {
+								width: 28rpx;
 							}
 						}
 					}
@@ -303,6 +367,20 @@
 				display: block;
 				width: 100%;
 			}
+		}
+
+		.show_swiper {
+			width: 100%;
+		
+			.item {
+		
+				image {
+					width: 100%;
+					height: 100%;
+					border-radius: 10rpx;
+				}
+			}
+		
 		}
 	}
 }

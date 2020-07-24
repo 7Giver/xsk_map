@@ -68,6 +68,10 @@
             "path" : "pages/mine/friend",
             "style" : {}
         }
+        ,{
+            "path" : "pages/mine/card_management",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

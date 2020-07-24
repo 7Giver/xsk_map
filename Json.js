@@ -129,7 +129,7 @@ const iconList = [
     {
         icon: "/static/mine/card.png",
         title: "名片管理",
-        // url: "/pages/mine/card",
+        url: "/pages/mine/card_management",
     },
     {
         icon: "/static/mine/service.png",
