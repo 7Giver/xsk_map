@@ -6,13 +6,13 @@
 				<image src="/static/train/border.png" mode="widthFix">
 			</view>
 			<view class="top_block">
-				<image :src="setObj.headimgurl" mode="widthFix">
+				<image :src="guest.avatar" mode="widthFix">
 				<view class="right">
 					<view class="item">
-						<view class="left">商户名称：<text>{{guest.company_name}}</text></view>
+						<view class="left">商户名称：<text>{{guest.company}}</text></view>
 					</view>
 					<view class="item">
-						<view class="left">联系电话：<text>{{guest.tel}}</text></view>
+						<view class="left">联系电话：<text>{{guest.mobile}}</text></view>
 					</view>
 					<view class="item">
 						<view class="left">商户地址：<text>{{guest.address}}</text></view>
@@ -91,6 +91,7 @@
 </template>
 
 <script>
+	import { mapState, mapMutations } from 'vuex';
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	export default {
 		components: {
@@ -110,10 +111,14 @@
 				clientList: []
 			}
 		},
+		computed: {
+    		...mapState(['userInfo'])
+  		},
 		onLoad(option) {
-			let order = option.order_sn || 'D20200720154126016985'
+			let order = option.order_sn
 			this.order = order
-			this.getLocal()
+			this.guest = this.userInfo
+			// this.getLocal()
 			this.getDetail()
 			this.getClientList()
 		},

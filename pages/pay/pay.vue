@@ -221,7 +221,10 @@
 					});
 					return false
 				}
-				this.postMapUserInfo()
+				// 4.0下单
+				this.creatMapOrder()
+				// 3.0下单
+				// this.postMapUserInfo()
 			},
 			// 提交用户信息
 			postMapUserInfo() {
@@ -271,6 +274,25 @@
 			//跳转支付
 			goPay(a, b) {
 				window.location.href = `${this.$baseURL}/api/go?jsApiParameters=${a}&order_sn=${b}`
+			},
+			// 地图标注下单
+			creatMapOrder() {
+				let str = uni.getStorageSync('mapStr')
+				let obj = {
+					wxid: this.user.wxid,
+					name: this.getMsg.company_name,
+					tel: this.getMsg.tel,
+					map: str,
+					address: this.getMsg.address
+				}
+				this.$test
+					.post(`/?r=api/order/map-submit`, obj)
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${response.data.order_sn}`
+						}
+					});
 			}
 		},
 	};

@@ -5,19 +5,19 @@
 			<image src="/static/train/border.png" mode="widthFix">
 		</view>
 		<view class="top_block">
-			<image :src="setObj.headimgurl" mode="widthFix">
+			<image :src="guest.avatar" mode="widthFix">
 			<view class="right">
 				<view class="item">
 					<view class="left">商户名称：
-						<text v-if="!editName">{{guest.company_name}}</text>
-						<input v-else type="text" v-model="guest.company_name" @blur="saveMsg('name')" focus placeholder="请填写店铺/公司名称" />
+						<text v-if="!editName">{{guest.company}}</text>
+						<input v-else type="text" v-model="guest.company" @blur="saveMsg('name')" focus placeholder="请填写店铺/公司名称" />
 					</view>
 					<view @click="eidtMsg('name')">修改</view>
 				</view>
 				<view class="item">
 					<view class="left">联系电话：
-						<text v-if="!editTel">{{guest.tel}}</text>
-						<input v-else type="number" v-model="guest.tel" @blur="saveMsg('tel')" focus maxlength="11" placeholder="请填写真实有效的手机号码" />
+						<text v-if="!editTel">{{guest.mobile}}</text>
+						<input v-else type="number" v-model="guest.mobile" @blur="saveMsg('tel')" focus maxlength="11" placeholder="请填写真实有效的手机号码" />
 					</view>
 					<view @click="eidtMsg('tel')">修改</view>
 				</view>
@@ -100,6 +100,7 @@
 </template>
 
 <script>
+	import { mapState, mapMutations } from 'vuex';
 	// import Json from '@/Json';
 	export default {
 		data() {
@@ -148,15 +149,22 @@
 				]
 			}
 		},
+		computed: {
+    		...mapState(['userInfo'])
+  		},
 		onShow() {
 			// this.areaList = Json.areaList
-			let value = uni.getStorageSync('userMsg')
-			let obj = uni.getStorageSync('postMsg')
-			value ? this.setObj = value : false
-			obj ? this.guest = obj : false
+			this.guest = this.userInfo
 			this.getAreaList()
 		},
 		methods: {
+			// 根据缓存获取用户信息
+			getLocal() {
+				let value = uni.getStorageSync('userMsg')
+				let obj = uni.getStorageSync('postMsg')
+				value ? this.setObj = value : false
+				obj ? this.guest = obj : false
+			},
 			// 获取省市信息
 			getAreaList() {
 				this.$test
@@ -186,7 +194,7 @@
 			saveMsg(type) {
 				switch(type) {
 					case 'name':
-						if (!this.guest.company_name) {
+						if (!this.guest.company) {
 							uni.showToast({
 								title: '请输入店铺名称',
 								icon: 'none'
@@ -196,14 +204,14 @@
 						this.editName = false;
 						break;
 					case 'tel':
-						if (!this.guest.tel) {
+						if (!this.guest.mobile) {
 							uni.showToast({
 								title: '请输入手机号',
 								icon: 'none'
 							});
 							return false
 						}
-						if (!(/^1[3456789]\d{9}$/.test(this.guest.tel))) {
+						if (!(/^1[3456789]\d{9}$/.test(this.guest.mobile))) {
 							uni.showToast({
 								title: '请输入正确的手机号',
 								icon: 'none',
@@ -225,8 +233,8 @@
 						break;
 				}
 				let obj = {
-					tel: this.guest.tel,
-					company_name: this.guest.company_name,
+					tel: this.guest.mobile,
+					company_name: this.guest.company,
 					address: this.guest.address
 				}
 				uni.setStorage({
@@ -336,8 +344,8 @@
 				let str = uni.getStorageSync('mapStr')
 				let wxid = uni.getStorageSync('userMsg').wxid
 				let obj = {
-					company: this.guest.company_name,
-					tel: this.guest.tel,
+					company: this.guest.company,
+					tel: this.guest.mobile,
 					address: this.guest.address,
 					map: str,
 					wxid: wxid,
@@ -351,9 +359,10 @@
 					.then(response => {
 						// console.log(response)
 						if (response.code === 200) {
-							uni.navigateTo({
-								url: `/pages/train/detail?order_sn=${response.data.order_sn}`
-							})
+							window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${response.data.order_sn}`
+							// uni.navigateTo({
+							// 	url: `/pages/train/detail?order_sn=${response.data.order_sn}`
+							// })
 						}
 					});
 			}
