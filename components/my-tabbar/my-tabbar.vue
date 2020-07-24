@@ -24,6 +24,10 @@ export default {
             type: Number,
             default: 3,
         },
+        is_mark: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
@@ -56,8 +60,10 @@ export default {
     	...mapState(['userInfo'])
   	},
     mounted() {
-        if(!this.userInfo.is_mark) {
+        if(!this.is_mark) {
             this.$set(this.data[2], 'hide', true)
+        } else {
+            this.$set(this.data[2], 'hide', false)
         }
     },
     methods: {

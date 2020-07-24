@@ -4,27 +4,41 @@
 		<view class="content">
 			<view class="item">
 				<view class="label">更换头像</view>
-				<view class="right" @tap="chooseImage()">
+				<view class="right" @tap="chooseImage">
 					<view class="img_block">
-						<image :src="path" mode="">
+						<image :src="guest.avatar" mode="">
 					</view>
 				</view>
 			</view>
 			<view class="item">
 				<view class="label">昵称</view>
-				<view class="right">三只小思</view>
+				<view class="right">
+					<input type="text" v-model="guest.nick_name" placeholder="请填写昵称" />
+				</view>
 			</view>
 			<view class="item">
 				<view class="label">商户名</view>
-				<view class="right">江苏加爵可乐店铺</view>
+				<view class="right">
+					<input type="text" v-model="guest.company" placeholder="请填写商户名称" />
+				</view>
 			</view>
 			<view class="item">
 				<view class="label">手机号</view>
-				<view class="right">18701891906</view>
+				<view class="right">
+					<input id="mobile" type="number" v-model="guest.mobile" @blur="saveMsg" maxlength="11" placeholder="请填写有效的手机号码" />
+				</view>
 			</view>
 			<view class="item">
 				<view class="label">微信号</view>
-				<view class="right">Luluxiancg</view>
+				<view class="right">
+					<input type="text" v-model="guest.wechat_id" placeholder="请填写微信号" />
+				</view>
+			</view>
+			<view class="item">
+				<view class="label">地址</view>
+				<view class="right">
+					<input type="text" v-model="guest.address" placeholder="请填写有效地址" />
+				</view>
 			</view>
 		</view>
 		<button class="save_btn" :disabled="disabled" @click="confirm">保存</button>
@@ -33,6 +47,7 @@
 </template>
 
 <script>
+	import { mapState, mapMutations } from 'vuex';
 	import kpsImageCutter from "@/components/ksp-image-cutter/ksp-image-cutter.vue";
 	export default {
 		components: {
@@ -40,45 +55,131 @@
 		},
 		data() {
 			return {
+				guest: {},
 				disabled: false, // 保存按钮禁用
 				url: "",
-                path: ""
 			}
 		},
+		computed: {
+    		...mapState(['userInfo'])
+  		},
+		onLoad() {
+			// console.log(this.userInfo)
+			this.guest = this.userInfo
+		},
 		methods: {
+			// 监听input输入
+			saveMsg(e) {
+				let type = e.target.id
+				if (type == 'mobile') {
+					if (!(/^1[3456789]\d{9}$/.test(this.guest.mobile))) {
+						uni.showToast({
+							title: '请输入正确的手机号',
+							icon: 'none',
+							duration: 1000
+						});
+						return false
+					}
+				}
+			},
+			// 选择照片
 			chooseImage() {
 				uni.chooseImage({
 					success: (res) => {
 						// 设置url的值，显示控件
 						this.url = res.tempFilePaths[0];
-						console.log(this.url)
 					}
 				});
-            },
+			},
+			// 选中图片
 			onok(ev) {
-                this.path = ev.path;
+                this.guest.avatar = ev.path;
 				this.url = "";
-				console.log(this.path)
 				uni.uploadFile({
-					url:  `${this.$testURL}/?r=api/index/upload`,
+					url: '/api/?r=api/index/upload',
 					filePath: ev.path,
 					name: 'image',
-					header: {"Content-Type": "multipart/form-data"},
-					success:(res) => {
-						console.log(res)
-						if (res.data.code == 200){
-							console.log('文件上传成功')
+					success: (res) => {
+						// console.log(res)
+						if (res.statusCode == 200) {
+							let result = JSON.parse(res.data)
+							this.guest.avatar = result.data
 						}
 					}
 				});
-            },
+			},
+			// 取消选择
             oncancle() {
                 // url设置为空，隐藏控件
                 this.url = "";
             },
-			// 保存信息
+			// 提交信息
 			confirm() {
-
+				if (!this.guest.avatar) {
+					uni.showToast({
+						title: '请选择头像',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!this.guest.nick_name) {
+					uni.showToast({
+						title: '请填写昵称',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!this.guest.company) {
+					uni.showToast({
+						title: '请填写商户名称',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!this.guest.mobile) {
+					uni.showToast({
+						title: '请填写手机号',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!(/^1[3456789]\d{9}$/.test(this.guest.mobile))) {
+					uni.showToast({
+						title: '请填写正确的手机号',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!this.guest.wechat_id) {
+					uni.showToast({
+						title: '请填写微信号',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!this.guest.address) {
+					uni.showToast({
+						title: '请填写商户地址',
+						icon: 'none'
+					});
+					return false
+				}
+				this.$test
+					.post(`/?r=api/user/edit`, this.guest)
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							uni.showToast({
+								title: '保存成功',
+								icon: 'none'
+							});
+						} else {
+							uni.showToast({
+								title: response.msg,
+								icon: 'none'
+							});
+						}
+					});
 			},
 			
 		}
@@ -117,7 +218,12 @@
 			}
 
 			.right {
-				font-size: 28rpx;
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				align-items: flex-end;
+				font-size: 26rpx;
+				text-align: right;
 				padding-right: 10rpx;
 
 				.img_block {
@@ -141,6 +247,10 @@
 						transform: rotate(45deg);
 						margin-left: 14rpx;
 					}
+				}
+
+				input {
+					width: 100%;
 				}
 			}
 		}

@@ -2,7 +2,7 @@
 	<view v-show="isready">
 		<connection v-if="select == 1"></connection>
 		<mine v-if="select == 3"></mine>
-		<my-tabbar :select="select" @change="change"></my-tabbar>
+		<my-tabbar v-if="isready" :select="select" :is_mark="is_mark" @change="change"></my-tabbar>
 	</view>
 </template>
 
@@ -16,6 +16,7 @@
 		data() {
 			return {
 				select: 0,
+				is_mark: false,
 				setObj: {},
 				isready: false,
 			}
@@ -53,6 +54,7 @@
 							this.$set(response.data, 'wxid', this.setObj.wxid)
 							this.setUserInfo(response.data)
 							this.isready = true
+							!this.userInfo.is_mark ? this.is_mark = false : this.is_mark = true
 						}
 					});
 			}
