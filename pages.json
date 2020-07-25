@@ -1,32 +1,20 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		// {
-        //     "path" : "pages/sousou/sousou",
-        //     "style" : {}
-        // },
+	"pages": [
 		{
 			"path": "pages/home/home",
-			"style": {
-				// "navigationBarTitleText": "搜搜地图标注中心"
-			}
+			"style": {}
 		},
 		{
 			"path": "pages/guest/guest",
-			"style": {
-				// "navigationBarTitleText": "增加客源"
-			}
+			"style": {}
 		},
 		{
 			"path": "pages/about/about",
-			"style": {
-				// "navigationBarTitleText": "关于我们"
-			}
+			"style": {}
 		},
 		{
 			"path": "pages/outweb/outweb",
-			"style": {
-				
-			}
+			"style": {}
 		},
 		{
 			"path" : "pages/pay/pay",
@@ -38,22 +26,18 @@
         }
         ,{
             "path" : "pages/mine/editmsg",
-            "style" : {
-				// "navigationBarTitleText": "编辑信息"
-			}
+            "style" : {}
         }
         ,{
             "path" : "pages/mine/service",
-            "style" : {
-				// "navigationBarTitleText": "专属客服"
-			}
+            "style" : {}
         }
         ,{
             "path" : "pages/mine/card",
             "style" : {}
         }
         ,{
-            "path" : "pages/train/train",  // 直通车
+            "path" : "pages/train/train",
             "style" : {}
         }
         ,{

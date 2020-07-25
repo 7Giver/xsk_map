@@ -81,38 +81,19 @@
 		computed: {
     		...mapState(['userInfo'])
   		},
-		onLoad(option) {
-			let id = option.id
-			id ? this.getClientInfo(id) : this.getMineInfo()
+		mounted() {
+			this.getMineInfo()
 			// this.getLocal()
 		},
 		methods: {
-			...mapMutations({
-				setUserInfo: 'setUserInfo'
-			}),
-			// 获取客户信息
-			getClientInfo(id) {
-				this.$test
-					.post(`/?r=api/user/card`, {
-						id: id,
-						wxid: ''
-					})
-					.then(response => {
-						// console.log(response)
-						if (response.code === 200) {
-							this.guest = response.data
-							this.getMap()
-						}
-					});
-			},
 			// 获取本人信息
 			getMineInfo() {
-				let value = this.userInfo.wxid
+                let value = uni.getStorageSync('userMsg').wxid
 				if (value) {
 					this.$test
 						.post(`/?r=api/user/card`, {
 							id: '',
-							wxid: this.userInfo.wxid
+							wxid: value
 						})
 						.then(response => {
 							// console.log(response)
@@ -121,10 +102,6 @@
 								this.getMap()
 							}
 						})
-				} else {
-					uni.redirectTo({
-						url: '/pages/sousou/sousou'
-					});
 				}
 			},
 			// 全屏展示图片
@@ -216,7 +193,7 @@
 
 <style lang="scss">
 #app {
-	padding-bottom: 100rpx;
+	padding-bottom: 150rpx;
 	background: linear-gradient(70deg, #50637C, #303641);
 
 	.header {

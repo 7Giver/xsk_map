@@ -1,5 +1,6 @@
 <template>
 	<view v-show="isready">
+		<card v-if="select == 0"></card>
 		<connection v-if="select == 1"></connection>
 		<mine v-if="select == 3"></mine>
 		<my-tabbar v-if="isready" :select="select" :is_mark="is_mark" @change="change"></my-tabbar>
@@ -27,6 +28,7 @@
 		onShow() {
 			this.select = 3
 			this.getLocal()
+			// console.log(this.userInfo)
 		},
 		methods: {
 			...mapMutations({

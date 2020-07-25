@@ -7,13 +7,10 @@ export default {
         uni.removeStorageSync('postMsg');
 
         // 测试用
-        // this.testSet()
+        this.testSet()
 
         // 进入应用授权
         // this.$getAuthorize()
-
-        //判断缓存
-        // this.goShowquan1();
     },
     onShow: function () {
         // console.log('App Show')
@@ -43,33 +40,7 @@ export default {
                 key: "postMsg",
                 data: msg,
             });
-        },
-        // 断缓存存储
-        goShowquan1() {
-            var url = window.location.href;
-            var temp = url.split("?")[1]; // 通过拆分链接判断是否获取参数存储
-            if (temp) {
-                uni.setStorage({
-                    key: "userMsg",
-                    data: getUrlparam(url),
-                });
-            }
-
-            function getUrlparam(url) {
-                let askIndex = url.indexOf("?");
-                let wellIndex = url.indexOf("#");
-                let askText = url.substring(askIndex + 1, wellIndex);
-                let result = {};
-                let askAry = askText.split("&");
-                askAry.forEach((item) => {
-                    let n = item.split("=");
-                    let key = n[0];
-                    let value = n[1];
-                    result[key] = value;
-                });
-                return result;
-            }
-        },
+        }
     },
 };
 </script>

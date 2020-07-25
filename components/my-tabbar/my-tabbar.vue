@@ -36,7 +36,7 @@ export default {
                 {
                     title: "搜搜名片",
                     icon: "/static/sousou/home.png",
-                    url: "/pages/mine/card",
+                    url: "/pages/sousou/card",
                 },
                 {
                     title: "人脉市集",

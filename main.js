@@ -77,9 +77,11 @@ Vue.prototype.$getAuthorize = () => {
 /*注册全局自定义组件*/
 import connection from '@/pages/sousou/connection.vue';
 import mine from '@/pages/sousou/mine.vue';
+import card from '@/pages/sousou/card.vue';
 
 Vue.component('connection', connection);
 Vue.component('mine', mine);
+Vue.component('card', card);
 
 Vue.prototype.$baseURL = baseURL
 Vue.prototype.$testURL = testURL
