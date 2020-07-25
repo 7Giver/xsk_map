@@ -170,16 +170,17 @@
 					console.log('has value!+++++++++')
 				} else {
 					console.log('no value!+++++++++')
-					this.goShowquan()
+					this.getUserMsg()
 				}
 				let obj = uni.getStorageSync('postMsg')
 				obj ? this.guest = obj : false
 			},
-			// 判断缓存存储
-			goShowquan() {
-				var url = window.location.href;
-				var temp = url.split("?")[1]; // 通过拆分链接判断是否获取参数存储
+			// 根据url获取参数
+			getUserMsg() {
+				var href = window.location.href;
+				var temp = href.split("?")[1]; // 通过拆分链接判断是否获取参数存储
 				if (temp) {
+					let url = decodeURIComponent(window.location.href)
 					uni.setStorage({
 						key: "userMsg",
 						data: getUrlparam(url),
@@ -188,7 +189,7 @@
 					this.$nextTick(() => {
 						this.showDailog = true;
 					})
-					console.log(uni.getStorageSync('userMsg'))
+					// console.log(uni.getStorageSync('userMsg'))
 				}
 
 				function getUrlparam(url) {
