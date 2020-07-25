@@ -43,6 +43,7 @@
 			</view>
 		</view>
 		<view class="my_btn" @click="_checkItem('all')">一键批量标注 获得海量曝光</view>
+		<!-- <view @tap="goNext">跳转</view> -->
 		<!-- 信息弹窗 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
 			<view class="uni-tip">
@@ -170,7 +171,7 @@
 					console.log('has value!+++++++++')
 				} else {
 					console.log('no value!+++++++++')
-					this.getUserMsg()
+					// this.getUserMsg()
 				}
 				let obj = uni.getStorageSync('postMsg')
 				obj ? this.guest = obj : false
@@ -393,6 +394,11 @@
 				});
 				uni.navigateTo({
 					url: '/pages/pay/pay'
+				})
+			},
+			goNext() {
+				uni.navigateTo({
+					url: '/pages/outweb/outweb'
 				})
 			}
 		}

@@ -52,16 +52,15 @@ Vue.prototype.$getAuthorize = () => {
           data: getUrlparam(url)
         })
       } else {
+        let url = window.location.href.split('#')[1]
         // window.location.href = `${baseURL}/api/geMapWxInfo`  // 正式
-        window.location.href = `${testURL}?r=api/user/authorize`  // 测试
+        window.location.href = `${testURL}?r=api/user/authorize&path=${url}`  // 测试
       }
     },
   });
 
   function getUrlparam(url) {
-    let askIndex = url.indexOf('?');
-    let wellIndex = url.indexOf('#');
-    let askText = url.substring(askIndex + 1, wellIndex);
+    let askText = url.split('?')[1];
     let result = {};
     let askAry = askText.split('&');
     askAry.forEach(item => {

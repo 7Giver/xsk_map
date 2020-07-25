@@ -7,10 +7,13 @@ export default {
         uni.removeStorageSync('postMsg');
 
         // 测试用
-        this.testSet()
+        // this.testSet()
 
         // 进入应用授权
         // this.$getAuthorize()
+
+        // 根据url获取参数
+        this.getUserMsg()
     },
     onShow: function () {
         // console.log('App Show')
@@ -40,7 +43,32 @@ export default {
                 key: "postMsg",
                 data: msg,
             });
-        }
+        },
+        // 根据url获取参数
+        getUserMsg() {
+            var href = window.location.href;
+            var temp = href.split("?")[1]; // 通过拆分链接判断是否获取参数存储
+            if (temp) {
+                let url = decodeURIComponent(window.location.href)
+                uni.setStorage({
+                    key: "userMsg",
+                    data: getUrlparam(url),
+                });
+            }
+
+            function getUrlparam(url) {
+                let askText = url.split('?')[1];
+                let result = {};
+                let askAry = askText.split("&");
+                askAry.forEach((item) => {
+                    let n = item.split("=");
+                    let key = n[0];
+                    let value = n[1];
+                    result[key] = value;
+                });
+                return result;
+            }
+        },
     },
 };
 </script>

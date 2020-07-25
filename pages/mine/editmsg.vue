@@ -173,6 +173,9 @@
 								title: '保存成功',
 								icon: 'none'
 							});
+							setTimeout(() => {
+								uni.navigateBack()
+							}, 700)
 						} else {
 							uni.showToast({
 								title: response.msg,

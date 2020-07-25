@@ -2,7 +2,7 @@
     <view id="app">
         <view class="header">
             <view class="top">
-                <view class="img">
+                <view class="img" @click="goEdit">
                     <image :src="userInfo.avatar" mode="widthFix">
                 </view>
                 <view class="right">
@@ -27,7 +27,7 @@
                 </view>
             </view>
         </view>
-        <view class="banner">
+        <view class="banner" @click="goCard">
             <image src="/static/mine/banner.png" mode="widthFix">
         </view>
     </view>
@@ -71,6 +71,18 @@ export default {
                     icon: 'none'
                 })
             }
+        },
+        // 跳转名片
+        goCard() {
+            this.$emit('change', {
+                select: 0
+            })
+        },
+        // 跳转编辑页
+        goEdit() {
+            uni.navigateTo({
+                url: '/pages/mine/editmsg'
+            })
         }
     },
 };

@@ -11,18 +11,15 @@
 					<view class="message">
 						<view class="item">
 							<view class="left">商户名<text>{{guest.company || '尚未完善'}}</text></view>
-							<view class="right" @click="uniCopy(guest.company)" v-if="guest.company">复制</view>
-							<view class="right" @click="goNext('edit')" v-else>去完善</view>
+							<view class="right" @click="goNext('edit')" v-if="!guest.company">去完善</view>
 						</view>
 						<view class="item">
 							<view class="left">手机号<text>{{guest.mobile || '尚未完善'}}</text></view>
-							<view class="right" @click="goCall(guest.mobile)" v-if="guest.mobile">拨打</view>
-							<view class="right" @click="goNext('edit')" v-else>去完善</view>
+							<view class="right" @click="goNext('edit')" v-if="!guest.mobile">去完善</view>
 						</view>
 						<view class="item" v-if="guest.wechat_id">
 							<view class="left">微信号<text>{{guest.wechat_id || '尚未完善'}}</text></view>
-							<view class="right" @click="uniCopy(guest.wechat_id)" v-if="guest.wechat_id">复制</view>
-							<view class="right" @click="goNext('edit')" v-else>去完善</view>
+							<view class="right" @click="goNext('edit')" v-if="!guest.wechat_id">去完善</view>
 						</view>
 						<view class="item" @click="showMap(guest.map_url)">
 							<view class="left">地址<a>{{guest.address || '尚未完善'}}</a></view>
