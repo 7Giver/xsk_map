@@ -107,18 +107,25 @@
 			},
 			// 获取本人信息
 			getMineInfo() {
-				this.$test
-					.post(`/?r=api/user/card`, {
-						id: '',
-						wxid: this.userInfo.wxid
-					})
-					.then(response => {
-						// console.log(response)
-						if (response.code === 200) {
-							this.guest = response.data
-							this.getMap()
-						}
+				let value = this.userInfo.wxid
+				if (value) {
+					this.$test
+						.post(`/?r=api/user/card`, {
+							id: '',
+							wxid: this.userInfo.wxid
+						})
+						.then(response => {
+							// console.log(response)
+							if (response.code === 200) {
+								this.guest = response.data
+								this.getMap()
+							}
+						})
+				} else {
+					uni.redirectTo({
+						url: '/pages/sousou/sousou'
 					});
+				}
 			},
 			// 全屏展示图片
 			fullImg() {

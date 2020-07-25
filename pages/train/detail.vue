@@ -12,10 +12,10 @@
 						<view class="left">商户名称：<text>{{guest.company}}</text></view>
 					</view>
 					<view class="item">
-						<view class="left">联系电话：<text>{{guest.mobile}}</text></view>
+						<view class="left">联系电话：<text>{{guest.company_tel}}</text></view>
 					</view>
 					<view class="item">
-						<view class="left">商户地址：<text>{{guest.address}}</text></view>
+						<view class="left">商户地址：<text>{{guest.company_address}}</text></view>
 					</view>
 				</view>
 			</view>
@@ -23,7 +23,7 @@
 			<view class="content">
 				<view class="title">投放的区域</view>
 				<view class="area_block">
-					<view class="item" v-for="(item, index) in areaList" :key="index">
+					<view class="item" v-for="(item, index) in guest.areaList" :key="index">
 						<view class="left">
 							<text v-if="index==0">区域一</text>
 							<text v-else-if="index==1">区域二</text>
@@ -40,12 +40,12 @@
 			<view class="block"></view>
 			<view class="content">
 				<view class="title">增加客源进度<text>(100+)</text></view>
-				<progress :percent="customer_percent" activeColor="#FF4948" show-info stroke-width="3" />
+				<progress :percent="guest.customer_percent" activeColor="#FF4948" show-info stroke-width="3" />
 			</view>
 			<view class="block"></view>
 			<view class="content">
 				<view class="title">投放时长进度<text>(3个月)</text></view>
-				<progress :percent="time_percent" activeColor="#FF4948" show-info stroke-width="3" />
+				<progress :percent="guest.time_percent" activeColor="#FF4948" show-info stroke-width="3" />
 			</view>
 			<view class="block"></view>
 			<view class="content">
@@ -99,13 +99,11 @@
 		},
 		data() {
 			return {
-				setObj: {}, //授权信息对象
-				guest: {},  // 表单信息
+				guest: {
+					areaList: [], // 区域列表
+				},  // 表单信息
 				order: '', // 订单号
-				areaList: [], // 区域列表
 				page: 1, // 分页
-				customer_percent: 0, // 增加客源进度
-				time_percent: 0,  // 投放时长进度
 				loadingMore: false, // 加载更多
 				loadingType: "more",
 				clientList: []
@@ -125,9 +123,7 @@
 		methods: {
 			// 获取缓存
 			getLocal() {
-				let value = uni.getStorageSync('userMsg')
 				let obj = uni.getStorageSync('postMsg')
-				value ? this.setObj = value : false
 				obj ? this.guest = obj : false
 			},
 			// 跳转直通车页
@@ -160,9 +156,7 @@
 					.then(response => {
 						// console.log(response)
 						if (response.code === 200) {
-							this.areaList = response.data.area
-							this.customer_percent = response.data.customer_percent
-							this.time_percent = response.data.time_percent
+							this.guest = response.data
 						}
 					});
 			},

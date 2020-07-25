@@ -15,10 +15,10 @@
 		},
 		data() {
 			return {
+				setObj: {},
 				select: 0,
 				is_mark: false,
-				setObj: {},
-				isready: false,
+				isready: false
 			}
 		},
 		computed: {
@@ -40,11 +40,12 @@
 			getLocal() {
 				let value = uni.getStorageSync('userMsg')
 				value ? this.setObj = value : this.$getAuthorize()
+				this.getUserInfo()
 				// 根据userInfo是否为空请求
-				Object.keys(this.userInfo).length == 0 ? this.getUserInfo() : this.isready = true
+				// Object.keys(this.userInfo).length == 0 ? this.getUserInfo() : this.isready = true
 			},
 			getUserInfo() {
-				console.log('getUserInfo')
+				// console.log('getUserInfo')
 				this.$test
 					.post(`/?r=api/user/info`, {
 						wxid: this.setObj.wxid

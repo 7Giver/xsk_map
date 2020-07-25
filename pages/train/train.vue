@@ -105,7 +105,6 @@
 	export default {
 		data() {
 			return {
-				setObj: {}, //授权信息对象
 				guest: {},  // 表单信息
 				clientIndex: 1, // 增加客源
 				timeIndex: 1,  // 投放时长
@@ -158,13 +157,6 @@
 			this.getAreaList()
 		},
 		methods: {
-			// 根据缓存获取用户信息
-			getLocal() {
-				let value = uni.getStorageSync('userMsg')
-				let obj = uni.getStorageSync('postMsg')
-				value ? this.setObj = value : false
-				obj ? this.guest = obj : false
-			},
 			// 获取省市信息
 			getAreaList() {
 				this.$test
@@ -341,6 +333,13 @@
 					});
 					return false
 				}
+				if (!this.checkList.length) {
+					uni.showToast({
+						title: '请选择投放区域',
+						icon: 'none'
+					});
+					return false
+				}
 				let str = uni.getStorageSync('mapStr')
 				let wxid = uni.getStorageSync('userMsg').wxid
 				let obj = {
@@ -360,9 +359,6 @@
 						// console.log(response)
 						if (response.code === 200) {
 							window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${response.data.order_sn}`
-							// uni.navigateTo({
-							// 	url: `/pages/train/detail?order_sn=${response.data.order_sn}`
-							// })
 						}
 					});
 			}
