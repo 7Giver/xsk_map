@@ -13,7 +13,7 @@
 							<view class="text">商户：{{item.company}}</view>
 							<view class="text">地区：{{item.city}}</view>
 						</view>
-						<view class="btn" @click="goCall(item.mobile)">拨打</view>
+						<view class="btn" @click.stop="goCall(item.mobile)">拨打</view>
 					</view>
 				</view>
 			</view>

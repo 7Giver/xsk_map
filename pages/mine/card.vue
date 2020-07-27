@@ -1,4 +1,5 @@
 <template>
+	<!-- 他人名片 -->
 	<view id="app">
 		<view class="header">
 			<view class="card">
@@ -6,30 +7,26 @@
 					<image :src="guest.avatar" mode="">
 				</view>
 				<view class="content">
-					<view class="nickname">{{guest.name  || '尚未完善'}}</view>
-					<view class="title">正是这些平凡的人生，却构成了伟大的历史.前面的路还很远,但是一定要走下去...</view>
+					<view class="nickname">{{guest.name}}</view>
+					<view class="title">{{guest.sign || '正是这些平凡的人生，却构成了伟大的历史.前面的路还很远,但是一定要走下去...'}}</view>
 					<view class="message">
 						<view class="item">
 							<view class="left">商户名<text>{{guest.company || '尚未完善'}}</text></view>
-							<view class="right" @click="uniCopy(guest.company)" v-if="guest.company">复制</view>
-							<view class="right" @click="goNext('edit')" v-else>去完善</view>
+							<view class="right" @click="uniCopy(guest.company)">复制</view>
 						</view>
 						<view class="item">
 							<view class="left">手机号<text>{{guest.mobile || '尚未完善'}}</text></view>
-							<view class="right" @click="goCall(guest.mobile)" v-if="guest.mobile">拨打</view>
-							<view class="right" @click="goNext('edit')" v-else>去完善</view>
+							<view class="right" @click="goCall(guest.mobile)">拨打</view>
 						</view>
 						<view class="item" v-if="guest.wechat_id">
 							<view class="left">微信号<text>{{guest.wechat_id || '尚未完善'}}</text></view>
-							<view class="right" @click="uniCopy(guest.wechat_id)" v-if="guest.wechat_id">复制</view>
-							<view class="right" @click="goNext('edit')" v-else>去完善</view>
+							<view class="right" @click="uniCopy(guest.wechat_id)">复制</view>
 						</view>
 						<view class="item" @click="showMap(guest.map_url)">
 							<view class="left">地址<a>{{guest.address || '尚未完善'}}</a></view>
-							<view class="address" v-if="guest.map_url">
+							<view class="address">
 								<image src="/static/mine/card/address.png" mode="widthFix">
 							</view>
-							<view class="right" @click="goNext('edit')" v-else>去完善</view>
 						</view>
 					</view>
 				</view>
@@ -38,7 +35,7 @@
 		<view class="show_block">
 			<view class="title" v-if="guest.maps">
 				<image src="/static/mine/card/title.png" mode="widthFix">
-				<text v-if="!userInfo.is_mark">获得地图标注</text>
+				<text v-if="!guest.is_mark">获得地图标注</text>
 				<text v-else>已获得地图标注</text>
 			</view>
 			<view class="map_block" v-if="guest.maps">
@@ -51,8 +48,9 @@
 				<image src="/static/mine/card/title.png" mode="widthFix">
 				<text>商户风采</text>
 			</view>
-			<view class="banner" v-if="!guest.show_pics.length" @click="goNext('card')">
-				<image src="/static/mine/card/banner.png" mode="widthFix">
+			<view class="banner" v-if="!guest.show_pics.length">
+				<image :src="imgUrl" mode="widthFix">
+				<view>商家暂无上传</view>
 			</view>
 			<swiper class="show_swiper" :current="current" v-else>
 				<swiper-item class="item" v-for="(item, index) in guest.show_pics" :key="index" @click="fullImg()">
@@ -60,20 +58,40 @@
 				</swiper-item>
 			</swiper>
 		</view>
+		<!-- 弹出层 -->
+		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
+			<view class="connect_tip">
+				<view class="title">温馨提示</view>
+				<view class="content">
+					<view class="main">当前用户尚未开通此功能</view>
+					<view class="message">您的联系请求已收集</view>
+					<view class="message">稍后会通知该用户</view>
+				</view>
+				<view class="bottom">
+					<view class="submit" @click="cancel">确定</view>
+				</view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
 	import { mapState, mapMutations } from 'vuex';
+	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 	import h5Copy from '@/js_sdk/junyi-h5-copy/junyi-h5-copy.js'
 	import Json from '@/Json';
 	export default {
+		components: {
+			UniPopup
+		},
 		data() {
 			return {
 				guest: {
 					show_pics: []
 				},
+				imgUrl: '',
 				current: 0, // 轮播index
+				showDailog: false, // 弹窗显示隐藏
 				showItems: [],  //商户风采数组
 				mapList: [] // 选中地图
 			}
@@ -83,7 +101,8 @@
   		},
 		onLoad(option) {
 			let id = option.id
-			id ? this.getClientInfo(id) : this.getMineInfo()
+			id ? this.getClientInfo(id) : false
+			this.imgUrl = Json.nodata
 			// this.getLocal()
 		},
 		methods: {
@@ -105,27 +124,15 @@
 						}
 					});
 			},
-			// 获取本人信息
-			getMineInfo() {
-				let value = this.userInfo.wxid
-				if (value) {
-					this.$test
-						.post(`/?r=api/user/card`, {
-							id: '',
-							wxid: this.userInfo.wxid
-						})
-						.then(response => {
-							// console.log(response)
-							if (response.code === 200) {
-								this.guest = response.data
-								this.getMap()
-							}
-						})
-				} else {
-					uni.redirectTo({
-						url: '/pages/sousou/sousou'
-					});
+			// 监听展示弹窗状态
+			change(e) {
+				if (!e.show) {
+					this.showDailog = false
 				}
+			},
+			// 关闭信息弹窗
+			cancel() {
+				this.showDailog = false;
 			},
 			// 全屏展示图片
 			fullImg() {
@@ -140,7 +147,13 @@
 			},
 			// 跳转外部地图
 			showMap(url) {
-				url ? window.location.href = url : false
+				if(!this.guest.is_mark) {
+					this.showDailog = true
+					return false
+				}
+				if(url && this.guest.is_mark) {
+					window.location.href = url
+				}
 			},
 			// 获取缓存
 			getLocal() {
@@ -162,12 +175,22 @@
 			},
 			// 调起电话
 			goCall(tel) {
+				if(!tel) {
+					return false
+				}
+				if(!this.guest.is_mark) {
+					this.showDailog = true
+					return false
+				}
 				uni.makePhoneCall({
     				phoneNumber: tel
 				})
 			},
 			// 复制到剪贴板
 			uniCopy(data) {
+				if(!data) {
+					return false
+				}
 				// #ifdef H5
                 const result = h5Copy(data)
 				if (result === false) {
@@ -396,12 +419,22 @@
 		}
 
 		.banner {
+			display: flex;
+			align-items: center;
+			flex-direction: column;
 			width: 100%;
 			padding-top: 20rpx;
 
 			>image {
 				display: block;
-				width: 100%;
+				width: 200rpx;
+				margin-bottom: 10rpx;
+			}
+
+			>view {
+				color: #333;
+				font-size: 28rpx;
+				line-height: 60rpx;
 			}
 		}
 
@@ -417,6 +450,68 @@
 				}
 			}
 		
+		}
+	}
+
+	// 提示弹窗
+	::v-deep.uni-popup__wrapper-box {
+		width: 70%;
+	}
+
+	.connect_tip {
+		text-align: center;
+		background: url('/static/sousou/bg.png') no-repeat center / 100% 100%;
+
+		.title {
+			color: #fff;
+			font-size: 34rpx;
+			line-height: 94rpx;
+			letter-spacing: 1px;
+		}
+
+		.content {
+			padding: 34rpx 30rpx 30rpx;
+
+			.main {
+				color: #208EFF;
+				font-size: 34rpx;
+				margin-bottom: 30rpx;
+			}
+
+			.off_title {
+				color: #4D565E;
+				font-size: 32rpx;
+				line-height: 86rpx;
+
+				>text {
+					color: #1F8FFF;
+				}
+			}
+
+			.message {
+				color: #4D565E;
+				font-size: 30rpx;
+				padding-bottom: 18rpx;
+			}
+		}
+
+		.bottom {
+			font-size: 34rpx;
+			padding-bottom: 40rpx;
+
+			.submit {
+				width: 80%;
+				color: #fff;
+				margin: 0 auto;
+				line-height: 76rpx;
+				border-radius: 80rpx;
+				background: linear-gradient(90deg, #1482FD, #3FA9FF);
+			}
+
+			.cancel {
+				color: #2996FF;
+				line-height: 88rpx;
+			}
 		}
 	}
 }

@@ -2,7 +2,7 @@
 	<view class="w-100">
 		<view class="w-100 flex_wrap">
 			<view class="imgs-view" v-for="(v,i) in imgArray" :key="i">
-				<image @click="preview(v,i)" :src="v" mode="widthFix"></image>
+				<image @click="preview(v,i)" :src="v" mode=""></image>
 				<view class="del-btn" @click="delImg(i)">
 					<image src="./imgs/delete.png"></image>
 				</view>
@@ -36,7 +36,7 @@
 			},
 			imgSize: { //图片大小 单位M
 				type: Number,
-				default: 2
+				default: 5
 			},
 			imgType: {  //如果是小程序，这个值则没用作用
 				type: [Array],

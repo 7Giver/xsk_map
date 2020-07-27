@@ -5,7 +5,7 @@
 			<image class="jia" src="@/components/poiuy-uImgUpload/imgs/jia.png" v-if="!path"></image>
 			<image class="content" :src="path" mode="widthFix" v-else>
 		</view>
-		<view class="title">商户风采<text>(最多9张图 大小2M以内)</text></view>
+		<view class="title">商户风采<text>(最多9张图 大小5M以内)</text></view>
 		<img-upload :imgArr="imgArray" imgCount="9" ref="imgUpload" @upLoads="upLoads"></img-upload>
 		<kps-image-cutter @ok="onok" @cancel="oncancle" :url="url" :fixed="false" :maxWidth="500" :minHeight="300"></kps-image-cutter>
 		<button class="submit" type="warn" @click="submit">提交</button>
@@ -98,13 +98,13 @@ export default {
 		},
 		// 提交表单
 		submit() {
-			if (!this.path) {
-				uni.showToast({
-					title: '请选择名片背景',
-					icon: 'none'
-				});
-				return false
-			}
+			// if (!this.path) {
+			// 	uni.showToast({
+			// 		title: '请选择名片背景',
+			// 		icon: 'none'
+			// 	});
+			// 	return false
+			// }
 			if (!this.targetArray.length) {
 				uni.showToast({
 					title: '请选择商户风采图',

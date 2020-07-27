@@ -3,6 +3,7 @@
 		<view class="banner">
 			<image src="/static/train/banner.png" mode="widthFix">
 			<image src="/static/train/border.png" mode="widthFix">
+			<image class="finger" src="/static/train/finger.gif" mode="widthFix">
 		</view>
 		<view class="top_block">
 			<image :src="guest.avatar" mode="widthFix">
@@ -93,7 +94,7 @@
 		</view>
 		<!-- 底部 -->
 		<view class="bottom">
-			<view class="left">实付:<text>￥1699</text></view>
+			<view class="left">实付:<text>￥{{total_cash}}</text></view>
 			<view class="right" @click="submit">立即支付</view>
 		</view>
 	</view>
@@ -106,6 +107,7 @@
 		data() {
 			return {
 				guest: {},  // 表单信息
+				total_cash: 1699, // 总价
 				clientIndex: 1, // 增加客源
 				timeIndex: 1,  // 投放时长
 				editName: false, // 编辑名称
@@ -285,7 +287,7 @@
 			},
 			// 区域去重
 			changeArray() {
-				let arr = this.putInList
+				let arr = this.putInList.filter(item => item.name !== '选择区域')
 				let res = new Map()
 				let newArr = arr.filter((a) => !res.has(a.name) && res.set(a.name, 1))
 				if (newArr.length !== arr.length) {
@@ -319,6 +321,7 @@
 			// 选择客源数
 			selectClient(index) {
 				this.clientIndex = index
+				index == 0 ? this.total_cash = 499 : this.total_cash = 1699
 			},
 			// 选择投放时长
 			selectTime(index) {
@@ -334,6 +337,13 @@
 					return false
 				}
 				if (!this.checkList.length) {
+					uni.showToast({
+						title: '请选择投放区域',
+						icon: 'none'
+					});
+					return false
+				}
+				if (this.checkList.length !== this.putInList.length) {
 					uni.showToast({
 						title: '请选择投放区域',
 						icon: 'none'
@@ -371,11 +381,19 @@
 	padding-bottom: 160rpx;
 
 	.banner {
+		position: relative;
 		width: 100%;
 
 		image {
 			display: block;
 			width: 100%;
+		}
+
+		.finger {
+			position: absolute;
+			top: 80rpx;
+			right: 140rpx;
+			width: 200rpx;
 		}
 	}
 

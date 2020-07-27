@@ -171,7 +171,7 @@
 					console.log('has value!+++++++++')
 				} else {
 					console.log('no value!+++++++++')
-					// this.getUserMsg()
+					this.getUserMsg()
 				}
 				let obj = uni.getStorageSync('postMsg')
 				obj ? this.guest = obj : false
@@ -194,9 +194,7 @@
 				}
 
 				function getUrlparam(url) {
-					let askIndex = url.indexOf("?");
-					let wellIndex = url.indexOf("#");
-					let askText = url.substring(askIndex + 1, wellIndex);
+					let askText = url.split('?')[1];
 					let result = {};
 					let askAry = askText.split("&");
 					askAry.forEach((item) => {
@@ -205,8 +203,8 @@
 						let value = n[1];
 						result[key] = value;
 					});
-					return result;
-				}
+                	return result;
+            	}
 			},
 			// 多选点击事件 展示信息弹窗
 			_checkItem(index) {

@@ -17,7 +17,7 @@
 		data() {
 			return {
 				setObj: {},
-				select: 0,
+				select: 3,
 				is_mark: false,
 				isready: false
 			}
@@ -26,7 +26,6 @@
     		...mapState(['userInfo'])
   		},
 		onShow() {
-			// this.changeSelect()
 			this.select = 3
 			this.getLocal()
 			// console.log(this.userInfo)
@@ -51,7 +50,7 @@
 				// console.log('getUserInfo')
 				this.$test
 					.post(`/?r=api/user/info`, {
-						wxid: this.setObj.wxid
+						wxid: uni.getStorageSync('userMsg').wxid || this.userInfo.wxid
 					})
 					.then(response => {
 						if (response.code === 200) {

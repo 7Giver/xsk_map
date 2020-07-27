@@ -6,8 +6,8 @@
 					<image :src="guest.avatar" mode="">
 				</view>
 				<view class="content">
-					<view class="nickname">{{guest.name  || '尚未完善'}}</view>
-					<view class="title">正是这些平凡的人生，却构成了伟大的历史.前面的路还很远,但是一定要走下去...</view>
+					<view class="nickname">{{guest.name || '尚未完善'}}</view>
+					<view class="title">{{guest.sign || '正是这些平凡的人生，却构成了伟大的历史.前面的路还很远,但是一定要走下去...'}}</view>
 					<view class="message">
 						<view class="item">
 							<view class="left">商户名<text>{{guest.company || '尚未完善'}}</text></view>
@@ -35,7 +35,7 @@
 		<view class="show_block">
 			<view class="title" v-if="guest.maps">
 				<image src="/static/mine/card/title.png" mode="widthFix">
-				<text v-if="!userInfo.is_mark">获得地图标注</text>
+				<text v-if="!guest.is_mark">获得地图标注</text>
 				<text v-else>已获得地图标注</text>
 			</view>
 			<view class="map_block" v-if="guest.maps">
@@ -51,26 +51,50 @@
 			<view class="banner" v-if="!guest.show_pics.length" @click="goNext('card')">
 				<image src="/static/mine/card/banner.png" mode="widthFix">
 			</view>
-			<swiper class="show_swiper" :current="current" v-else>
-				<swiper-item class="item" v-for="(item, index) in guest.show_pics" :key="index" @click="fullImg()">
-					<image :src="item" mode=""></image>
-				</swiper-item>
-			</swiper>
+			<view class="swiper_block" v-else>
+				<view class="faded" v-if="!guest.is_mark">
+					<view @click="goNext('home')">地图标注后可显示</view>
+				</view>
+				<swiper class="show_swiper" :current="current">
+					<swiper-item class="item" v-for="(item, index) in guest.show_pics" :key="index" @click="fullImg()">
+						<image :src="item" mode=""></image>
+					</swiper-item>
+				</swiper>
+			</view>
 		</view>
+		<!-- 弹出层 -->
+		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
+			<view class="connect_tip">
+				<view class="title">温馨提示</view>
+				<view class="content">
+					<view class="main">当前用户尚未开通此功能</view>
+					<view class="message">您的联系请求已收集</view>
+					<view class="message">稍后会通知该用户</view>
+				</view>
+				<view class="bottom">
+					<view class="submit" @click="cancel">确定</view>
+				</view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
 	import { mapState, mapMutations } from 'vuex';
+	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 	import h5Copy from '@/js_sdk/junyi-h5-copy/junyi-h5-copy.js'
 	import Json from '@/Json';
 	export default {
+		components: {
+			UniPopup
+		},
 		data() {
 			return {
 				guest: {
 					show_pics: []
 				},
 				current: 0, // 轮播index
+				showDailog: false, // 弹窗显示隐藏
 				showItems: [],  //商户风采数组
 				mapList: [] // 选中地图
 			}
@@ -80,12 +104,11 @@
   		},
 		mounted() {
 			this.getMineInfo()
-			// this.getLocal()
 		},
 		methods: {
 			// 获取本人信息
 			getMineInfo() {
-                let value = uni.getStorageSync('userMsg').wxid
+                let value = uni.getStorageSync('userMsg').wxid || this.userInfo.wxid
 				if (value) {
 					this.$test
 						.post(`/?r=api/user/card`, {
@@ -101,6 +124,16 @@
 						})
 				}
 			},
+			// 监听展示弹窗状态
+			change(e) {
+				if (!e.show) {
+					this.showDailog = false
+				}
+			},
+			// 关闭信息弹窗
+			cancel() {
+				this.showDailog = false;
+			},
 			// 全屏展示图片
 			fullImg() {
 				let arr = []
@@ -114,12 +147,13 @@
 			},
 			// 跳转外部地图
 			showMap(url) {
-				url ? window.location.href = url : false
-			},
-			// 获取缓存
-			getLocal() {
-				let obj = uni.getStorageSync('postMsg')
-				obj ? this.guest = obj : false
+				if(!this.guest.is_mark) {
+					this.showDailog = true
+					return false
+				}
+				if(url && this.guest.is_mark) {
+					window.location.href = url
+				}
 			},
 			// 获取选中地图
 			getMap() {
@@ -136,6 +170,13 @@
 			},
 			// 调起电话
 			goCall(tel) {
+				if(!tel) {
+					return false
+				}
+				if(!this.guest.is_mark) {
+					this.showDailog = true
+					return false
+				}
 				uni.makePhoneCall({
     				phoneNumber: tel
 				})
@@ -171,6 +212,11 @@
 			goNext(type) {
 				let url = ''
 				switch (type) {
+					case 'home':
+						uni.switchTab({
+							url: '/pages/home/home'
+						})
+						break;
 					case 'card':
 						url = '/pages/mine/card_management'
 						break;
@@ -379,18 +425,108 @@
 			}
 		}
 
-		.show_swiper {
-			width: 100%;
-		
-			.item {
-		
-				image {
-					width: 100%;
-					height: 100%;
-					border-radius: 10rpx;
+		.swiper_block {
+			position: relative;
+
+			.faded {
+				position: absolute;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				opacity: 1;
+				background: rgba(0, 0, 0, .6);
+				z-index: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 20rpx;
+
+				>view {
+					color: #C59A5A;
+					width: 46%;
+					font-size: 28rpx;
+					line-height: 50rpx;
+					text-align: center;
+					border-radius: 6rpx;
+					background: linear-gradient(-80deg, #F9E0AF, #FAEDD2);
 				}
 			}
-		
+
+			.show_swiper {
+				width: 100%;
+				position: relative;
+			
+				.item {
+			
+					image {
+						width: 100%;
+						height: 100%;
+						border-radius: 20rpx;
+					}
+				}
+			}
+		}
+	}
+
+	// 提示弹窗
+	::v-deep.uni-popup__wrapper-box {
+		width: 70%;
+	}
+
+	.connect_tip {
+		text-align: center;
+		background: url('/static/sousou/bg.png') no-repeat center / 100% 100%;
+
+		.title {
+			color: #fff;
+			font-size: 34rpx;
+			line-height: 94rpx;
+			letter-spacing: 1px;
+		}
+
+		.content {
+			padding: 34rpx 30rpx 30rpx;
+
+			.main {
+				color: #208EFF;
+				font-size: 34rpx;
+				margin-bottom: 30rpx;
+			}
+
+			.off_title {
+				color: #4D565E;
+				font-size: 32rpx;
+				line-height: 86rpx;
+
+				>text {
+					color: #1F8FFF;
+				}
+			}
+
+			.message {
+				color: #4D565E;
+				font-size: 30rpx;
+				padding-bottom: 18rpx;
+			}
+		}
+
+		.bottom {
+			font-size: 34rpx;
+			padding-bottom: 40rpx;
+
+			.submit {
+				width: 80%;
+				color: #fff;
+				margin: 0 auto;
+				line-height: 76rpx;
+				border-radius: 80rpx;
+				background: linear-gradient(90deg, #1482FD, #3FA9FF);
+			}
+
+			.cancel {
+				color: #2996FF;
+				line-height: 88rpx;
+			}
 		}
 	}
 }

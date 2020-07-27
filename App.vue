@@ -13,7 +13,7 @@ export default {
         // this.$getAuthorize()
 
         // 根据url获取参数
-        this.getUserMsg()
+        // this.getUserMsg()
     },
     onShow: function () {
         // console.log('App Show')

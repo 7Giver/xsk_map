@@ -24,7 +24,7 @@
 			</view>
 			<empty v-if="userList.length==0"></empty>
 			<view class="list_block">
-				<view class="item" v-for="(item, index) in userList" :key="index">
+				<view class="item" v-for="(item, index) in userList" :key="index"  @click="goCard(item.id)">
 					<image :src="item.avatar" mode="">
 					<view class="content">
 						<view class="left">
@@ -33,7 +33,7 @@
 							<view class="text">商户：{{item.company}}</view>
 							<view class="text">地区：{{item.province}} {{item.city}}</view>
 						</view>
-						<view class="btn" @click="goAdd(item.id, index)" v-if="!item.checked">+添加</view>
+						<view class="btn" @click.stop="goAdd(item.id, index)" v-if="!item.checked">+添加</view>
 						<view class="disabled" v-else>已关注</view>
 					</view>
 				</view>
@@ -205,6 +205,12 @@ export default {
 				}
 			}
 		},
+		// 跳转名片页面
+		goCard(id) {
+			uni.navigateTo({
+				url: `/pages/mine/card?id=${id}`
+			})
+		},
 		// 取消人脉
 		goCancel(id, index) {
 			let checkList = this.checkList
@@ -252,6 +258,8 @@ export default {
 			if (this.classifyArr[1].length != 0) {
 				this.name = this.classifyArr[1][this.classifyIndex[1]]
 			}
+			this.userList = []
+			this.loadingType = 'more'
 			this.getConnection()
 		},
 		// 获取二级

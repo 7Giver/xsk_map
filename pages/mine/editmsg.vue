@@ -35,11 +35,34 @@
 				</view>
 			</view>
 			<view class="item">
-				<view class="label">地址</view>
+				<view class="label">选择省市</view>
+				<view class="right">
+					<picker
+						mode="multiSelector"
+						@change="classifyChange"
+						@columnchange="columnchange"
+						:value="classifyIndex"
+						:range="classifyArr"
+						range-key="province"
+					>
+						<view v-if="guest.province && guest.city">{{guest.province}} {{guest.city}}</view>
+						<view v-else>请选择省市</view>
+					</picker>
+				</view>
+			</view>
+			<view class="item">
+				<view class="label">详细地址</view>
 				<view class="right">
 					<input type="text" v-model="guest.address" placeholder="请填写有效地址" />
 				</view>
 			</view>
+			<view class="item">
+				<view class="label">个性签名</view>
+				<view class="right">
+					<input type="text" v-model="guest.sign" placeholder="请填写个性签名" />
+				</view>
+			</view>
+			<view class="tips">注：详细地址只有标注地图后才会在名片显示哦！</view>
 		</view>
 		<button class="save_btn" :disabled="disabled" @click="confirm">保存</button>
 		<kps-image-cutter @ok="onok" @cancel="oncancle" :url="url" :fixed="false" :maxWidth="500" :minHeight="300"></kps-image-cutter>
@@ -56,6 +79,10 @@
 		data() {
 			return {
 				guest: {},
+				name: '请选择省市', // 选中的名称
+				classifyIndex: [0, 0],
+				classifyArr: [[], []],  // picker - 数据源
+				childArr: [], // 二级分类数据源
 				disabled: false, // 保存按钮禁用
 				url: "",
 			}
@@ -66,8 +93,50 @@
 		onLoad() {
 			// console.log(this.userInfo)
 			this.guest = this.userInfo
+			this.getAreaList()
 		},
 		methods: {
+			// 获取省市信息
+			getAreaList() {
+				this.$test
+					.post(`/?r=api/index/district`, {})
+					.then(response => {
+						if (response.code === 200) {
+							this.areaList = response.data
+							this.getAllClassify()
+						} else {
+							uni.showToast({
+								title: '获取省市失败',
+								icon: 'none'
+							})
+						}
+					});
+			},
+			// 获取数据源并分出一级二级
+			getAllClassify() {
+				this.areaList.forEach((item, index) => {
+					this.childArr.push(item.city)
+				})
+				this.classifyArr[0] = this.areaList;
+				this.classifyArr[1] = this.childArr[0]
+			},
+			// 选择地区
+			classifyChange(e) {
+				let value = e.target.value;
+				this.classifyIndex = value;
+				if (this.classifyArr[0].length != 0) {
+					this.guest.province = this.classifyArr[0][this.classifyIndex[0]].province
+				}
+				if (this.classifyArr[1].length != 0) {
+					this.guest.city = this.classifyArr[1][this.classifyIndex[1]]
+				}
+			},
+			// 获取二级
+			columnchange(e) {
+				if (e.detail.column == 0) {
+					this.classifyArr[1] = this.childArr[e.detail.value]
+				}
+			},
 			// 监听input输入
 			saveMsg(e) {
 				let type = e.target.id
@@ -122,27 +191,6 @@
 					});
 					return false
 				}
-				if (!this.guest.nick_name) {
-					uni.showToast({
-						title: '请填写昵称',
-						icon: 'none'
-					});
-					return false
-				}
-				if (!this.guest.company) {
-					uni.showToast({
-						title: '请填写商户名称',
-						icon: 'none'
-					});
-					return false
-				}
-				if (!this.guest.mobile) {
-					uni.showToast({
-						title: '请填写手机号',
-						icon: 'none'
-					});
-					return false
-				}
 				if (!(/^1[3456789]\d{9}$/.test(this.guest.mobile))) {
 					uni.showToast({
 						title: '请填写正确的手机号',
@@ -150,16 +198,9 @@
 					});
 					return false
 				}
-				if (!this.guest.wechat_id) {
-					uni.showToast({
-						title: '请填写微信号',
-						icon: 'none'
-					});
-					return false
-				}
 				if (!this.guest.address) {
 					uni.showToast({
-						title: '请填写商户地址',
+						title: '请填写详细地址',
 						icon: 'none'
 					});
 					return false
@@ -205,7 +246,6 @@
 			align-items: center;
 			justify-content: space-between;
 			color: #333537;
-			font-size: 32rpx;
 			border-bottom: 1px solid #E8E8E8;
 
 			&:first-child {
@@ -225,7 +265,6 @@
 				display: flex;
 				flex-direction: column;
 				align-items: flex-end;
-				font-size: 26rpx;
 				text-align: right;
 				padding-right: 10rpx;
 
@@ -255,7 +294,17 @@
 				input {
 					width: 100%;
 				}
+
+				uni-picker {
+					font-size: 30rpx;
+				}
 			}
+		}
+
+		.tips {
+			color: #FF5765;
+			font-size: 22rpx;
+			padding-top: 16rpx;
 		}
 	}
 

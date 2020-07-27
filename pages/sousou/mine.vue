@@ -90,8 +90,7 @@ export default {
 
 <style lang="scss">
 #app {
-    height: 100vh;
-    padding-bottom: 120rpx;
+    padding-bottom: 160rpx;
     background: #F9F9FB;
 
 	.header {
