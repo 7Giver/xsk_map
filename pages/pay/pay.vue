@@ -167,8 +167,6 @@
 			this.getMsg = uni.getStorageSync("postMsg");
 			this.checkItems = Json.checkItems;
 			this.getMap()
-			console.log('user', this.user)
-			console.log('getMsg', this.getMsg)
 		},
 		methods: {
 			// 同意协议

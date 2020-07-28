@@ -1,27 +1,393 @@
 <template>
-	<view>
-		
+	<view id="app">
+		<view class="header">
+            <view class="top">
+                <view class="img" @click="goEdit">
+                    <image :src="userInfo.avatar" mode="">
+                </view>
+                <view class="right">
+                    <view class="title">{{userInfo.nick_name}}</view>
+                    <view class="tips" v-if="userInfo.is_mark">
+                        <text>地图标注商户</text>
+                    </view>
+                </view>
+            </view>
+            <view class="bottom">
+                <view class="left" v-if="userInfo.is_mark">恭喜您 地图已标注</view>
+                <view class="left" v-else>您还未标注地图</view>
+                <view class="right" @click="goHome" v-if="!userInfo.is_mark">去标注</view>
+            </view>
+        </view>
+		<view class="container">
+			<view class="item" @click="goNext('card')">
+				<image src="/static/mine/min_card.png" mode="widthFix">
+				<text>搜搜名片</text>
+			</view>
+			<view class="item" @click="goNext('friend')">
+				<image src="/static/mine/team.png" mode="widthFix">
+				<text>人脉市集</text>
+			</view>
+			<view class="item" @click="goNext('train')">
+				<image src="/static/mine/people.png" mode="widthFix">
+				<text>快速获客</text>
+			</view>
+		</view>
+		<view class="banner">
+			<swiper class="show_swiper" autoplay="true" circular="true" :current="current">
+				<swiper-item class="item" v-for="(item, index) in bannerList" :key="index" @click="goWeb(index)">
+					<image :src="item" mode="widthFix"></image>
+				</swiper-item>
+			</swiper>
+        </view>
+        <view class="content">
+            <view class="icon_block">
+                <view class="item" v-for="(item, index) in iconList" :key="index" @click="gonext(index, item.url)">
+                    <image :src="item.icon" mode="widthFix">
+                    <view>{{item.title}}</view>
+                </view>
+            </view>
+        </view>
 	</view>
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				
-			}
+import { mapState, mapMutations } from 'vuex';
+// import Json from '@/Json';
+export default {
+	data() {
+		return {
+			current: 0,
+			setObj: {},
+			iconList: [
+				{
+					icon: '/static/mine/icon01.png',
+					title: '编辑信息',
+					url: '/pages/mine/editmsg'
+				},
+				{
+					icon: '/static/mine/icon02.png',
+					title: '我的人脉',
+					url: '/pages/mine/friend'
+				},
+				{
+					icon: '/static/mine/icon03.png',
+					title: '名片管理',
+					url: '/pages/mine/card_management'
+				},
+				{
+					icon: '/static/mine/icon04.png',
+					title: '专属客服',
+					url: '/pages/mine/service'
+				},
+			],
+			bannerList: ['/static/mine/banner.png', '/static/mine/banner_01.png']
+		}
+	},
+	computed: {
+    	...mapState(['userInfo'])
+  	},
+	onShow() {
+		// this.iconList = Json.iconList
+		this.getLocal()
+		// uni.redirectTo({
+		// 	url: '/pages/sousou/sousou'
+		// })
+	},
+	methods: {
+		...mapMutations({
+			setUserInfo: 'setUserInfo'
+		}),
+		// 根据缓存获取用户信息
+		getLocal() {
+			let value = uni.getStorageSync('userMsg')
+			value ? this.setObj = value : this.$getAuthorize()
+			this.getUserInfo()
+			// 根据userInfo是否为空请求
+			// Object.keys(this.userInfo).length == 0 ? this.getUserInfo() : this.isready = true
 		},
-		onShow() {
-			uni.redirectTo({
-				url: '/pages/sousou/sousou'
+		// 获取用户信息
+		getUserInfo() {
+			// console.log('getUserInfo')
+			this.$test
+				.post(`/?r=api/user/info`, {
+					wxid: uni.getStorageSync('userMsg').wxid || this.userInfo.wxid
+				})
+				.then(response => {
+					if (response.code === 200) {
+						this.$set(response.data, 'wxid', this.setObj.wxid)
+						this.setUserInfo(response.data)
+					}
+				});
+		},
+		// 跳转首页
+        goHome() {
+            uni.switchTab({
+                url: '/pages/home/home'
+            })
+        },
+        // 跳转页面
+        gonext(index, url) {
+            if (url) {
+				uni.navigateTo({
+					url: url
+				})
+            } else {
+                uni.showToast({
+                    title: '正在升级中...',
+                    icon: 'none'
+                })
+            }
+        },
+        // 跳转
+        goNext(type) {
+			let url = ''
+            switch (type) {
+				case 'card':
+					url = '/pages/mine/mine_card'
+					break;
+				case 'friend':
+					url = '/pages/mine/mine_card'
+					break;
+				case 'train':
+					url = '/pages/train/train'
+					break;
+				default:
+					url = ''
+			}
+			uni.navigateTo({
+				url: url
 			})
 		},
-		methods: {
-			
-		}
+		// banner跳转
+		goWeb(index) {
+			if (index == 0) {
+				uni.navigateTo({
+					url: '/pages/mine/mine_card'
+				})
+			} else {
+				this.goHome()
+			}
+		},
+        // 跳转编辑页
+        goEdit() {
+            uni.navigateTo({
+                url: '/pages/mine/editmsg'
+            })
+        }
 	}
+}
 </script>
 
-<style>
+<style lang="scss">
+#app {
+	padding-bottom: 60rpx;
+    background: #F9F9FB;
 
+	.header {
+		background: #fff;
+        padding-bottom: 30rpx;
+
+        >view {
+            display: flex;
+            align-items: center;
+        }
+
+        .top {
+            padding: 60rpx 40rpx 120rpx;
+            background: url('/static/mine/bg.png') no-repeat center / 100% 100%;
+
+            .img {
+                margin-right: 26rpx;
+                border: 2px solid #72A2EC;
+                border-radius: 50%;
+                overflow: hidden;
+
+                >image {
+                    display: block;
+                    width: 100rpx;
+                    height: 100rpx;
+                }
+            }
+
+            .right {
+
+                .title {
+                    color: #fff;
+                    font-size: 34rpx;
+                    letter-spacing: 1px;
+                    margin-bottom: 14rpx;
+                }
+
+                .tips {
+                    display: inline-block;
+                    font-size: 22rpx;
+                    line-height: 46rpx;
+                    
+                    >text {
+                        display: flex;
+                        align-items: center;
+                        color: #BE8B3F;
+                        padding-right: 16rpx;
+                        border-radius: 50rpx;
+                        background: linear-gradient(90deg, #E1D6B2, #D7C292);
+
+                        &::before {
+                            content: '';
+                            width: 30rpx;
+                            height: 30rpx;
+                            margin-left: 12rpx;
+                            margin-right: 8rpx;
+                            background: url('/static/mine/v_icon.png') no-repeat center / 100% 100%;
+                        }
+                    }
+                }
+
+            }
+            
+        }
+
+        .bottom {
+            width: 92%;
+            margin: 0 auto;
+            margin-top: -60rpx;
+            padding: 26rpx 30rpx;
+            justify-content: space-between;
+            border-radius: 20rpx;
+            background: linear-gradient(-80deg, #F9E0AF, #FAEDD2);
+
+            >view {
+                display: flex;
+                align-items: center;
+            }
+
+            .left {
+                color: #343434;
+                font-size: 32rpx;
+                font-weight: bold;
+
+                &::before {
+                    content: '';
+                    width: 40rpx;
+                    height: 34rpx;
+                    margin-right: 20rpx;
+                    background: url('/static/mine/vip_icon.png') no-repeat center / 100% 100%;
+                }
+            }
+
+            .right {
+                color: #fff;
+                padding: 0 22rpx;
+                font-size: 28rpx;
+                line-height: 56rpx;
+                border-radius: 40rpx;
+                background: #FE5567;
+
+                &::after {
+                    content: "";
+                    width: 13rpx;
+                    height: 13rpx;
+                    border-top: 1.5px solid #fff;
+                    border-right: 1.5px solid #fff;
+                    transform: rotate(45deg);
+                    margin-left: 6rpx;
+                    margin-right: 4rpx;
+                }
+            }
+        }
+	}
+
+	.container {
+		width: 92%;
+		margin: 24rpx auto;
+		background: #fff;
+		border-radius: 28rpx;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		.item {
+			flex: 1;
+			display: flex;
+			align-items: center;
+			flex-direction: column;
+			padding: 20rpx 0;
+
+			>image {
+				display: block;
+				width: 68rpx;
+				margin-bottom: 6rpx;
+				// height: 30rpx;
+			}
+
+			>text {
+				font-size: 28rpx;
+				font-weight: bold;
+			}
+		}
+	}
+
+    .content {
+        width: 92%;
+        margin: 30rpx auto 40rpx;
+        background: #fff;
+        border-radius: 28rpx;
+
+        .icon_block {
+			padding: 0 30rpx;
+            padding-bottom: 20rpx;
+
+            .item {
+				position: relative;
+				display: flex;
+				align-items: center;
+                padding: 30rpx 0;
+
+				&:not(:last-child) {
+					border-bottom: 1px solid #EAEAEA;
+				}
+				
+                >image {
+                    display: block;
+                    width: 46rpx;
+					margin-right: 20rpx;
+                }
+
+                >view {
+                    color: #323232;
+                    font-size: 30rpx;
+					font-weight: bold;
+                }
+
+				&::after {
+					content: "";
+					position: absolute;
+					right: 0;
+                    width: 15rpx;
+                    height: 15rpx;
+                    border-top: 1px solid #939393;
+                    border-right: 1px solid #939393;
+                    transform: rotate(45deg);
+                    margin-left: 6rpx;
+                    margin-right: 4rpx;
+				}
+            }
+        }
+    }
+
+    .banner {
+        width: 92%;
+        margin: 0 auto;
+
+		.show_swiper {
+			height: 139rpx;
+
+			image {
+				display: block;
+				width: 100%;
+			}
+		}
+
+        
+    }
+}
 </style>

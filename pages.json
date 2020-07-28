@@ -56,6 +56,10 @@
             "path" : "pages/mine/card_management",
             "style" : {}
         }
+        ,{
+            "path" : "pages/mine/mine_card",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

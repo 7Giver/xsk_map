@@ -15,7 +15,7 @@
             <view class="bottom">
                 <view class="left" v-if="userInfo.is_mark">恭喜您 地图已标注</view>
                 <view class="left" v-else>您还未标注地图</view>
-                <view class="right" @click="goHome" v-if="!userInfo.is_mark">点击去标注</view>
+                <view class="right" @click="goHome" v-if="!userInfo.is_mark">去标注</view>
             </view>
         </view>
         <view class="content">
@@ -160,7 +160,7 @@ export default {
             width: 92%;
             margin: 0 auto;
             margin-top: -60rpx;
-            padding: 28rpx 30rpx;
+            padding: 26rpx 30rpx;
             justify-content: space-between;
             border-radius: 20rpx;
             background: linear-gradient(-80deg, #F9E0AF, #FAEDD2);
@@ -185,15 +185,22 @@ export default {
             }
 
             .right {
-                color: #C59A5A;
+                color: #fff;
+                padding: 0 22rpx;
                 font-size: 28rpx;
+                line-height: 56rpx;
+                border-radius: 40rpx;
+                background: #FE5567;
 
                 &::after {
-                    content: '';
-                    width: 28rpx;
-                    height: 28rpx;
-                    margin-left: 14rpx;
-                    background: url('/static/mine/enter_icon.png') no-repeat center / 100% 100%;
+                    content: "";
+                    width: 13rpx;
+                    height: 13rpx;
+                    border-top: 1.5px solid #fff;
+                    border-right: 1.5px solid #fff;
+                    transform: rotate(45deg);
+                    margin-left: 6rpx;
+                    margin-right: 4rpx;
                 }
             }
         }
