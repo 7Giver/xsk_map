@@ -32,10 +32,10 @@
 				<view><text>{{ -1000 }}</text>元</view>
 			</view>
 			<!-- 赠品 -->
-			<view class="gift_block" @click="_showItem">
+			<view class="gift_block">
 				<view class="left">赠品</view>
 				<view class="right">
-					<view class="item">
+					<view class="item" @click="_showItem(0)">
 						<image src="/static/pay/p_card.png" mode="widthFix"></image>
 						<view class="text">
 							<view>电子名片</view>
@@ -43,7 +43,7 @@
 						</view>
 					</view>
 					<view class="and"></view>
-					<view class="item">
+					<view class="item" @click="_showItem(1)">
 						<image src="/static/pay/c_card.png" mode="widthFix"></image>
 						<view class="text">
 							<view>潜在客源</view>
@@ -96,13 +96,11 @@
 		<!-- 展示弹窗 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
 			<view class="container">
-				<view class="show_box">
-					<swiper class="show_swiper" indicator-dots="false" circular="true" indicator-active-color="#6E7FD2" :current="current">
-						<swiper-item class="item" v-for="(item, index) in showItems" :key="index">
-							<image :src="item.cover" mode=""></image>
-						</swiper-item>
-					</swiper>
-				</view>
+				<swiper class="show_swiper" :current="current">
+					<swiper-item class="item" v-for="(item, index) in showItems" :key="index">
+						<image :src="item.cover" mode="widthFix"></image>
+					</swiper-item>
+				</swiper>
 			</view>
 		</uni-popup>
 	</view>
@@ -123,7 +121,7 @@
 				showDailog: false, // 展示弹窗
 				agreement: true, // 同意协议
 				checkItems: [],  // 选中地图
-				showItems: [],  // 展示数据
+				showItems: [{cover: '/static/pay/mycard.png'},{cover: '/static/pay/people.png'},],  // 展示数据
 				showlist: [
                     {
 						image: "/static/pay/address.png",
@@ -195,22 +193,25 @@
 				if (!e.show) {
 					this.showDailog = false;
 					this.current = 0;
-					this.showItems = []
+					// this.showItems = []
 				}
 			},
 			// 展示效果图事件
-			_showItem() {
-				this.$http
-					.post(`/api/getPoster`, {
-						type: 1
-					})
-					.then(response => {
-						if (response.code === 200) {
-							// console.log(response)
-							this.showItems = response.data
-							this.showDailog = true
-						}
-					});
+			_showItem(index) {
+				// this.$http
+				// 	.post(`/api/getPoster`, {
+				// 		type: 1
+				// 	})
+				// 	.then(response => {
+				// 		if (response.code === 200) {
+				// 			// console.log(response)
+				// 			this.showItems = response.data
+				// 			this.showDailog = true
+				// 		}
+				// 	});
+
+				this.showDailog = true
+				this.current = index
 			},
 			// 点击支付
 			submit() {
@@ -619,33 +620,31 @@
 		}
 
 		// 展示弹窗
+		::v-deep.uni-popup__wrapper.center {
+			height: 94%;
+		}
 		
 		.container {
 			height: 1040rpx;
 			border-radius: 20rpx;
-			// background: #D6ECFF;
 			position: relative;
+			
+			// overflow: hidden;
 
-			.show_box {
+			.show_swiper {
+				width: 100%;
 				height: 100%;
-				position: relative;
+				border-radius: 26rpx;
+				overflow: hidden;
 
-				.show_swiper {
-					width: 100%;
-					height: 100%;
-					padding-top: 40rpx;
+				.item {
 
-					.item {
-						padding: 0rpx 42rpx;
-
-						image {
-							width: 100%;
-							height: 100%;
-							border-radius: 26rpx;
-						}
+					image {
+						display: block;
+						width: 100%;
 					}
-
 				}
+
 			}
 		}
 	}
