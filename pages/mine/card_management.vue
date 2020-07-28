@@ -50,7 +50,8 @@ export default {
 			this.path = ev.path;
 			this.url = "";
 			uni.uploadFile({
-				url: '/api/?r=api/index/upload',
+				url: `${this.$testURL}?r=api/index/upload`,
+				// url: `/api/?r=api/index/upload`, //开发
 				filePath: ev.path,
 				name: 'image',
 				success: (res) => {

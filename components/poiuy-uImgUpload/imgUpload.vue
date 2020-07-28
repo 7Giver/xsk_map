@@ -226,7 +226,8 @@
 			uploadImg(item, callback) {
 				const _this = this;
 				uni.uploadFile({
-					url: '/api/?r=api/index/upload', //自行修改各自的对应的接口 
+					url: `${this.$testURL}?r=api/index/upload`, // 正式
+					// url: `/api/?r=api/index/upload`, //开发
 					filePath: item,
 					name: 'file',
 					success: (uploadFileRes) => {
