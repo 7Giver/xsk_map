@@ -3,7 +3,7 @@
         <view class="header">
             <view class="top">
                 <view class="img" @click="goEdit">
-                    <image :src="userInfo.avatar" mode="widthFix">
+                    <image :src="userInfo.avatar" mode="">
                 </view>
                 <view class="right">
                     <view class="title">{{userInfo.nick_name}}</view>
@@ -115,6 +115,7 @@ export default {
                 >image {
                     display: block;
                     width: 100rpx;
+                    height: 100rpx;
                 }
             }
 

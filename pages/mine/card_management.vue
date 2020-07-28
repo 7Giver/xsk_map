@@ -71,15 +71,10 @@ export default {
 		// 批量上传图片
 		upLoads(){
 			this.$refs.imgUpload.upload(res => {
+				console.log(res.code)
 				if (res.code == 0) {
-                    this.targetArray = res.urlArray
-                } else {
-					//用户没有上传图片的返回 code码为400
-					uni.showToast({
-						title: '请选择图片',
-						icon: 'none'
-					})
-				}
+					this.targetArray = res.urlArray
+                }
 			});
 		},
 		// 获取名片管理图片
@@ -106,6 +101,7 @@ export default {
 			// 	});
 			// 	return false
 			// }
+			console.log(this.targetArray)
 			if (!this.targetArray.length) {
 				uni.showToast({
 					title: '请选择商户风采图',
