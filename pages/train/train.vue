@@ -1,6 +1,7 @@
 <template>
 	<view id="app">
-		<view class="banner">
+		<uni-nav-bar title="快速获客" left-icon="back" @clickLeft="back"></uni-nav-bar>
+		<view class="banner" @click="posterShow">
 			<image src="/static/train/banner.png" mode="widthFix">
 			<image src="/static/train/border.png" mode="widthFix">
 			<image class="finger" src="/static/train/finger.gif" mode="widthFix">
@@ -97,19 +98,35 @@
 			<view class="left">实付:<text>￥{{total_cash}}</text></view>
 			<view class="right" @click="submit">立即支付</view>
 		</view>
+		<!-- 弹出层 -->
+		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
+			<view class="poster_block">
+				<image src="/static/train/poster.png" mode="widthFix"></image>
+				<view class="tips" @click="cancel">
+					<image src="/static/train/close.png" mode=""></image>
+				</view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
 	import { mapState, mapMutations } from 'vuex';
+	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
+	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 	// import Json from '@/Json';
 	export default {
+		components: {
+			uniNavBar,
+			UniPopup
+		},
 		data() {
 			return {
 				guest: {},  // 表单信息
 				total_cash: 1699, // 总价
 				clientIndex: 1, // 增加客源
 				timeIndex: 1,  // 投放时长
+				showDailog: false, // 弹窗隐藏显示
 				editName: false, // 编辑名称
 				editTel: false,  // 编辑电话
 				editAddress: false, // 编辑地址
@@ -174,13 +191,13 @@
 			eidtMsg(type) {
 				switch(type) {
 					case 'name':
-						this.editName = true;
+						this.editName = true
 						break;
 					case 'tel':
-						this.editTel = true;
+						this.editTel = true
 						break;
 					case 'address':
-						this.editAddress = true;
+						this.editAddress = true
 						break;
 				}
 			},
@@ -236,9 +253,26 @@
 					data: obj
 				});
 			},
+			// nav导航返回
+			back() {
+				uni.navigateBack()
+			},
 			// 同意协议
 			checkagree() {
 				this.agreement = !this.agreement
+			},
+			posterShow() {
+				this.showDailog = true
+			},
+			// 监听展示弹窗状态
+			change(e) {
+				if (!e.show) {
+					this.showDailog = false
+				}
+			},
+			// 关闭信息弹窗
+			cancel() {
+				this.showDailog = false;
 			},
 			// 添加地区
 			addArea() {
@@ -604,6 +638,34 @@
 			font-size: 32rpx;
 			text-align: center;
 			background: linear-gradient(90deg, #FF5664, #FF3D2F);
+		}
+	}
+
+	// 海报弹窗
+	::v-deep.uni-popup__wrapper-box {
+		width: 75%;
+	}
+
+	.poster_block {
+		// position: relative;
+
+		>image {
+			display: block;
+			width: 100%;
+			border-radius: 28rpx;
+		}
+
+		.tips {
+			position: absolute;
+			left: 50%;
+			bottom: -130rpx;
+			transform: translate(-50%, -50%);
+
+			>image {
+				display: block;
+				width: 65rpx;
+				height: 65rpx;
+			}
 		}
 	}
 }

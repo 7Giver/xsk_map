@@ -12,14 +12,17 @@
 						<view class="item">
 							<view class="left">商户名<text>{{guest.company || '尚未完善'}}</text></view>
 							<view class="right" @click="goNext('edit')" v-if="!guest.company">去完善</view>
+							<view class="right" @click="uniCopy(guest.company)">复制</view>
 						</view>
 						<view class="item">
 							<view class="left">手机号<text>{{guest.mobile || '尚未完善'}}</text></view>
 							<view class="right" @click="goNext('edit')" v-if="!guest.mobile">去完善</view>
+							<view class="right" @click="goCall(guest.mobile)">拨打</view>
 						</view>
 						<view class="item" v-if="guest.wechat_id">
 							<view class="left">微信号<text>{{guest.wechat_id || '尚未完善'}}</text></view>
 							<view class="right" @click="goNext('edit')" v-if="!guest.wechat_id">去完善</view>
+							<view class="right" @click="uniCopy(guest.wechat_id)">复制</view>
 						</view>
 						<view class="item" @click="showMap(guest.map_url)">
 							<view class="left">地址<a>{{guest.address || '尚未完善'}}</a></view>
@@ -68,11 +71,11 @@
 				<view class="title">温馨提示</view>
 				<view class="content">
 					<view class="main">当前用户尚未开通此功能</view>
-					<view class="message">您的联系请求已收集</view>
-					<view class="message">稍后会通知该用户</view>
+					<view class="message">此功能需要开通地图标注服务</view>
 				</view>
 				<view class="bottom">
-					<view class="submit" @click="cancel">确定</view>
+					<view class="cancel" @click="cancel">取消</view>
+					<view class="submit" @click="goNext('home')">去标注</view>
 				</view>
 			</view>
 		</uni-popup>
@@ -106,6 +109,9 @@
 			this.getMineInfo()
 		},
 		methods: {
+			open() {
+				this.showDailog = true
+			},
 			// 获取本人信息
 			getMineInfo() {
                 let value = uni.getStorageSync('userMsg').wxid || this.userInfo.wxid
@@ -475,22 +481,24 @@
 
 	.connect_tip {
 		text-align: center;
+		overflow: hidden;
+		border-radius: 32rpx;
 		background: url('/static/sousou/bg.png') no-repeat center / 100% 100%;
 
 		.title {
 			color: #fff;
 			font-size: 34rpx;
-			line-height: 94rpx;
+			line-height: 80rpx;
 			letter-spacing: 1px;
 		}
 
 		.content {
-			padding: 34rpx 30rpx 30rpx;
+			padding: 56rpx 30rpx 60rpx;
 
 			.main {
 				color: #208EFF;
 				font-size: 34rpx;
-				margin-bottom: 30rpx;
+				margin-bottom: 40rpx;
 			}
 
 			.off_title {
@@ -511,21 +519,24 @@
 		}
 
 		.bottom {
-			font-size: 34rpx;
-			padding-bottom: 40rpx;
+			display: flex;
+			align-items: center;
+			font-size: 32rpx;
+			line-height: 76rpx;
+
+			>view {
+				flex: 1;
+			}
 
 			.submit {
 				width: 80%;
 				color: #fff;
 				margin: 0 auto;
-				line-height: 76rpx;
-				border-radius: 80rpx;
 				background: linear-gradient(90deg, #1482FD, #3FA9FF);
 			}
 
 			.cancel {
 				color: #2996FF;
-				line-height: 88rpx;
 			}
 		}
 	}
