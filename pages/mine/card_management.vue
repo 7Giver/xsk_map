@@ -187,7 +187,7 @@ export default {
 
 	.submit {
 		position: fixed;
-		bottom: 90rpx;
+		bottom: 20rpx;
 		left: 50%;
 		transform: translate(-50%, -50%);
 		width: 90%;
