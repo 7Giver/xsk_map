@@ -1,5 +1,6 @@
 <template>
 	<view id="app">
+		<uni-nav-bar title="专属客服" left-icon="back" @clickLeft="$back"></uni-nav-bar>
 		<view class="banner">
             <image src="/static/mine/service_banner.png" mode="widthFix">
         </view>
@@ -21,7 +22,11 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex';
+import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 export default {
+	components: {
+		uniNavBar
+	},
 	data() {
 		return {
 			

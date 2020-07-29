@@ -1,5 +1,6 @@
 <template>
 	<view id="app">
+		<uni-nav-bar title="搜搜名片" left-icon="back" @clickLeft="$back"></uni-nav-bar>
 		<view class="header">
 			<view class="card">
 				<view class="avatar" v-if="guest.avatar">
@@ -84,11 +85,13 @@
 
 <script>
 	import { mapState, mapMutations } from 'vuex';
+	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 	import h5Copy from '@/js_sdk/junyi-h5-copy/junyi-h5-copy.js'
 	import Json from '@/Json';
 	export default {
 		components: {
+			uniNavBar,
 			UniPopup
 		},
 		data() {
@@ -242,7 +245,7 @@
 
 <style lang="scss">
 #app {
-	padding-bottom: 150rpx;
+	padding-bottom: 80rpx;
 	background: linear-gradient(70deg, #50637C, #303641);
 
 	.header {

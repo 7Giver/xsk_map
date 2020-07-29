@@ -1,23 +1,28 @@
 <template>
 	<view id="app">
-		<view class="title">名片背景图</view>
-		<view class="img_block" @tap="chooseImage">
-			<image class="jia" src="@/components/poiuy-uImgUpload/imgs/jia.png" v-if="!path"></image>
-			<image class="content" :src="path" mode="widthFix" v-else>
+		<uni-nav-bar title="名片管理" left-icon="back" @clickLeft="$back"></uni-nav-bar>
+		<view class="content">
+			<view class="title">名片背景图</view>
+			<view class="img_block" @tap="chooseImage">
+				<image class="jia" src="@/components/poiuy-uImgUpload/imgs/jia.png" v-if="!path"></image>
+				<image class="content" :src="path" mode="widthFix" v-else>
+			</view>
+			<view class="title">商户风采<text>(最多9张图 大小5M以内)</text></view>
+			<img-upload :imgArr="imgArray" imgCount="9" ref="imgUpload" @upLoads="upLoads"></img-upload>
+			<kps-image-cutter @ok="onok" @cancel="oncancle" :url="url" :fixed="false" :maxWidth="500" :minHeight="300"></kps-image-cutter>
+			<button class="submit" type="warn" @click="submit">提交</button>
 		</view>
-		<view class="title">商户风采<text>(最多9张图 大小5M以内)</text></view>
-		<img-upload :imgArr="imgArray" imgCount="9" ref="imgUpload" @upLoads="upLoads"></img-upload>
-		<kps-image-cutter @ok="onok" @cancel="oncancle" :url="url" :fixed="false" :maxWidth="500" :minHeight="300"></kps-image-cutter>
-		<button class="submit" type="warn" @click="submit">提交</button>
 	</view>
 </template>
 
 <script>
 import { mapState, mapMutations } from 'vuex';
+import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 import imgUpload from '@/components/poiuy-uImgUpload/imgUpload.vue';
 import kpsImageCutter from "@/components/ksp-image-cutter/ksp-image-cutter.vue";
 export default {
 	components: {
+		uniNavBar,
 		imgUpload,
 		kpsImageCutter
     },
@@ -137,7 +142,11 @@ export default {
 
 <style lang="scss">
 #app {
-	padding: 40rpx 40rpx 0;
+	height: 100vh;
+
+	.content {
+		padding: 40rpx 40rpx 0;
+	}
 
 	.title {
 		display: flex;

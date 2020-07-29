@@ -1,6 +1,7 @@
 <template>
 	<view id="app">
         <!-- <view class="block"></view> -->
+		<uni-nav-bar title="编辑信息" left-icon="back" @clickLeft="$back"></uni-nav-bar>
 		<view class="content">
 			<view class="item">
 				<view class="label">更换头像</view>
@@ -50,19 +51,26 @@
 					</picker>
 				</view>
 			</view>
-			<view class="item">
-				<view class="label">详细地址</view>
-				<view class="right">
-					<input type="text" v-model="guest.address" placeholder="请填写有效地址" />
+			<view class="address">
+				<view class="top">
+					<view class="label">详细地址</view>
+					<view class="right">
+						<input type="text" v-model="guest.address" placeholder="请填写有效地址" />
+					</view>
 				</view>
 			</view>
-			<view class="item">
+			<view class="tips" v-if="!guest.is_mark">
+				<view >注：详细地址只有标注地图后才会在名片显示哦！</view>
+				<view class="add" @click="goNext">去标注</view>
+			</view>
+			<view class="sign">
 				<view class="label">个性签名</view>
 				<view class="right">
-					<input type="text" v-model="guest.sign" placeholder="请填写个性签名" />
+					<view class="input_block">
+						<textarea v-model="guest.sign" placeholder="请填写个性签名" style="height: 100rpx" />
+					</view>
 				</view>
 			</view>
-			<view class="tips">注：详细地址只有标注地图后才会在名片显示哦！</view>
 		</view>
 		<button class="save_btn" :disabled="disabled" @click="confirm">保存</button>
 		<kps-image-cutter @ok="onok" @cancel="oncancle" :url="url" :fixed="false" :maxWidth="500" :minHeight="300"></kps-image-cutter>
@@ -71,9 +79,11 @@
 
 <script>
 	import { mapState, mapMutations } from 'vuex';
+	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 	import kpsImageCutter from "@/components/ksp-image-cutter/ksp-image-cutter.vue";
 	export default {
 		components: {
+			uniNavBar,
 			kpsImageCutter
 		},
 		data() {
@@ -111,6 +121,53 @@
 							})
 						}
 					});
+			},
+			// 跳转首页
+			goNext() {
+				if (!this.guest.company) {
+					uni.showToast({
+						title: '请填写商户名',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!this.guest.mobile) {
+					uni.showToast({
+						title: '请填写手机号',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!(/^1[3456789]\d{9}$/.test(this.guest.mobile))) {
+					uni.showToast({
+						title: '请填写正确的手机号',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!this.guest.address) {
+					uni.showToast({
+						title: '请填写详细地址',
+						icon: 'none'
+					});
+					return false
+				}
+				let obj = {
+					tel: this.guest.mobile,
+					company_name: this.guest.company,
+					address: this.guest.address,
+				}
+				uni.setStorage({
+					key: "postMsg",
+					data: obj
+				})
+				uni.setStorage({
+					key: "openPost",
+					data: true
+				})
+				uni.switchTab({
+					url: '/pages/home/home'
+				})
 			},
 			// 获取数据源并分出一级二级
 			getAllClassify() {
@@ -165,8 +222,8 @@
                 this.guest.avatar = ev.path;
 				this.url = "";
 				uni.uploadFile({
-					url: `${this.$testURL}/?r=api/index/upload`,
-					// url: '/api/?r=api/index/upload', // 开发
+					// url: `${this.$testURL}/?r=api/index/upload`,
+					url: '/api/?r=api/index/upload', // 开发
 					filePath: ev.path,
 					name: 'image',
 					success: (res) => {
@@ -188,6 +245,20 @@
 				if (!this.guest.avatar) {
 					uni.showToast({
 						title: '请选择头像',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!this.guest.company) {
+					uni.showToast({
+						title: '请填写商户名',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!this.guest.mobile) {
+					uni.showToast({
+						title: '请填写手机号',
 						icon: 'none'
 					});
 					return false
@@ -233,6 +304,7 @@
 
 <style lang="scss">
 #app {
+	padding-bottom: 100rpx;
 
 	.block {
 		height: 26rpx;
@@ -247,10 +319,13 @@
 			align-items: center;
 			justify-content: space-between;
 			color: #333537;
-			border-bottom: 1px solid #E8E8E8;
 
 			&:first-child {
 				padding: 16rpx 0;
+			}
+
+			&:not(:last-child) {
+				border-bottom: 1px solid #E8E8E8;
 			}
 
 			&:not(:first-child) {
@@ -258,11 +333,12 @@
 			}
 
 			.label {
+				flex: 1;
 				font-size: 30rpx;
 			}
 
 			.right {
-				flex: 1;
+				flex: 1.5;
 				display: flex;
 				flex-direction: column;
 				align-items: flex-end;
@@ -302,17 +378,87 @@
 			}
 		}
 
+		.address {
+			color: #333537;
+			border-bottom: 1px solid #E8E8E8;
+
+			.top {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 28rpx 0;
+
+				.label {
+					font-size: 30rpx;
+				}
+
+				.right {
+					flex: 1;
+					display: flex;
+					flex-direction: column;
+					align-items: flex-end;
+					text-align: right;
+					padding-right: 10rpx;
+
+					input {
+						width: 100%;
+					}
+
+					uni-picker {
+						font-size: 30rpx;
+					}
+				}
+			}
+		}
+		
 		.tips {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
 			color: #FF5765;
-			font-size: 22rpx;
-			padding-top: 16rpx;
+			font-size: 24rpx;
+			margin: 10rpx auto 0;
+
+			.add {
+				font-size: 30rpx;
+				display: flex;
+				align-items: center;
+				text-decoration: underline;
+
+				&::after {
+					content: "";
+					width: 14rpx;
+					height: 14rpx;
+					border-top: 1px solid #FF5765;
+					border-right: 1px solid #FF5765;
+					transform: rotate(45deg);
+					margin-left: 6rpx;
+					margin-right: 10rpx;
+				}
+			}
+		}
+		
+		.sign {
+			padding-top: 26rpx;
+			
+			.label {
+				flex: 1;
+				font-size: 30rpx;
+			}
+
+			.input_block {
+				padding: 16rpx 36rpx;
+				margin: 20rpx auto;
+				border-radius: 16rpx;
+				background: #f5f5f5;
+			}
 		}
 	}
 
 	.save_btn {
 		width: 90%;
 		height: 80rpx;
-		margin: 60rpx auto;
+		margin: 100rpx auto 0;
 		color: #fff;
 		font-size: 32rpx;
 		border-radius: 50rpx;

@@ -73,6 +73,11 @@ Vue.prototype.$getAuthorize = () => {
   }
 }
 
+// 返回上一页
+Vue.prototype.$back = () => {
+  uni.navigateBack()
+}
+
 /*注册全局自定义组件*/
 import connection from '@/pages/sousou/connection.vue';
 import mine from '@/pages/sousou/mine.vue';

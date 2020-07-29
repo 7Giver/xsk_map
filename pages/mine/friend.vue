@@ -1,6 +1,7 @@
 <template>
 	<view id="app">
 		<scroll-view class="scroll_content" scroll-y @scrolltolower="getDataList">
+			<uni-nav-bar title="我的人脉" left-icon="back" @clickLeft="$back"></uni-nav-bar>
 			<!-- 空白页 -->
 			<empty v-if="userList.length==0"></empty>
 			<view class="list_block">
@@ -23,11 +24,13 @@
 </template>
 
 <script>
+	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	import empty from "@/components/empty/empty.vue";
 	import Json from '@/Json';
 	export default {
 		components: {
+			uniNavBar,
 			uniLoadMore,
 			empty
 		},

@@ -1,5 +1,5 @@
 <template>
-	<view id="app">
+	<view id="app" v-cloak>
 		<view class="header">
             <view class="top">
                 <view class="img" @click="goEdit">
@@ -7,16 +7,21 @@
                 </view>
                 <view class="right">
                     <view class="title">{{userInfo.nick_name}}</view>
-                    <view class="tips" v-if="userInfo.is_mark">
-                        <text>地图标注商户</text>
+                    <view :class="[userInfo.is_mark ? 'tips on' : 'tips off']">
+                        <text v-if="userInfo.is_mark">地图标注商户</text>
+                        <text v-else>未标注商户</text>
                     </view>
                 </view>
             </view>
-            <view class="bottom">
+            <view class="bottom" v-if="!userInfo.is_mark">
+                <view class="left">您还未标注地图</view>
+                <view class="right" @click="goHome">去标注</view>
+            </view>
+            <!-- <view class="bottom">
                 <view class="left" v-if="userInfo.is_mark">恭喜您 地图已标注</view>
                 <view class="left" v-else>您还未标注地图</view>
                 <view class="right" @click="goHome" v-if="!userInfo.is_mark">去标注</view>
-            </view>
+            </view> -->
         </view>
 		<view class="container">
 			<view class="item" @click="goNext('card')">
@@ -30,6 +35,7 @@
 			<view class="item" @click="goNext('train')">
 				<image src="/static/mine/people.png" mode="widthFix">
 				<text>快速获客</text>
+                <image :class="[userInfo.is_mark ? 'hot ani' : 'hot']" src="/static/mine/hot.png" mode="widthFix">
 			</view>
 		</view>
 		<view class="banner">
@@ -57,7 +63,7 @@ export default {
 	data() {
 		return {
 			current: 0,
-			setObj: {},
+            setObj: {},
 			iconList: [
 				{
 					icon: '/static/mine/icon01.png',
@@ -88,7 +94,7 @@ export default {
   	},
 	onShow() {
 		// this.iconList = Json.iconList
-		this.getLocal()
+        this.getLocal()
 		// uni.redirectTo({
 		// 	url: '/pages/sousou/sousou'
 		// })
@@ -115,7 +121,7 @@ export default {
 				.then(response => {
 					if (response.code === 200) {
 						this.$set(response.data, 'wxid', this.setObj.wxid)
-						this.setUserInfo(response.data)
+                        this.setUserInfo(response.data)
 					}
 				});
 		},
@@ -146,7 +152,7 @@ export default {
 					url = '/pages/mine/mine_card'
 					break;
 				case 'friend':
-					url = '/pages/mine/mine_card'
+					url = '/pages/mine/connection'
 					break;
 				case 'train':
 					url = '/pages/train/train'
@@ -193,7 +199,7 @@ export default {
         }
 
         .top {
-            padding: 60rpx 40rpx 120rpx;
+            padding: 60rpx 40rpx 60rpx;
             background: url('/static/mine/bg.png') no-repeat center / 100% 100%;
 
             .img {
@@ -226,9 +232,14 @@ export default {
                     >text {
                         display: flex;
                         align-items: center;
-                        color: #BE8B3F;
                         padding-right: 16rpx;
                         border-radius: 50rpx;
+                    }
+                }
+
+                .on {
+                    >text {
+                        color: #BE8B3F;
                         background: linear-gradient(90deg, #E1D6B2, #D7C292);
 
                         &::before {
@@ -238,6 +249,22 @@ export default {
                             margin-left: 12rpx;
                             margin-right: 8rpx;
                             background: url('/static/mine/v_icon.png') no-repeat center / 100% 100%;
+                        }
+                    }
+                }
+
+                .off {
+                    >text {
+                        color: #9A9A9A;
+                        background: #C9C9C9;
+
+                        &::before {
+                            content: '';
+                            width: 30rpx;
+                            height: 30rpx;
+                            margin-left: 12rpx;
+                            margin-right: 8rpx;
+                            background: url('/static/mine/off_icon.png') no-repeat center / 100% 100%;
                         }
                     }
                 }
@@ -254,6 +281,7 @@ export default {
             justify-content: space-between;
             border-radius: 20rpx;
             background: linear-gradient(-80deg, #F9E0AF, #FAEDD2);
+            margin-top: -36rpx;
 
             >view {
                 display: flex;
@@ -306,23 +334,58 @@ export default {
 		justify-content: space-between;
 
 		.item {
+            position: relative;
 			flex: 1;
 			display: flex;
 			align-items: center;
 			flex-direction: column;
-			padding: 20rpx 0;
+			padding: 24rpx 0;
 
 			>image {
 				display: block;
 				width: 68rpx;
 				margin-bottom: 6rpx;
-				// height: 30rpx;
 			}
 
 			>text {
 				font-size: 28rpx;
 				font-weight: bold;
 			}
+
+            .hot {
+                position: absolute;
+                top: 10rpx;
+                right: 68rpx;
+                width: 32rpx;
+            }
+
+            .ani {
+                animation: fade 1000ms infinite;
+            }
+
+            @keyframes fade {
+                from {
+                    opacity: 1.0;
+                }
+                50% {
+                    opacity: 0.2;
+                }
+                to {
+                    opacity: 1.0;
+                }
+            }
+
+            @-webkit-keyframes fade {
+                from {
+                    opacity: 1.0;
+                }
+                50% {
+                    opacity: 0.2;
+                }
+                to {
+                    opacity: 1.0;
+                }
+            }
 		}
 	}
 
@@ -386,8 +449,6 @@ export default {
 				width: 100%;
 			}
 		}
-
-        
     }
 }
 </style>

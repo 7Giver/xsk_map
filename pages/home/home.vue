@@ -174,7 +174,15 @@
 					this.getUserMsg()
 				}
 				let obj = uni.getStorageSync('postMsg')
+				let open = uni.getStorageSync('openPost')
 				obj ? this.guest = obj : false
+				// 根据编辑信息控制弹窗显示
+				if (open) {
+					this.$nextTick(() => {
+						this.showDailog = true;
+					})
+					uni.removeStorageSync('openPost');
+				}
 			},
 			// 根据url获取参数
 			getUserMsg() {

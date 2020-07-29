@@ -60,6 +60,10 @@
             "path" : "pages/mine/mine_card",
             "style" : {}
         }
+        ,{
+            "path" : "pages/mine/connection",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

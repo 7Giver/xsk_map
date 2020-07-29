@@ -1,6 +1,6 @@
 <template>
-	<view id="app">
-		<uni-nav-bar title="快速获客" left-icon="back" @clickLeft="back"></uni-nav-bar>
+	<view id="app" v-cloak>
+		<uni-nav-bar title="快速获客" left-icon="back" @clickLeft="$back"></uni-nav-bar>
 		<view class="banner" @click="posterShow">
 			<image src="/static/train/banner.png" mode="widthFix">
 			<image src="/static/train/border.png" mode="widthFix">
@@ -36,7 +36,7 @@
 		<view class="content">
 			<view class="title">选择要投放的区域<text>(最多三个区域)</text></view>
 			<view class="area_block">
-				<view class="item" v-for="(item, index) in putInList" :key="index">
+				<view class="item" v-for="(item, index) in putInList" :key="index" v-cloak>
 					<view class="main">
 						<text v-if="index==0">区域一</text>
 						<text v-else-if="index==1">区域二</text>
@@ -252,10 +252,6 @@
 					key: "postMsg",
 					data: obj
 				});
-			},
-			// nav导航返回
-			back() {
-				uni.navigateBack()
 			},
 			// 同意协议
 			checkagree() {
