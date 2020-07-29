@@ -5,7 +5,7 @@
 			<view class="title">名片背景图</view>
 			<view class="img_block" @tap="chooseImage">
 				<image class="jia" src="@/components/poiuy-uImgUpload/imgs/jia.png" v-if="!path"></image>
-				<image class="content" :src="path" mode="widthFix" v-else>
+				<image class="img" :src="path" mode="widthFix" v-else>
 			</view>
 			<view class="title">商户风采<text>(最多9张图 大小5M以内)</text></view>
 			<img-upload :imgArr="imgArray" imgCount="9" ref="imgUpload" @upLoads="upLoads"></img-upload>
@@ -174,7 +174,7 @@ export default {
 		background-color: #F1F1F1;
 		
 
-		.content {
+		.img {
 			display: block;
 			width: 100%;
 		}
