@@ -1,10 +1,14 @@
 <script>
+import { mapState, mapMutations } from 'vuex';
 var testjs = require("@/common/vconsole.min.js");
 // new testjs()
 export default {
     onLaunch: function () {
         // console.log('App Launch')
         uni.removeStorageSync('postMsg');
+
+        //获取用户信息
+        this.getUserInfo()
 
         // 测试用
         // this.testSet()
@@ -22,6 +26,9 @@ export default {
         // console.log('App Hide')
     },
     methods: {
+        ...mapMutations({
+			setUserInfo: 'setUserInfo'
+		}),
         // 测试用缓存
         testSet() {
             let obj = {
@@ -69,6 +76,22 @@ export default {
                 return result;
             }
         },
+        // 获取用户信息
+		getUserInfo() {
+            let value = uni.getStorageSync('userMsg')
+            if (value) {
+                this.$test
+                    .post(`/?r=api/user/info`, {
+                        wxid: value.wxid || this.userInfo.wxid
+                    })
+                    .then(response => {
+                        if (response.code === 200) {
+                            this.$set(response.data, 'wxid', value.wxid)
+                            this.setUserInfo(response.data)
+                        }
+                    });
+            }
+		},
     },
 };
 </script>

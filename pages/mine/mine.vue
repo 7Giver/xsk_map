@@ -100,30 +100,12 @@ export default {
 		// })
 	},
 	methods: {
-		...mapMutations({
-			setUserInfo: 'setUserInfo'
-		}),
 		// 根据缓存获取用户信息
 		getLocal() {
 			let value = uni.getStorageSync('userMsg')
 			value ? this.setObj = value : this.$getAuthorize()
-			this.getUserInfo()
 			// 根据userInfo是否为空请求
 			// Object.keys(this.userInfo).length == 0 ? this.getUserInfo() : this.isready = true
-		},
-		// 获取用户信息
-		getUserInfo() {
-			// console.log('getUserInfo')
-			this.$test
-				.post(`/?r=api/user/info`, {
-					wxid: uni.getStorageSync('userMsg').wxid || this.userInfo.wxid
-				})
-				.then(response => {
-					if (response.code === 200) {
-						this.$set(response.data, 'wxid', this.setObj.wxid)
-                        this.setUserInfo(response.data)
-					}
-				});
 		},
 		// 跳转首页
         goHome() {
