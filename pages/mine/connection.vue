@@ -33,7 +33,7 @@
 							<view class="text">商户：{{item.company}}</view>
 							<view class="text">地区：{{item.province}} {{item.city}}</view>
 						</view>
-						<view class="btn" @click.stop="goAdd(item.id, index)" v-if="!item.checked">+添加</view>
+						<view class="btn" @click.stop="addfriend(item.id, item)" v-if="!item.checked">+添加</view>
 						<view class="disabled" v-else>已关注</view>
 					</view>
 				</view>
@@ -142,6 +142,9 @@ export default {
 					if (response.code === 200) {
 						let resultData = response.data;
 						if (resultData.length > 0) {
+							// resultData.forEach(item => {
+							// 	item.checked = false
+							// })
 							if (this.page == 1) {
 								if (resultData.length < 10) {
 									this.loadingType = 'noMore';
@@ -166,7 +169,7 @@ export default {
 				});
 		},
 		// 添加人脉请求
-		addfriend(id) {
+		addfriend(id, item) {
 			this.$test
 				.post(`/?r=api/user/add-relation`, {
 					wxid: this.userInfo.wxid,
@@ -175,36 +178,37 @@ export default {
 				.then(response => {
 					// console.log(response)
 					if (response.code === 200) {
-						this.checkList.push(id)
-						this.$set(this.userList[index], 'checked', true)
+						this.$set(item, 'checked', true)
 						uni.showToast({
 							title: '添加成功',
 							icon: 'none'
                 		})
+					} else {
+						this.showDailog = true
 					}
 				});
 		},
 		// 添加人脉
-		goAdd(id, index) {
-			let checkList = this.checkList
-			if (this.userInfo.is_mark) {
-				if(this.userInfo.is_direct) {
-					this.addfriend(id)
-				} else {
-					if(checkList.length > 5) {
-						this.showDailog = true
-					} else {
-						this.addfriend(id)
-					}
-				}
-			} else {
-				if(checkList.length > 0) {
-					this.showDailog = true
-				} else {
-					this.addfriend(id)
-				}
-			}
-		},
+		// goAdd(id, index) {
+		// 	let checkList = this.checkList
+		// 	if (this.userInfo.is_mark) {
+		// 		if(this.userInfo.is_direct) {
+		// 			this.addfriend(id)
+		// 		} else {
+		// 			if(checkList.length > 5) {
+		// 				this.showDailog = true
+		// 			} else {
+		// 				this.addfriend(id)
+		// 			}
+		// 		}
+		// 	} else {
+		// 		if(checkList.length > 0) {
+		// 			this.showDailog = true
+		// 		} else {
+		// 			this.addfriend(id)
+		// 		}
+		// 	}
+		// },
 		// 跳转名片页面
 		goCard(id) {
 			uni.navigateTo({
@@ -281,7 +285,7 @@ export default {
 		position: fixed;
 		top: 0;
 		width: 100%;
-		z-index: 999;
+		z-index: 2;
 	}
 
 	.banner {
@@ -368,6 +372,8 @@ export default {
 		>view {
 			display: flex;
 			align-items: center;
+			justify-content: flex-end;
+			padding-right: 20rpx;
 			width: 100%;
 
 			.area {
@@ -380,7 +386,8 @@ export default {
 
 			uni-picker {
 				font-size: 27rpx;
-    			padding: 0 12rpx;
+    			padding: 0 10rpx;
+				white-space: nowrap;
 			}
 		}
 	}

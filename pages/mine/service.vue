@@ -11,11 +11,11 @@
 				<image src="/static/mine/2_code.png" mode="widthFix">
 			</view>
         </view>
-		<view class="bottom">
+		<view class="bottom" @click="goCall(tel)">
             <view>
 				<text>客服官方热线</text>
 			</view>
-			<view>4000-929-77</view>
+			<view>{{tel}}</view>
         </view>
 	</view>
 </template>
@@ -29,14 +29,19 @@ export default {
 	},
 	data() {
 		return {
-			
+			tel: '4000-929-777'
 		}
 	},
 	computed: {
     	...mapState(['userInfo'])
   	},
 	methods: {
-		
+		// 调起电话
+		goCall(tel) {
+			uni.makePhoneCall({
+				phoneNumber: tel
+			});
+		}
 	}
 }
 </script>

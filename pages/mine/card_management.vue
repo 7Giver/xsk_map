@@ -76,7 +76,7 @@ export default {
 		// 批量上传图片
 		upLoads(){
 			this.$refs.imgUpload.upload(res => {
-				console.log(res.code)
+				// console.log(res.code)
 				if (res.code == 0) {
 					this.targetArray = res.urlArray
                 }
@@ -106,7 +106,7 @@ export default {
 			// 	});
 			// 	return false
 			// }
-			console.log(this.targetArray)
+			// console.log(this.targetArray)
 			if (!this.targetArray.length) {
 				uni.showToast({
 					title: '请选择商户风采图',

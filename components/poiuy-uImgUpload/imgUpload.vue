@@ -6,10 +6,10 @@
 				<view class="del-btn" @click="delImg(i)">
 					<image src="./imgs/delete.png"></image>
 				</view>
-				<view class="uploading flex_xy_center" v-if="closeLoading&&startUpload">
+				<!-- <view class="uploading flex_xy_center" v-if="closeLoading&&startUpload">
 					<view><image src="./imgs/uploading4.png"></image>
 					<view class="upload-txt">上传中...</view></view>
-				</view>
+				</view> -->
 			</view>
 			<view v-if="imgArray.length<imgCount" class="upload-img-view flex_xy_center" @click="upPhoto">
 				<image src="./imgs/jia.png"></image>

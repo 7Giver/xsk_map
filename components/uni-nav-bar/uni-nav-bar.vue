@@ -174,7 +174,7 @@
 		display: flex;
 		/* #endif */
 		flex-wrap: nowrap;
-		width: 120rpx;
+		/* width: 120rpx; */
 		padding: 0 6px;
 		justify-content: center;
 		align-items: center;
@@ -184,7 +184,7 @@
 		/* #ifndef APP-NVUE */
 		display: flex;
 		/* #endif */
-		width: 150rpx;
+		flex: 1;
 		justify-content: flex-start;
 	}
 
@@ -192,13 +192,13 @@
 		/* #ifndef APP-NVUE */
 		display: flex;
 		/* #endif */
-		width: 150rpx;
+		flex: 1;
 		padding-right: 30rpx;
 		justify-content: flex-end;
 	}
 
 	.uni-navbar__header-container {
-		flex: 1;
+		flex: 2;
 	}
 
 	.uni-navbar__header-container-inner {

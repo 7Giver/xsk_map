@@ -7,6 +7,10 @@ export default {
         // console.log('App Launch')
         uni.removeStorageSync('postMsg');
 
+        // #ifdef H5
+        uni.setStorageSync('state_ios_href', location.href)
+        // #endif
+
         //获取用户信息
         this.getUserInfo()
 
@@ -46,10 +50,10 @@ export default {
                 key: "userMsg",
                 data: obj,
 			});
-			uni.setStorage({
-                key: "postMsg",
-                data: msg,
-            });
+			// uni.setStorage({
+            //     key: "postMsg",
+            //     data: msg,
+            // });
         },
         // 根据url获取参数
         getUserMsg() {

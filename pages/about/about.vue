@@ -48,7 +48,7 @@
 					<view class="num"><text>3</text></view><text>联系我们</text>
 				</view>
 				<image src="/static/about/connect.png" mode="widthFix"></image>
-				<view class="message">客服热线：4000-929-777</view>
+				<view class="message" @click="goCall(tel)">客服热线：{{tel}}</view>
 			</view>
 		</view>
 	</view>
@@ -56,7 +56,9 @@
 <script>
 	export default {
 		data() {
-			return {}
+			return {
+				tel: '4000-929-777'
+			}
 		},
 		onTabItemTap() {
 			uni.pageScrollTo({
@@ -64,7 +66,14 @@
 				duration: 0
 			})
 		},
-		methods: {}
+		methods: {
+			// 调起电话
+			goCall(tel) {
+				uni.makePhoneCall({
+    				phoneNumber: tel
+				});
+			}
+		}
 	}
 </script>
 <style lang="scss">

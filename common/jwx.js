@@ -16,13 +16,14 @@ export default {
 		let platform = uni.getSystemInfoSync().platform
 		console.log('warn', platform)
 		let href = platform == 'ios' ? uni.getStorageSync('state_ios_href') : window.location.href
-		console.log('warn-href', href)
-		var uri = encodeURIComponent(href); //获取当前url然后传递给后台获取授权和签名信息  
+		console.log('warn-href', href.split('#')[0])
+		let url = href.split('#')[0]
+		// var uri = encodeURIComponent(url); //获取当前url然后传递给后台获取授权和签名信息
 		uni.request({
-			url: 'https://apis.53pzck.top/addons/xshop/h5/share', //你的接口地址  
-			// url:'http://yj-h5-client.asspc.cn/addons/xshop/h5/share',//你的接口地址  
+			url: 'http://server.yingku878.com/?r=api/index/jsapi-config', //你的接口地址  
+			method: 'POST', 
 			data: {
-				url: uri
+				url: url
 			},
 			success: (res) => {
 				console.log('initJssdk:', res.data)

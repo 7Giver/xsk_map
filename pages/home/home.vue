@@ -43,6 +43,10 @@
 			</view>
 		</view>
 		<view class="my_btn" @click="_checkItem('all')">一键批量标注 获得海量曝光</view>
+		<view class="load_order" @click="getOrder" v-if="hasOrder">
+			<view>待支付</view>
+			<view>10:00:00</view>
+		</view>
 		<!-- <view @tap="goNext">跳转</view> -->
 		<!-- 信息弹窗 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
@@ -129,10 +133,11 @@
 		},
 		data() {
 			return {
-				showWeb: false,  // 控制页面展示
+				order_sn: '',  // 待支付订单号
 				setObj: {}, // 授权后用户信息对象
 				showDailog: false, // 是否显示信息弹窗
 				showDailog1: false, // 是否显示展示弹窗
+				hasOrder: false, // 控制进行中订单显示
 				current: 0, // 轮播index
 				guest: {},  // 表单信息
 				showItems: [],  // 展示轮播数组
@@ -163,12 +168,11 @@
 			getUserdata() {
 				var value = uni.getStorageSync('userMsg')
 				if (value) {
-					// this.showWeb = true
-					// uni.showTabBar()
 					this.setObj = value
 					console.log('has value!+++++++++')
 					console.log(value)
 					console.log('has value!+++++++++')
+					// this.getloadingOrder()
 				} else {
 					console.log('no value!+++++++++')
 					this.getUserMsg()
@@ -198,6 +202,7 @@
 					this.$nextTick(() => {
 						this.showDailog = true;
 					})
+					// this.getloadingOrder()
 					// console.log(uni.getStorageSync('userMsg'))
 				}
 
@@ -213,6 +218,46 @@
 					});
                 	return result;
             	}
+			},
+			// 获取进行中订单
+			getloadingOrder() {
+				this.$test
+					.post(`/?r=api/index/index`, {
+						wxid: this.setObj.wxid
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							if (response.data.order_sn) {
+								this.order_sn = response.data.order_sn
+								this.hasOrder = true
+							}
+						}
+					})
+			},
+			// 上传合法手机号
+			postMobile(tel) {
+				this.$test
+					.post(`/?r=api/index/mobile`, {
+						wxid: this.setObj.wxid,
+						mobile: tel
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+						}
+					})
+			},
+			// 获取进行中订单信息并下单
+			getOrder() {
+				if (this.order_sn) {
+					window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${this.order_sn}`
+				} else {
+					uni.showToast({
+						title: '下单失败',
+						icon: 'none'
+					})
+				}
 			},
 			// 多选点击事件 展示信息弹窗
 			_checkItem(index) {
@@ -317,18 +362,9 @@
 							icon: 'none',
 							duration: 1000
 						});
-						// return false
+						return false
 					}
-					let obj = {
-						tel: this.guest.tel,
-						company_name: this.guest.company_name,
-						address: this.guest.address
-					}
-					uni.setStorage({
-						key: "postMsg",
-						data: obj
-					});
-					console.log("set success")
+					this.postMobile(this.guest.tel)
 				} else {
 					if (!(/^1[3456789]\d{9}$/.test(this.guest.tel))) {
 						return false
@@ -342,7 +378,6 @@
 						key: "postMsg",
 						data: obj
 					});
-					console.log("set success1")
 				}
 			},
 			// 提交信息
@@ -398,9 +433,25 @@
 					key: "postMsg",
 					data: obj
 				});
-				uni.navigateTo({
-					url: '/pages/pay/pay'
-				})
+				let str = uni.getStorageSync('mapStr')
+				let result = {
+					wxid: this.setObj.wxid,
+					name: this.guest.company_name,
+					tel: this.guest.tel,
+					map: str,
+					address: this.guest.address
+				}
+				// console.log(result)
+				this.$test
+					.post(`/?r=api/order/map-submit`, result)
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							uni.navigateTo({
+								url: '/pages/pay/pay?order_sn=' + response.data.order_sn
+							})
+						}
+					})
 			},
 			goNext() {
 				uni.navigateTo({
@@ -573,6 +624,25 @@
 						}
 					}
 				}
+			}
+		}
+
+		// 进行中订单浮窗
+		.load_order {
+			position: fixed;
+			right: 30rpx;
+			bottom: 280rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			width: 140rpx;
+			height: 140rpx;
+			background: url('/static/index/clock.png') no-repeat center / 100% 100%;
+
+			>view {
+				color: #FC585B;
+				font-size: 24rpx;
 			}
 		}
 
@@ -817,7 +887,6 @@
 				}
 			}
 		}
-
 	}
 </style>
 

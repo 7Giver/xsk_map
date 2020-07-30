@@ -1,6 +1,6 @@
 <template>
 	<view id="app">
-		<uni-nav-bar title="搜搜名片" left-icon="back" @clickLeft="$back"></uni-nav-bar>
+		<uni-nav-bar title="搜搜名片" left-icon="back" @clickLeft="goNext('mine')"></uni-nav-bar>
 		<view class="header">
 			<view class="card">
 				<view class="avatar" v-if="guest.avatar">
@@ -8,22 +8,22 @@
 				</view>
 				<view class="content">
 					<view class="nickname">{{guest.name || '尚未完善'}}</view>
-					<view class="title">{{guest.sign || '正是这些平凡的人生，却构成了伟大的历史.前面的路还很远,但是一定要走下去...'}}</view>
+					<view class="title">{{guest.sign || '大众消费的导航，为您需求指方向。'}}</view>
 					<view class="message">
 						<view class="item">
 							<view class="left">商户名<text>{{guest.company || '尚未完善'}}</text></view>
 							<view class="right" @click="goNext('edit')" v-if="!guest.company">去完善</view>
-							<view class="right" @click="uniCopy(guest.company)">复制</view>
+							<view class="right" @click="uniCopy(guest.company)" v-else>复制</view>
 						</view>
 						<view class="item">
 							<view class="left">手机号<text>{{guest.mobile || '尚未完善'}}</text></view>
 							<view class="right" @click="goNext('edit')" v-if="!guest.mobile">去完善</view>
-							<view class="right" @click="goCall(guest.mobile)">拨打</view>
+							<view class="right" @click="goCall(guest.mobile)" v-else>拨打</view>
 						</view>
 						<view class="item" v-if="guest.wechat_id">
 							<view class="left">微信号<text>{{guest.wechat_id || '尚未完善'}}</text></view>
 							<view class="right" @click="goNext('edit')" v-if="!guest.wechat_id">去完善</view>
-							<view class="right" @click="uniCopy(guest.wechat_id)">复制</view>
+							<view class="right" @click="uniCopy(guest.wechat_id)" v-else>复制</view>
 						</view>
 						<view class="item" @click="showMap(guest.map_url)">
 							<view class="left">地址<a>{{guest.address || '尚未完善'}}</a></view>
@@ -66,6 +66,7 @@
 				</swiper>
 			</view>
 		</view>
+		<!-- <view @click="goShare">分享</view> -->
 		<!-- 弹出层 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
 			<view class="connect_tip">
@@ -110,6 +111,7 @@
   		},
 		onShow() {
 			this.getMineInfo()
+			this.goShare()
 		},
 		methods: {
 			open() {
@@ -226,6 +228,11 @@
 							url: '/pages/home/home'
 						})
 						break;
+					case 'mine':
+						uni.switchTab({
+							url: '/pages/mine/mine'
+						})
+						break;
 					case 'card':
 						url = '/pages/mine/card_management'
 						break;
@@ -238,6 +245,30 @@
 				uni.navigateTo({
 					url: url
 				})
+			},
+			// 调用微信自定义分享
+			goShare() {
+				let obj = {
+					title: `${this.userInfo.name}的商户地图名片请惠存`,
+					desc: `姓名：${this.userInfo.name}  商户：${this.userInfo.company}`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/ac/acd236b509b370efe5e57d238bd81011.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							desc: obj.desc, // 分享描述
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
+							console.log('response', response)
+						})
+					})
+				}
+				// #endif
 			}
 		}
 	}
@@ -443,7 +474,7 @@
 				width: 100%;
 				height: 100%;
 				opacity: 1;
-				background: rgba(0, 0, 0, .6);
+				background: rgba(0, 0, 0, .7);
 				z-index: 1;
 				display: flex;
 				align-items: center;

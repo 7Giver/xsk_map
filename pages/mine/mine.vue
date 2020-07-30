@@ -92,7 +92,7 @@ export default {
 	computed: {
     	...mapState(['userInfo'])
   	},
-	onShow() {
+	onLoad() {
 		// this.iconList = Json.iconList
         this.getLocal()
 		// uni.redirectTo({
@@ -100,12 +100,33 @@ export default {
 		// })
 	},
 	methods: {
+        ...mapMutations({
+			setUserInfo: 'setUserInfo'
+		}),
 		// 根据缓存获取用户信息
 		getLocal() {
 			let value = uni.getStorageSync('userMsg')
-			value ? this.setObj = value : this.$getAuthorize()
-			// 根据userInfo是否为空请求
-			// Object.keys(this.userInfo).length == 0 ? this.getUserInfo() : this.isready = true
+            value ? this.setObj = value : this.$getAuthorize()
+            let href = window.location.href
+            let temp = href.split('?')[1]
+			// 根据userInfo是否为空和url是否有参数请求
+			Object.keys(this.userInfo).length == 0 ? this.getUserInfo() : false
+        },
+        // 获取用户信息
+		getUserInfo() {
+            let value = uni.getStorageSync('userMsg')
+            if (value) {
+                this.$test
+                    .post(`/?r=api/user/info`, {
+                        wxid: value.wxid || this.userInfo.wxid
+                    })
+                    .then(response => {
+                        if (response.code === 200) {
+                            this.$set(response.data, 'wxid', value.wxid)
+                            this.setUserInfo(response.data)
+                        }
+                    })
+            }
 		},
 		// 跳转首页
         goHome() {

@@ -8,7 +8,7 @@
 				</view>
 				<view class="content">
 					<view class="nickname">{{guest.name}}</view>
-					<view class="title">{{guest.sign || '正是这些平凡的人生，却构成了伟大的历史.前面的路还很远,但是一定要走下去...'}}</view>
+					<view class="title">{{guest.sign || '大众消费的导航，为您需求指方向。'}}</view>
 					<view class="message">
 						<view class="item">
 							<view class="left">商户名<text>{{guest.company || '尚未完善'}}</text></view>
@@ -52,11 +52,16 @@
 				<image :src="imgUrl" mode="widthFix">
 				<view>商家暂无上传</view>
 			</view>
-			<swiper class="show_swiper" :current="current" v-else>
-				<swiper-item class="item" v-for="(item, index) in guest.show_pics" :key="index" @click="fullImg()">
-					<image :src="item" mode=""></image>
-				</swiper-item>
-			</swiper>
+			<view class="swiper_block" v-else>
+				<view class="faded" v-if="guest.show_pics.length && !guest.is_mark">
+					<view @click="goNext('home')">地图标注后可显示</view>
+				</view>
+				<swiper class="show_swiper" :current="current" v-else>
+					<swiper-item class="item" v-for="(item, index) in guest.show_pics" :key="index" @click="fullImg()">
+						<image :src="item" mode=""></image>
+					</swiper-item>
+				</swiper>
+			</view>
 		</view>
 		<!-- 弹出层 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
@@ -220,6 +225,11 @@
 			goNext(type) {
 				let url = ''
 				switch (type) {
+					case 'home':
+						uni.switchTab({
+							url: '/pages/home/home'
+						})
+						break;
 					case 'card':
 						url = '/pages/mine/card_management'
 						break;
@@ -438,18 +448,46 @@
 			}
 		}
 
-		.show_swiper {
-			width: 100%;
-		
-			.item {
-		
-				image {
-					width: 100%;
-					height: 100%;
-					border-radius: 10rpx;
+		.swiper_block {
+			position: relative;
+
+			.faded {
+				position: absolute;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				opacity: 1;
+				background: rgba(0, 0, 0, .7);
+				z-index: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 20rpx;
+
+				>view {
+					color: #C59A5A;
+					width: 46%;
+					font-size: 28rpx;
+					line-height: 50rpx;
+					text-align: center;
+					border-radius: 6rpx;
+					background: linear-gradient(-80deg, #F9E0AF, #FAEDD2);
 				}
 			}
-		
+
+			.show_swiper {
+				width: 100%;
+				position: relative;
+			
+				.item {
+			
+					image {
+						width: 100%;
+						height: 100%;
+						border-radius: 20rpx;
+					}
+				}
+			}
 		}
 	}
 

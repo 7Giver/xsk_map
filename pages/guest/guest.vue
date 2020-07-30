@@ -143,7 +143,8 @@
 		onShow() {
 			this.noticeList = Json.noticeList
 			this.setObj = uni.getStorageSync('userMsg')
-			this.guest = uni.getStorageSync('postMsg')
+			let obj = uni.getStorageSync('postMsg')
+			obj ? this.guest = obj : false
 			this.getShow()
 		},
 		onTabItemTap() {
@@ -153,6 +154,19 @@
 			})
 		},
 		methods: {
+			// 上传合法手机号
+			postMobile(tel) {
+				this.$test
+					.post(`/?r=api/index/mobile`, {
+						wxid: this.setObj.wxid,
+						mobile: tel
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+						}
+					})
+			},
 			// 获取banner图
 			getShow() {
 				// this.$http
@@ -219,18 +233,9 @@
 							icon: 'none',
 							duration: 1000
 						});
-						// return false
+						return false
 					}
-					let obj = {
-						tel: this.guest.tel,
-						company_name: this.guest.company_name,
-						address: this.guest.address
-					}
-					uni.setStorage({
-						key: "postMsg",
-						data: obj
-					});
-					console.log("set success")
+					this.postMobile(this.guest.tel)
 				} else {
 					if (!(/^1[3456789]\d{9}$/.test(this.guest.tel))) {
 						return false
@@ -244,7 +249,6 @@
 						key: "postMsg",
 						data: obj
 					});
-					console.log("set success1")
 				}
 			},
 			// 提交信息
@@ -290,9 +294,25 @@
 					key: "postMsg",
 					data: obj
 				});
-				uni.navigateTo({
-					url: '/pages/pay/pay'
-				})
+				let str = uni.getStorageSync('mapStr')
+				let result = {
+					wxid: this.setObj.wxid,
+					name: this.guest.company_name,
+					tel: this.guest.tel,
+					map: str,
+					address: this.guest.address
+				}
+				// console.log(result)
+				this.$test
+					.post(`/?r=api/order/map-submit`, result)
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							uni.navigateTo({
+								url: '/pages/pay/pay?order_sn=' + response.data.order_sn
+							})
+						}
+					})
 			}
 		}
 	}

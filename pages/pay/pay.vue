@@ -117,6 +117,7 @@
 			return {
 				user: {},
 				getMsg: {},
+				order_sn: '', // 支付订单号
 				current: 0, // 轮播index
 				showDailog: false, // 展示弹窗
 				agreement: true, // 同意协议
@@ -162,13 +163,17 @@
 				]
 			};
 		},
-		onShow() {
+		onLoad(option) {
 			this.user = uni.getStorageSync("userMsg");
 			this.getMsg = uni.getStorageSync("postMsg");
 			this.checkItems = Json.checkItems;
+			this.order_sn = option.order_sn
 			this.getMap()
 		},
 		methods: {
+			doNothing() {
+				console.log('111')
+			},
 			// 同意协议
 			checkagree() {
 				this.agreement = !this.agreement;
@@ -221,9 +226,17 @@
 					return false
 				}
 				// 4.0下单
-				this.creatMapOrder()
+				// this.creatMapOrder()
 				// 3.0下单
 				// this.postMapUserInfo()
+				if (this.order_sn) {
+					window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${this.order_sn}`
+				} else {
+					uni.showToast({
+						title: '下单失败',
+						icon: 'none'
+					})
+				}
 			},
 			// 提交用户信息
 			postMapUserInfo() {
@@ -599,6 +612,8 @@
 
 					text {
 						color: #FF423A;
+						font-size: 38rpx;
+						font-weight: bold;
 						padding-left: 8rpx;
 					}
 				}
@@ -623,11 +638,9 @@
 		}
 		
 		.container {
-			height: 1040rpx;
+			height: 1066rpx;
 			border-radius: 20rpx;
 			position: relative;
-			
-			// overflow: hidden;
 
 			.show_swiper {
 				width: 100%;
@@ -636,6 +649,7 @@
 				overflow: hidden;
 
 				.item {
+					overflow: scroll;
 
 					image {
 						display: block;

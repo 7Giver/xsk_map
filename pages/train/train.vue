@@ -1,34 +1,34 @@
 <template>
 	<view id="app" v-cloak>
 		<uni-nav-bar title="快速获客" left-icon="back" @clickLeft="$back"></uni-nav-bar>
-		<view class="banner" @click="posterShow">
+		<view class="banner">
 			<image src="/static/train/banner.png" mode="widthFix">
 			<image src="/static/train/border.png" mode="widthFix">
-			<image class="finger" src="/static/train/finger.gif" mode="widthFix">
+			<image @click="posterShow" class="finger" src="/static/train/finger.gif" mode="widthFix">
 		</view>
 		<view class="top_block">
-			<image :src="guest.avatar" mode="widthFix">
+			<image :src="guest.avatar || setObj.headimgurl" mode="widthFix">
 			<view class="right">
 				<view class="item">
 					<view class="left">商户名称：
-						<text v-if="!editName">{{guest.company}}</text>
-						<input v-else type="text" v-model="guest.company" @blur="saveMsg('name')" focus placeholder="请填写店铺/公司名称" />
+						<text v-if="!editName && guest.company">{{guest.company}}</text>
+						<input v-else type="text" v-model="guest.company" @blur="saveMsg('company')" focus placeholder="请填写店铺/公司名称" />
 					</view>
-					<view @click="eidtMsg('name')">修改</view>
+					<view class="edit" @click="eidtMsg('name')" v-if="guest.company">修改</view>
 				</view>
 				<view class="item">
 					<view class="left">联系电话：
-						<text v-if="!editTel">{{guest.mobile}}</text>
-						<input v-else type="number" v-model="guest.mobile" @blur="saveMsg('tel')" focus maxlength="11" placeholder="请填写真实有效的手机号码" />
+						<text v-if="!editTel && guest.mobile">{{guest.mobile}}</text>
+						<input v-else type="number" v-model="guest.mobile" @blur="saveMsg('mobile')" focus maxlength="11" placeholder="请填写真实有效的手机号码" />
 					</view>
-					<view @click="eidtMsg('tel')">修改</view>
+					<view class="edit" @click="eidtMsg('tel')" v-if="guest.mobile">修改</view>
 				</view>
 				<view class="item">
 					<view class="left">商户地址：
-						<text v-if="!editAddress">{{guest.address}}</text>
-						<input v-else type="text" v-model="guest.address" @blur="saveMsg('address')" focus placeholder="请填写真实有效店铺/公司地址" />
+						<text v-if="!editAddress && guest.address">{{guest.address}}</text>
+						<textarea v-else v-model="guest.address" @blur="saveMsg('address')" :focus="true" placeholder="请填写真实有效店铺/公司地址" style="height: 100rpx" />
 					</view>
-					<view @click="eidtMsg('address')">修改</view>
+					<view class="edit" @click="eidtMsg('address')" v-if="guest.address">修改</view>
 				</view>
 			</view>
 		</view>
@@ -122,6 +122,7 @@
 		},
 		data() {
 			return {
+				setObj: {}, // 缓存信息
 				guest: {},  // 表单信息
 				total_cash: 1699, // 总价
 				clientIndex: 1, // 增加客源
@@ -172,6 +173,7 @@
   		},
 		onShow() {
 			// this.areaList = Json.areaList
+			this.setObj = uni.getStorageSync('userMsg')
 			this.guest = this.userInfo
 			this.getAreaList()
 		},
@@ -192,9 +194,11 @@
 				switch(type) {
 					case 'name':
 						this.editName = true
+						this.editAddress = false
 						break;
 					case 'tel':
 						this.editTel = true
+						this.editAddress = false
 						break;
 					case 'address':
 						this.editAddress = true
@@ -204,54 +208,25 @@
 			// 保存修改信息
 			saveMsg(type) {
 				switch(type) {
-					case 'name':
-						if (!this.guest.company) {
-							uni.showToast({
-								title: '请输入店铺名称',
-								icon: 'none'
-							});
-							return false
-						}
+					case 'company':
 						this.editName = false;
 						break;
-					case 'tel':
-						if (!this.guest.mobile) {
-							uni.showToast({
-								title: '请输入手机号',
-								icon: 'none'
-							});
-							return false
-						}
-						if (!(/^1[3456789]\d{9}$/.test(this.guest.mobile))) {
-							uni.showToast({
-								title: '请输入正确的手机号',
-								icon: 'none',
-								duration: 1000
-							});
-							return false
-						}
+					case 'mobile':
 						this.editTel = false;
 						break;
 					case 'address':
-						if (!this.guest.address) {
-							uni.showToast({
-								title: '请输入详细地址',
-								icon: 'none'
-							});
-							return false
-						}
 						this.editAddress = false;
 						break;
 				}
-				let obj = {
-					tel: this.guest.mobile,
-					company_name: this.guest.company,
-					address: this.guest.address
-				}
-				uni.setStorage({
-					key: "postMsg",
-					data: obj
-				});
+				// let obj = {
+				// 	tel: this.guest.mobile,
+				// 	company_name: this.guest.company,
+				// 	address: this.guest.address
+				// }
+				// uni.setStorage({
+				// 	key: "postMsg",
+				// 	data: obj
+				// })
 			},
 			// 同意协议
 			checkagree() {
@@ -359,6 +334,35 @@
 			},
 			// 立即支付
 			submit() {
+				if (!this.guest.company) {
+					uni.showToast({
+						title: '请输入商户名称',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!this.guest.mobile) {
+					uni.showToast({
+						title: '请输入手机号',
+						icon: 'none'
+					});
+					return false
+				}
+				if (!(/^1[3456789]\d{9}$/.test(this.guest.mobile))) {
+					uni.showToast({
+						title: '请输入正确的手机号',
+						icon: 'none',
+						duration: 1000
+					});
+					return false
+				}
+				if (!this.guest.address) {
+					uni.showToast({
+						title: '请输入商户地址',
+						icon: 'none'
+					});
+					return false
+				}
 				if (!this.agreement) {
 					uni.showToast({
 						title: '请阅读服务协议',
@@ -413,6 +417,7 @@
 	.banner {
 		position: relative;
 		width: 100%;
+		overflow: hidden;
 
 		image {
 			display: block;
@@ -447,18 +452,29 @@
 				align-items: center;
 				justify-content: space-between;
 				font-size: 28rpx;
-				line-height: 50rpx;
+				line-height: 64rpx;
 
 				.left {
+					flex: 1;
 					display: flex;
 					white-space: nowrap;
 					font-weight: bold;
 
 					input {
-						height: 48rpx;
-						color: #9CA1B4;
-						font-size: 28rpx;
-						text-indent: 26rpx;
+						width: 100%;
+						height: 46rpx;
+						font-size: 26rpx;
+						text-indent: 24rpx;
+						font-weight: normal;
+						background: #f8f8f8;
+						border-radius: 20rpx;
+						margin-top: 8rpx;
+					}
+
+					textarea {
+						width: 100%;
+						padding: 10rpx 20rpx;
+						font-size: 26rpx;
 						font-weight: normal;
 						background: #f8f8f8;
 						border-radius: 20rpx;
@@ -477,7 +493,16 @@
 					}
 				}
 
-				>view:last-child {
+				&:last-child {
+					.left {
+						>text {
+							line-height: 40rpx;
+							margin-top: 10rpx;
+						}
+					}
+				}
+
+				.edit {
 					color: #516AF7;
 					white-space: nowrap;
 					padding-left: 24rpx;
