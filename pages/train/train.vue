@@ -1,6 +1,6 @@
 <template>
 	<view id="app" v-cloak>
-		<uni-nav-bar title="快速获客" left-icon="back" @clickLeft="$back"></uni-nav-bar>
+		<uni-nav-bar title="快速获客" left-icon="back" @clickLeft="back"></uni-nav-bar>
 		<view class="banner">
 			<image src="/static/train/banner.png" mode="widthFix">
 			<image src="/static/train/border.png" mode="widthFix">
@@ -178,6 +178,12 @@
 			this.getAreaList()
 		},
 		methods: {
+			// 返回我的页面
+			back() {
+				uni.switchTab({
+					url: '/pages/mine/mine'
+				})
+			},
 			// 获取省市信息
 			getAreaList() {
 				this.$test

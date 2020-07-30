@@ -1,5 +1,6 @@
 <template>
 	<view id="app">
+		<uni-nav-bar title="支付页" left-icon="back" @clickLeft="back"></uni-nav-bar>
 		<view class="header">
 			<view class="user">
 				<image :src="user.headimgurl" mode=""></image>
@@ -107,10 +108,12 @@
 </template>
 
 <script>
+	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 	import Json from '@/Json';
 	export default {
 		components: {
+			uniNavBar,
 			UniPopup
 		},
 		data() {
@@ -173,6 +176,12 @@
 		methods: {
 			doNothing() {
 				console.log('111')
+			},
+			// 返回我的页面
+			back() {
+				uni.switchTab({
+					url: '/pages/mine/mine'
+				})
 			},
 			// 同意协议
 			checkagree() {

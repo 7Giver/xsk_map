@@ -42,18 +42,18 @@ export default {
 				wxid: "wpxgorng"
 			};
 			let msg = {
-				address: "士大夫大师傅",
-				company_name: "对方的",
+				address: "无锡锡宁路前村工业园a区23",
+				company_name: "大庆五金",
 				tel: "13026689953"
 			};
             uni.setStorage({
                 key: "userMsg",
                 data: obj,
 			});
-			// uni.setStorage({
-            //     key: "postMsg",
-            //     data: msg,
-            // });
+			uni.setStorage({
+                key: "postMsg",
+                data: msg,
+            });
         },
         // 根据url获取参数
         getUserMsg() {

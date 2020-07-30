@@ -17,6 +17,9 @@
                 <view class="left">您还未标注地图</view>
                 <view class="right" @click="goHome">去标注</view>
             </view>
+            <view class="bottom" v-if="userInfo.mark_status == 1">
+                <view class="left">商户地图标注中，请耐心等待！</view>
+            </view>
             <!-- <view class="bottom">
                 <view class="left" v-if="userInfo.is_mark">恭喜您 地图已标注</view>
                 <view class="left" v-else>您还未标注地图</view>
