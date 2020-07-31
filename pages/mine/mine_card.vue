@@ -2,12 +2,13 @@
 	<view id="app">
 		<uni-nav-bar title="搜搜名片" left-icon="back" @clickLeft="goNext('mine')"></uni-nav-bar>
 		<view class="header">
+			<image class="background" :src="guest.bg_image || background" mode="widthFix">
 			<view class="card">
-				<view class="avatar" v-if="guest.avatar">
-					<image :src="guest.avatar" mode="">
+				<view class="avatar">
+					<image :src="guest.avatar || setObj.headimgurl" mode="">
 				</view>
 				<view class="content">
-					<view class="nickname">{{guest.name || '尚未完善'}}</view>
+					<view class="nickname">{{guest.name || setObj.nickname}}</view>
 					<view class="title">{{guest.sign || '大众消费的导航，为您需求指方向。'}}</view>
 					<view class="message">
 						<view class="item">
@@ -55,7 +56,23 @@
 			<view class="banner" v-if="!guest.show_pics.length" @click="goNext('card')">
 				<image src="/static/mine/card/banner.png" mode="widthFix">
 			</view>
-			<view class="swiper_block" v-else>
+			<view class="banner_block" v-else>
+				<view class="faded" v-if="!guest.is_mark">
+					<view @click="goNext('home')">地图标注后可显示</view>
+				</view>
+				<view v-if="!showMore">
+					<view class="item" v-for="(item, index) in guest.show_pics.slice(0,3)" :key="index" @click="fullImg()">
+						<image :src="item" mode=""></image>
+					</view>
+				</view>
+				<view v-else>
+					<view class="item" v-for="(item, index) in guest.show_pics" :key="index" @click="fullImg()">
+						<image :src="item" mode=""></image>
+					</view>
+				</view>
+				<view class="more" @click="showmore" v-if="!showMore && guest.show_pics.length>3">展示更多</view>
+			</view>
+			<!-- <view class="swiper_block" v-else>
 				<view class="faded" v-if="!guest.is_mark">
 					<view @click="goNext('home')">地图标注后可显示</view>
 				</view>
@@ -64,7 +81,7 @@
 						<image :src="item" mode=""></image>
 					</swiper-item>
 				</swiper>
-			</view>
+			</view> -->
 		</view>
 		<!-- <view @click="goShare">分享</view> -->
 		<!-- 弹出层 -->
@@ -97,10 +114,13 @@
 		},
 		data() {
 			return {
+				setObj: {},
 				guest: {
 					show_pics: []
 				},
 				current: 0, // 轮播index
+				background: '/static/mine/card/background.png',
+				showMore: false, // 显示更多
 				showDailog: false, // 弹窗显示隐藏
 				showItems: [],  //商户风采数组
 				mapList: [] // 选中地图
@@ -110,6 +130,7 @@
     		...mapState(['userInfo'])
   		},
 		onShow() {
+			this.setObj = uni.getStorageSync('userMsg')
 			this.getMineInfo()
 			this.goShare()
 		},
@@ -129,7 +150,13 @@
 						.then(response => {
 							// console.log(response)
 							if (response.code === 200) {
-								this.guest = response.data
+								let value = response.data
+								if (!value.is_mark) {
+									let list = value.show_pics.slice(0,1)
+									this.guest.show_pics = list
+								} else {
+									this.guest = value
+								}
 								this.getMap()
 							}
 						})
@@ -181,9 +208,6 @@
 			},
 			// 调起电话
 			goCall(tel) {
-				if(!tel) {
-					return false
-				}
 				if(!this.guest.is_mark) {
 					this.showDailog = true
 					return false
@@ -194,6 +218,10 @@
 			},
 			// 复制到剪贴板
 			uniCopy(data) {
+				if(!this.guest.is_mark) {
+					this.showDailog = true
+					return false
+				}
 				// #ifdef H5
                 const result = h5Copy(data)
 				if (result === false) {
@@ -269,6 +297,10 @@
 					})
 				}
 				// #endif
+			},
+			// 展示更多
+			showmore() {
+				this.showMore = true
 			}
 		}
 	}
@@ -280,12 +312,19 @@
 	background: linear-gradient(70deg, #50637C, #303641);
 
 	.header {
-		padding: 230rpx 0 38rpx;
-		background: url('/static/mine/card/background.png') no-repeat top / 100%;
+		padding: 0 0 40rpx;
+		// background: url('/static/mine/card/background.png') no-repeat top / 100%;
+
+		.background {
+			display: block;
+			width: 100%;
+		}
 
 		.card {
+			position: absolute;
+			left: 50%;
+			transform: translate(-50%, -50%);
 			width: 90%;
-			margin: 0 auto;
 
 			.avatar {
 				display: flex;
@@ -416,7 +455,7 @@
 
 	.show_block {
 		width: 90%;
-		margin: 0 auto;
+		margin: 330rpx auto 0;
 		padding: 30rpx 34rpx;
 		background: #fff;
 		border-radius: 20rpx;
@@ -462,6 +501,67 @@
 			>image {
 				display: block;
 				width: 100%;
+			}
+		}
+
+		.banner_block {
+			position: relative;
+
+			.faded {
+				position: absolute;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				opacity: 1;
+				background: rgba(0, 0, 0, .7);
+				z-index: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 20rpx;
+
+				>view {
+					color: #C59A5A;
+					width: 46%;
+					font-size: 28rpx;
+					line-height: 50rpx;
+					text-align: center;
+					border-radius: 6rpx;
+					background: linear-gradient(-80deg, #F9E0AF, #FAEDD2);
+				}
+			}
+
+			.item {
+				height: 380rpx;
+				margin-bottom: 30rpx;
+
+				>image {
+					display: block;
+					width: 100%;
+					height: 100%;
+					border-radius: 16rpx;
+				}
+			}
+		}
+
+		.more {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #5169F7;
+			font-size: 28rpx;
+			text-align: center;
+			letter-spacing: 1px;
+
+			&::after {
+				content: "";
+				width: 12rpx;
+				height: 12rpx;
+				border-top: 1px solid #5169F7;
+				border-right: 1px solid #5169F7;
+				transform: rotate(135deg);
+				margin-left: 10rpx;
+				margin-bottom: 12rpx;
 			}
 		}
 

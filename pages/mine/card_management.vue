@@ -7,8 +7,8 @@
 				<image class="jia" src="@/components/poiuy-uImgUpload/imgs/jia.png" v-if="!path"></image>
 				<image class="img" :src="path" mode="widthFix" v-else>
 			</view>
-			<view class="title">商户风采<text>(最多9张图 大小5M以内)</text></view>
-			<img-upload :imgArr="imgArray" imgCount="9" ref="imgUpload" @upLoads="upLoads"></img-upload>
+			<view class="title">商户风采<text>(最多6张图 大小5M以内)</text></view>
+			<img-upload :imgArr="imgArray" imgCount="6" ref="imgUpload" @upLoads="upLoads"></img-upload>
 			<kps-image-cutter @ok="onok" @cancel="oncancle" :url="url" :fixed="false" :maxWidth="500" :minHeight="300"></kps-image-cutter>
 			<button class="submit" type="warn" @click="submit">提交</button>
 		</view>
@@ -142,7 +142,7 @@ export default {
 
 <style lang="scss">
 #app {
-	height: 100vh;
+	padding-bottom: 300rpx;
 
 	.content {
 		padding: 40rpx 40rpx 0;

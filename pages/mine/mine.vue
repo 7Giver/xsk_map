@@ -1,50 +1,50 @@
 <template>
 	<view id="app" v-cloak>
 		<view class="header">
-            <view class="top">
-                <view class="img" @click="goEdit">
-                    <image :src="userInfo.avatar" mode="">
-                </view>
-                <view class="right">
-                    <view class="title">{{userInfo.nick_name}}</view>
-                    <view :class="[userInfo.is_mark ? 'tips on' : 'tips off']">
-                        <text v-if="userInfo.is_mark">地图标注商户</text>
-                        <text v-else>未标注商户</text>
+            <view class="block">
+                <view class="top">
+                    <view class="img" @click="goEdit">
+                        <image :src="userInfo.avatar" mode="">
+                    </view>
+                    <view class="right">
+                        <view class="title">{{userInfo.nick_name}}</view>
+                        <view :class="[userInfo.is_mark ? 'tips on' : 'tips off']">
+                            <text v-if="userInfo.is_mark">地图标注商户</text>
+                            <text v-else>未标注商户</text>
+                        </view>
                     </view>
                 </view>
+                <view class="bottom" v-if="!userInfo.is_mark">
+                    <view class="left">您还未标注地图</view>
+                    <view class="right" @click="goHome">去标注</view>
+                </view>
+                <view class="bottom" v-else>
+                    <view class="left" v-if="userInfo.is_mark">恭喜您 地图已标注</view>
+                </view>
+                <view class="bottom" v-if="userInfo.mark_status == 1">
+                    <view class="left">商户地图标注中，请耐心等待！</view>
+                </view>
             </view>
-            <view class="bottom" v-if="!userInfo.is_mark">
-                <view class="left">您还未标注地图</view>
-                <view class="right" @click="goHome">去标注</view>
-            </view>
-            <view class="bottom" v-if="userInfo.mark_status == 1">
-                <view class="left">商户地图标注中，请耐心等待！</view>
-            </view>
-            <!-- <view class="bottom">
-                <view class="left" v-if="userInfo.is_mark">恭喜您 地图已标注</view>
-                <view class="left" v-else>您还未标注地图</view>
-                <view class="right" @click="goHome" v-if="!userInfo.is_mark">去标注</view>
-            </view> -->
         </view>
 		<view class="container">
-			<view class="item" @click="goNext('card')">
-				<image src="/static/mine/min_card.png" mode="widthFix">
-				<text>搜搜名片</text>
-			</view>
-			<view class="item" @click="goNext('friend')">
-				<image src="/static/mine/team.png" mode="widthFix">
-				<text>人脉市集</text>
-			</view>
-			<view class="item" @click="goNext('train')">
-				<image src="/static/mine/people.png" mode="widthFix">
-				<text>快速获客</text>
+            <view class="item" @click="goNext('card')">
+				<image src="/static/mine/min_card.png" mode="">
+			    <text>搜搜名片</text>
+            </view>
+            <view class="item" @click="goNext('friend')">
+                <image src="/static/mine/team.png" mode="">
+                <text>人脉市集</text>
+            </view>
+            <view class="item" @click="goNext('train')">
+                <image src="/static/mine/people.png" mode="">
+                <text>快速获客</text>
                 <image :class="[userInfo.is_mark ? 'hot ani' : 'hot']" src="/static/mine/hot.png" mode="widthFix">
-			</view>
+            </view>
 		</view>
 		<view class="banner">
 			<swiper class="show_swiper" autoplay="true" circular="true" :current="current">
-				<swiper-item class="item" v-for="(item, index) in bannerList" :key="index" @click="goWeb(index)">
-					<image :src="item" mode="widthFix"></image>
+				<swiper-item class="item" v-for="(item, index) in bannerList" :key="index" @click="goWeb(item.id)">
+					<image :src="item.img" mode="widthFix"></image>
 				</swiper-item>
 			</swiper>
         </view>
@@ -89,7 +89,20 @@ export default {
 					url: '/pages/mine/service'
 				},
 			],
-			bannerList: ['/static/mine/banner.png', '/static/mine/banner_01.png']
+			bannerList: [
+                {
+                    id: 0,
+                    img: '/static/mine/banner.png'
+                },
+                {
+                    id: 1,
+                    img: '/static/mine/banner01.png'
+                },
+                {
+                    id: 2,
+                    img: '/static/mine/banner02.png'
+                }
+            ]
 		}
 	},
 	computed: {
@@ -98,6 +111,7 @@ export default {
 	onLoad() {
 		// this.iconList = Json.iconList
         this.getLocal()
+
 		// uni.redirectTo({
 		// 	url: '/pages/sousou/sousou'
 		// })
@@ -113,7 +127,10 @@ export default {
             let href = window.location.href
             let temp = href.split('?')[1]
 			// 根据userInfo是否为空和url是否有参数请求
-			Object.keys(this.userInfo).length == 0 ? this.getUserInfo() : false
+            Object.keys(this.userInfo).length == 0 ? this.getUserInfo() : false
+            this.userInfo.is_mark
+                ? this.$delete(this.bannerList, 1)
+                : this.$delete(this.bannerList, 2)
         },
         // 获取用户信息
 		getUserInfo() {
@@ -171,13 +188,21 @@ export default {
 			})
 		},
 		// banner跳转
-		goWeb(index) {
-			if (index == 0) {
-				uni.navigateTo({
-					url: '/pages/mine/mine_card'
-				})
-			} else {
-				this.goHome()
+		goWeb(id) {
+            switch (id) {
+				case 0:
+					uni.navigateTo({
+					    url: '/pages/mine/mine_card'
+				    })
+					break;
+				case 1:
+					this.goHome()
+					break;
+				case 2:
+					uni.navigateTo({
+					    url: '/pages/train/train'
+				    })
+					break;
 			}
 		},
         // 跳转编辑页
@@ -192,21 +217,38 @@ export default {
 
 <style lang="scss">
 #app {
+    width: 100%;
+    position: absolute;
+    overflow-x: hidden;
+    padding-top: 360rpx;
 	padding-bottom: 60rpx;
-    background: #F9F9FB;
 
 	.header {
-		background: #fff;
-        padding-bottom: 30rpx;
+        width: 160%;
+		position: absolute;
+        top: 14%;
+        left: 50%;
+        height: 360rpx;
+        transform: translate(-50%, -50%);
+        background: url('/static/mine/bg.png') no-repeat center / 100%;
+        border-radius: 0 0 50% 50%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-top: 40rpx;
 
-        >view {
-            display: flex;
-            align-items: center;
+        .block {
+            width: 62%;
+
+            >view {
+                display: flex;
+                align-items: center;
+            }
         }
-
+        
         .top {
-            padding: 60rpx 40rpx 60rpx;
-            background: url('/static/mine/bg.png') no-repeat center / 100% 100%;
+            padding: 60rpx 40rpx 50rpx;
 
             .img {
                 margin-right: 26rpx;
@@ -274,20 +316,16 @@ export default {
                         }
                     }
                 }
-
             }
-            
         }
 
         .bottom {
             width: 92%;
             margin: 0 auto;
-            margin-top: -60rpx;
-            padding: 26rpx 30rpx;
+            padding: 26rpx 30rpx 56rpx;
             justify-content: space-between;
             border-radius: 20rpx;
             background: linear-gradient(-80deg, #F9E0AF, #FAEDD2);
-            margin-top: -36rpx;
 
             >view {
                 display: flex;
@@ -331,14 +369,11 @@ export default {
 	}
 
 	.container {
-		width: 92%;
-		margin: 24rpx auto;
-		background: #fff;
-		border-radius: 28rpx;
-		display: flex;
+        display: flex;
 		align-items: center;
 		justify-content: space-between;
-
+		margin: 10rpx auto;
+        
 		.item {
             position: relative;
 			flex: 1;
@@ -349,8 +384,9 @@ export default {
 
 			>image {
 				display: block;
-				width: 68rpx;
-				margin-bottom: 6rpx;
+				width: 100rpx;
+                height: 100rpx;
+				margin-bottom: 14rpx;
 			}
 
 			>text {
@@ -360,8 +396,8 @@ export default {
 
             .hot {
                 position: absolute;
-                top: 10rpx;
-                right: 68rpx;
+                top: 2rpx;
+                right: 58rpx;
                 width: 32rpx;
             }
 
@@ -409,7 +445,7 @@ export default {
 				position: relative;
 				display: flex;
 				align-items: center;
-                padding: 30rpx 0;
+                padding: 22rpx 0;
 
 				&:not(:last-child) {
 					border-bottom: 1px solid #EAEAEA;
@@ -417,7 +453,7 @@ export default {
 				
                 >image {
                     display: block;
-                    width: 46rpx;
+                    width: 56rpx;
 					margin-right: 20rpx;
                 }
 

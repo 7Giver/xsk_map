@@ -171,7 +171,7 @@
 		computed: {
     		...mapState(['userInfo'])
   		},
-		onShow() {
+		onLoad() {
 			// this.areaList = Json.areaList
 			this.setObj = uni.getStorageSync('userMsg')
 			this.guest = this.userInfo

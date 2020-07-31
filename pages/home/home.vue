@@ -45,7 +45,7 @@
 		<view class="my_btn" @click="_checkItem('all')">一键批量标注 获得海量曝光</view>
 		<view class="load_order" @click="getOrder" v-if="hasOrder">
 			<view>待支付</view>
-			<view>10:00:00</view>
+			<view>{{count}}</view>
 		</view>
 		<!-- <view @tap="goNext">跳转</view> -->
 		<!-- 信息弹窗 -->
@@ -134,6 +134,7 @@
 		data() {
 			return {
 				order_sn: '',  // 待支付订单号
+				count: '', // 倒计时
 				setObj: {}, // 授权后用户信息对象
 				showDailog: false, // 是否显示信息弹窗
 				showDailog1: false, // 是否显示展示弹窗
@@ -172,7 +173,7 @@
 					console.log('has value!+++++++++')
 					console.log(value)
 					console.log('has value!+++++++++')
-					// this.getloadingOrder()
+					this.getloadingOrder()
 				} else {
 					console.log('no value!+++++++++')
 					this.getUserMsg()
@@ -202,7 +203,7 @@
 					this.$nextTick(() => {
 						this.showDailog = true;
 					})
-					// this.getloadingOrder()
+					this.getloadingOrder()
 					// console.log(uni.getStorageSync('userMsg'))
 				}
 
@@ -218,22 +219,6 @@
 					});
                 	return result;
             	}
-			},
-			// 获取进行中订单
-			getloadingOrder() {
-				this.$test
-					.post(`/?r=api/index/index`, {
-						wxid: this.setObj.wxid
-					})
-					.then(response => {
-						// console.log(response)
-						if (response.code === 200) {
-							if (response.data.order_sn) {
-								this.order_sn = response.data.order_sn
-								this.hasOrder = true
-							}
-						}
-					})
 			},
 			// 上传合法手机号
 			postMobile(tel) {
@@ -251,13 +236,59 @@
 			// 获取进行中订单信息并下单
 			getOrder() {
 				if (this.order_sn) {
-					window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${this.order_sn}`
+					uni.navigateTo({
+						url: '/pages/pay/pay?order_sn='+this.order_sn
+					})
 				} else {
 					uni.showToast({
 						title: '下单失败',
 						icon: 'none'
 					})
 				}
+			},
+			// 获取进行中订单
+			getloadingOrder() {
+				this.$test
+					.post(`/?r=api/index/index`, {
+						wxid: this.setObj.wxid
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							if (response.data.order_sn) {
+								let endtime = response.data.end_time
+								this.order_sn = response.data.order_sn
+								endtime ? this.countDown(endtime) : false
+							}
+						}
+					})
+			},
+			// 计算倒计时
+			countDown(endtime) {
+				let myclock = setInterval(() => {
+					// var endtime = parseInt(new Date('2020/07/31,11:46').getTime()/1000)
+					var nowtime = parseInt(new Date().getTime()/1000);
+					var lefttime = parseInt(endtime - nowtime);
+					var d = parseInt(lefttime / (24*60*60))
+					var h = parseInt(lefttime / (60 * 60) % 24);
+					var m = parseInt(lefttime / 60 % 60);
+					var s = parseInt(lefttime % 60);
+					d = addZero(d)
+					h = addZero(h);
+					m = addZero(m);
+					s = addZero(s);
+					this.count = `${m}:${s}`;
+					this.hasOrder = true
+					if (lefttime <= 0) {
+						this.hasOrder = false
+						clearInterval(myclock)
+						// console.log('clear!')
+					}
+					//小于10补0
+					function addZero(i) {
+						return i < 10 ? "0" + i: i + "";
+					}
+				}, 1000)
 			},
 			// 多选点击事件 展示信息弹窗
 			_checkItem(index) {
@@ -299,18 +330,6 @@
 			},
 			// 展示效果图事件
 			_showItem(id) {
-				// this.$http
-				// 	.post(`/api/getPoster`, {
-				// 		type: id
-				// 	})
-				// 	.then(response => {
-				// 		if (response.code === 200) {
-				// 			// console.log(response)
-				// 			this.showItems = response.data
-				// 			this.showDailog1 = true
-				// 		}
-				// 	});
-
 				this.$test
 					.post(`/?r=api/index/poster`, {
 						type: id
@@ -638,6 +657,8 @@
 			flex-direction: column;
 			width: 140rpx;
 			height: 140rpx;
+			border-radius: 50%;
+			overflow: hidden;
 			background: url('/static/index/clock.png') no-repeat center / 100% 100%;
 
 			>view {

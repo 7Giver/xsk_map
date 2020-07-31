@@ -2,8 +2,9 @@
 	<!-- 他人名片 -->
 	<view id="app">
 		<view class="header">
+			<image class="background" :src="guest.bg_image || background" mode="widthFix">
 			<view class="card">
-				<view class="avatar" v-if="guest.avatar">
+				<view class="avatar">
 					<image :src="guest.avatar" mode="">
 				</view>
 				<view class="content">
@@ -18,7 +19,7 @@
 							<view class="left">手机号<text>{{guest.mobile || '尚未完善'}}</text></view>
 							<view class="right" @click="goCall(guest.mobile)">拨打</view>
 						</view>
-						<view class="item" v-if="guest.wechat_id">
+						<view class="item">
 							<view class="left">微信号<text>{{guest.wechat_id || '尚未完善'}}</text></view>
 							<view class="right" @click="uniCopy(guest.wechat_id)">复制</view>
 						</view>
@@ -52,16 +53,32 @@
 				<image :src="imgUrl" mode="widthFix">
 				<view>商家暂无上传</view>
 			</view>
-			<view class="swiper_block" v-else>
+			<view class="banner_block" v-else>
+				<view class="faded" v-if="!guest.is_mark">
+					<view @click="goNext('home')">商家尚未开通地图标注</view>
+				</view>
+				<view v-if="!showMore">
+					<view class="item" v-for="(item, index) in guest.show_pics.slice(0,3)" :key="index" @click="fullImg()">
+						<image :src="item" mode=""></image>
+					</view>
+				</view>
+				<view v-else>
+					<view class="item" v-for="(item, index) in guest.show_pics" :key="index" @click="fullImg()">
+						<image :src="item" mode=""></image>
+					</view>
+				</view>
+				<view class="more" @click="showmore" v-if="!showMore && guest.show_pics.length>3">展示更多</view>
+			</view>
+			<!-- <view class="swiper_block" v-else>
 				<view class="faded" v-if="guest.show_pics.length && !guest.is_mark">
 					<view @click="goNext('home')">地图标注后可显示</view>
 				</view>
-				<swiper class="show_swiper" :current="current" v-else>
+				<swiper class="show_swiper" :current="current">
 					<swiper-item class="item" v-for="(item, index) in guest.show_pics" :key="index" @click="fullImg()">
 						<image :src="item" mode=""></image>
 					</swiper-item>
 				</swiper>
-			</view>
+			</view> -->
 		</view>
 		<!-- 弹出层 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
@@ -96,6 +113,8 @@
 				},
 				imgUrl: '',
 				current: 0, // 轮播index
+				background: '/static/mine/card/background.png',
+				showMore: false, // 显示更多
 				showDailog: false, // 弹窗显示隐藏
 				showItems: [],  //商户风采数组
 				mapList: [] // 选中地图
@@ -124,10 +143,20 @@
 					.then(response => {
 						// console.log(response)
 						if (response.code === 200) {
-							this.guest = response.data
+							let value = response.data
+							if (!value.is_mark) {
+								let list = value.show_pics.slice(0,1)
+								this.guest.show_pics = list
+							} else {
+								this.guest = value
+							}
 							this.getMap()
 						}
 					});
+			},
+			// 展示更多
+			showmore() {
+				this.showMore = true
 			},
 			// 监听展示弹窗状态
 			change(e) {
@@ -180,11 +209,11 @@
 			},
 			// 调起电话
 			goCall(tel) {
-				if(!tel) {
-					return false
-				}
 				if(!this.guest.is_mark) {
 					this.showDailog = true
+					return false
+				}
+				if(!tel) {
 					return false
 				}
 				uni.makePhoneCall({
@@ -193,6 +222,10 @@
 			},
 			// 复制到剪贴板
 			uniCopy(data) {
+				if(!this.guest.is_mark) {
+					this.showDailog = true
+					return false
+				}
 				if(!data) {
 					return false
 				}
@@ -253,12 +286,19 @@
 	background: linear-gradient(70deg, #50637C, #303641);
 
 	.header {
-		padding: 230rpx 0 38rpx;
-		background: url('/static/mine/card/background.png') no-repeat top / 100%;
+		padding: 0 0 40rpx;
+		// background: url('/static/mine/card/background.png') no-repeat top / 100%;
+
+		.background {
+			display: block;
+			width: 100%;
+		}
 
 		.card {
+			position: absolute;
+			left: 50%;
+			transform: translate(-50%, -50%);
 			width: 90%;
-			margin: 0 auto;
 
 			.avatar {
 				display: flex;
@@ -389,7 +429,7 @@
 
 	.show_block {
 		width: 90%;
-		margin: 0 auto;
+		margin: 330rpx auto 0;
 		padding: 30rpx 34rpx;
 		background: #fff;
 		border-radius: 20rpx;
@@ -445,6 +485,67 @@
 				color: #333;
 				font-size: 28rpx;
 				line-height: 60rpx;
+			}
+		}
+
+		.banner_block {
+			position: relative;
+
+			.faded {
+				position: absolute;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				opacity: 1;
+				background: rgba(0, 0, 0, .7);
+				z-index: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 20rpx;
+
+				>view {
+					color: #C59A5A;
+					width: 46%;
+					font-size: 28rpx;
+					line-height: 50rpx;
+					text-align: center;
+					border-radius: 6rpx;
+					background: linear-gradient(-80deg, #F9E0AF, #FAEDD2);
+				}
+			}
+
+			.item {
+				height: 380rpx;
+				margin-bottom: 30rpx;
+
+				>image {
+					display: block;
+					width: 100%;
+					height: 100%;
+					border-radius: 16rpx;
+				}
+			}
+		}
+
+		.more {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #5169F7;
+			font-size: 28rpx;
+			text-align: center;
+			letter-spacing: 1px;
+
+			&::after {
+				content: "";
+				width: 12rpx;
+				height: 12rpx;
+				border-top: 1px solid #5169F7;
+				border-right: 1px solid #5169F7;
+				transform: rotate(135deg);
+				margin-left: 10rpx;
+				margin-bottom: 12rpx;
 			}
 		}
 

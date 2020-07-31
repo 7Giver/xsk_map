@@ -7,7 +7,7 @@
 				<view class="right">
 					<view class="nickname">{{ user.nickname }}</view>
 					<view class="icon_block">
-						<view class="item" v-for="(item, index) in user.icon" :key="index">
+						<view class="item" v-for="(item, index) in map" :key="index">
 							<image :src="item.image" mode=""></image>
 						</view>
 					</view>
@@ -15,7 +15,7 @@
 			</view>
 			<view class="message">
 				<view>联系电话：{{ getMsg.tel }}</view>
-				<view>商户名称：{{ getMsg.company_name }}</view>
+				<view>商户名称：{{ getMsg.company }}</view>
 				<view>商户地址：{{ getMsg.address }}</view>
 			</view>
 		</view>
@@ -77,7 +77,7 @@
 					<view class="text">{{ item.msg }}</view>
 				</view>
 			</view>
-			<!-- 协议 -->
+			<!-- 协议 -->	
 			<view class="agreement" @click="checkagree">
 				<view class="checked">
 					<image v-if="agreement" src="/static/pay/check.png" mode=""></image>
@@ -108,6 +108,7 @@
 </template>
 
 <script>
+	import { mapState, mapMutations } from 'vuex';
 	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 	import Json from '@/Json';
@@ -120,6 +121,7 @@
 			return {
 				user: {},
 				getMsg: {},
+				map: [], // 选择地图
 				order_sn: '', // 支付订单号
 				current: 0, // 轮播index
 				showDailog: false, // 展示弹窗
@@ -166,12 +168,14 @@
 				]
 			};
 		},
+		computed: {
+    		...mapState(['userInfo'])
+  		},
 		onLoad(option) {
 			this.user = uni.getStorageSync("userMsg");
-			this.getMsg = uni.getStorageSync("postMsg");
 			this.checkItems = Json.checkItems;
 			this.order_sn = option.order_sn
-			this.getMap()
+			this.getOrderDetail()
 		},
 		methods: {
 			doNothing() {
@@ -180,7 +184,7 @@
 			// 返回我的页面
 			back() {
 				uni.switchTab({
-					url: '/pages/mine/mine'
+					url: '/pages/home/home'
 				})
 			},
 			// 同意协议
@@ -189,7 +193,7 @@
 			},
 			// 获取选中地图
 			getMap() {
-				let str = uni.getStorageSync('mapStr')  // '1,3,4'
+				let str = this.getMsg.map  // '1,3,4'
 				let arr = str.split(',')
 				let newArr = []
 				arr.forEach(item => {
@@ -198,7 +202,7 @@
 					})
 					newArr.push(result)
 				});
-				this.user.icon = newArr.flat(2)
+				this.map = newArr.flat(2)
 			},
 			// 监听展示弹窗状态
 			change(e) {
@@ -225,6 +229,20 @@
 				this.showDailog = true
 				this.current = index
 			},
+			// 根据单号获取详情
+			getOrderDetail() {
+				this.$test
+					.post(`/?r=api/order/map-detail`, {
+						order_sn: this.order_sn
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							this.getMsg = response.data
+							this.getMap()
+						}
+					});
+			},
 			// 点击支付
 			submit() {
 				if (!this.agreement) {
@@ -234,10 +252,6 @@
 					});
 					return false
 				}
-				// 4.0下单
-				// this.creatMapOrder()
-				// 3.0下单
-				// this.postMapUserInfo()
 				if (this.order_sn) {
 					window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${this.order_sn}`
 				} else {
@@ -246,74 +260,6 @@
 						icon: 'none'
 					})
 				}
-			},
-			// 提交用户信息
-			postMapUserInfo() {
-				let str = uni.getStorageSync('mapStr')
-				this.$http
-					.post(`/api/saveMapMember`, {
-						wxid: this.user.wxid,
-						name: this.user.nickname,
-						tel: this.getMsg.tel,
-						company_name: this.getMsg.company_name,
-						address: this.getMsg.address
-					})
-					.then(response => {
-						// console.log(response)
-						if (response.code === 200) {
-							uni.showToast({
-								title: '提交成功',
-								icon: 'none'
-							});
-							var query = {
-								mid: response.data,
-								money: 299,
-								map: str,
-								nickname: this.user.nickname,
-								openid: this.user.openid,
-								address: this.getMsg.address
-							}
-							this.creatMapOrder(query)
-							this.user = {}
-							this.getMsg = {}
-						}
-					});
-			},
-			// 创建订单
-			creatMapOrder(query) {
-				this.$http
-					.post(`/api/createMapOrder`, query)
-					.then(response => {
-						// console.log(response)
-						if (response.code === 200) {
-							var a = response.data.jsApiParameters
-							var b = response.data.order_sn
-							this.goPay(a, b)
-						}
-					});
-			},
-			//跳转支付
-			goPay(a, b) {
-				window.location.href = `${this.$baseURL}/api/go?jsApiParameters=${a}&order_sn=${b}`
-			},
-			// 地图标注下单
-			creatMapOrder() {
-				let str = uni.getStorageSync('mapStr')
-				let obj = {
-					wxid: this.user.wxid,
-					name: this.getMsg.company_name,
-					tel: this.getMsg.tel,
-					map: str,
-					address: this.getMsg.address
-				}
-				this.$test
-					.post(`/?r=api/order/map-submit`, obj)
-					.then(response => {
-						// console.log(response)
-						if (response.code === 200) {
-							window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${response.data.order_sn}`
-						}
-					});
 			}
 		},
 	};

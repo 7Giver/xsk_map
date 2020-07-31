@@ -1,58 +1,14 @@
 <template>
 	<view id="app">
-		<view class="header">
-			<view>搜搜地图标注中心</view>
-			<view>增加客源：<text>{{5600}}万人次</text></view>
-		</view>
-		<view class="banner">
-			<image src="/static/guest/banner.png" mode="widthFix"></image>
-			<!-- 公告 -->
-			<view class="notice">
-				<image class="icon_l" src="/static/index/icon_notice.png" mode=""></image>
-				<view class="cont">
-					<swiper vertical="true" autoplay="true" circular="true" class="notice_swiper">
-						<swiper-item v-for="(item, index) in noticeList" :key="index">
-							<view>恭喜<text>{{ item.title }}</text>成功开通了地图定位标注</view>
-						</swiper-item>
-					</swiper>
-				</view>
+		<uni-load-more v-if="loadingMore" :status="loadingType"></uni-load-more>
+		<view class="page" v-show="!loadingMore">
+			<view class="header">
+				<view>搜搜地图标注中心</view>
+				<view>增加客源：<text>{{5600}}万人次</text></view>
 			</view>
-		</view>
-		<view class="message">
-			<view class="top">顾客在消费前，习惯通过地图搜索关键词查找周边门店。地图标注以后，用户可以搜索到您的门店，给您<text>增加客源</text>，大大<text>增加进店量</text>，<text>提升品牌知名度</text>。</view>
-			<view class="icon_list">
-				<view class="item" v-for="(item,index) in iconItems" :key="index">
-					<image :src="item.image" mode=""></image>
-					<text>{{item.title}}</text>
-					<text>{{item.text}}</text>
-				</view>
-			</view>
-		</view>
-		<view class="content">
-			<image class="title" src="/static/guest/title.png" mode="widthFix"></image>
-			<view class="show_box">
-				<swiper class="show_swiper" :current="current" v-if="showItems.length>1">
-					<swiper-item class="item" v-for="(item, index) in showItems" :key="index" @click="fullImg()">
-						<image :src="item.cover" mode="widthFix"></image>
-					</swiper-item>
-				</swiper>
-				<swiper class="show_swiper1" :current="current" v-else>
-					<swiper-item class="item1" v-for="(item, index) in showItems" :key="index" @click="fullImg()">
-						<image :src="item.cover" mode="widthFix"></image>
-					</swiper-item>
-				</swiper>
-				<view class="swiper-btn left" @click="prev">
-					<image src="/static/guest/left.png" mode=""></image>
-				</view>
-				<view class="swiper-btn right" @click="next">
-					<image src="/static/guest/right.png" mode=""></image>
-				</view>
-			</view>
-		</view>
-		<view class="my_btn" @click="_checkItem('all')">一键标注地图 领先同行一步</view>
-		<!-- 信息弹窗 -->
-		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
-			<view class="uni-tip">
+			<view class="banner">
+				<image src="/static/guest/banner.png" mode="widthFix"></image>
+				<!-- 公告 -->
 				<view class="notice">
 					<image class="icon_l" src="/static/index/icon_notice.png" mode=""></image>
 					<view class="cont">
@@ -63,56 +19,107 @@
 						</swiper>
 					</view>
 				</view>
-				<view class="input-content">
-					<!-- <view class="my_item">
-						<view class="label">真实姓名</view>
-						<input type="text" v-model="guest.name" maxlength="16" placeholder="请填写真实有效姓名" />
-					</view> -->
-					<view class="my_item">
-						<view class="label">手机号码</view>
-						<input id="tel" type="number" v-model="guest.tel" @blur="saveMsg" maxlength="11" placeholder="请填写真实有效的手机号码" />
+			</view>
+			<view class="message">
+				<view class="top">顾客在消费前，习惯通过地图搜索关键词查找周边门店。地图标注以后，用户可以搜索到您的门店，给您<text>增加客源</text>，大大<text>增加进店量</text>，<text>提升品牌知名度</text>。</view>
+				<view class="icon_list">
+					<view class="item" v-for="(item,index) in iconItems" :key="index">
+						<image :src="item.image" mode=""></image>
+						<text>{{item.title}}</text>
+						<text>{{item.text}}</text>
 					</view>
-					<view class="my_item">
-						<view class="label">店铺/公司名称</view>
-						<input type="text" v-model="guest.company_name" @blur="saveMsg" placeholder="请填写真实有效店铺/公司名称" />
+				</view>
+			</view>
+			<view class="content">
+				<image class="title" src="/static/guest/title.png" mode="widthFix"></image>
+				<view class="show_box">
+					<swiper class="show_swiper" :current="current" v-if="showItems.length>1">
+						<swiper-item class="item" v-for="(item, index) in showItems" :key="index" @click="fullImg()">
+							<image :src="item.cover" mode="widthFix"></image>
+						</swiper-item>
+					</swiper>
+					<swiper class="show_swiper1" :current="current" v-else>
+						<swiper-item class="item1" v-for="(item, index) in showItems" :key="index" @click="fullImg()">
+							<image :src="item.cover" mode="widthFix"></image>
+						</swiper-item>
+					</swiper>
+					<view class="swiper-btn left" @click="prev">
+						<image src="/static/guest/left.png" mode=""></image>
 					</view>
-					<view class="my_item">
-						<view class="label">店铺/公司地址</view>
-						<input type="text" v-model="guest.address" @blur="saveMsg" placeholder="请填写真实有效店铺/公司地址" />
+					<view class="swiper-btn right" @click="next">
+						<image src="/static/guest/right.png" mode=""></image>
 					</view>
-					<view class="form-btn1" @click="submit">立即标注地图 客户轻松上门</view>
-					<!-- <view class="form-btn" @click="submit">
-						<view class="left">
-							<view>限时优惠<br>￥299</view>
-							<view>剩余9个名额</view>
+				</view>
+			</view>
+			<view class="my_btn" @click="_checkItem('all')">一键标注地图 领先同行一步</view>
+			<!-- 信息弹窗 -->
+			<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
+				<view class="uni-tip">
+					<view class="notice">
+						<image class="icon_l" src="/static/index/icon_notice.png" mode=""></image>
+						<view class="cont">
+							<swiper vertical="true" autoplay="true" circular="true" class="notice_swiper">
+								<swiper-item v-for="(item, index) in noticeList" :key="index">
+									<view>恭喜<text>{{ item.title }}</text>成功开通了地图定位标注</view>
+								</swiper-item>
+							</swiper>
 						</view>
-						<view class="right">
+					</view>
+					<view class="input-content">
+						<!-- <view class="my_item">
+							<view class="label">真实姓名</view>
+							<input type="text" v-model="guest.name" maxlength="16" placeholder="请填写真实有效姓名" />
+						</view> -->
+						<view class="my_item">
+							<view class="label">手机号码</view>
+							<input id="tel" type="number" v-model="guest.tel" @blur="saveMsg" maxlength="11" placeholder="请填写真实有效的手机号码" />
+						</view>
+						<view class="my_item">
+							<view class="label">店铺/公司名称</view>
+							<input type="text" v-model="guest.company_name" @blur="saveMsg" placeholder="请填写真实有效店铺/公司名称" />
+						</view>
+						<view class="my_item">
+							<view class="label">店铺/公司地址</view>
+							<input type="text" v-model="guest.address" @blur="saveMsg" placeholder="请填写真实有效店铺/公司地址" />
+						</view>
+						<view class="form-btn1" @click="submit">立即标注地图 客户轻松上门</view>
+						<!-- <view class="form-btn" @click="submit">
+							<view class="left">
+								<view>限时优惠<br>￥299</view>
+								<view>剩余9个名额</view>
+							</view>
+							<view class="right">
+								<view>立即标注地图</view>
+								<view>客户轻松上门</view>
+							</view>
+						</view> -->
+						<!-- <view class="form-btn2" @click="submit">
 							<view>立即标注地图</view>
 							<view>客户轻松上门</view>
-						</view>
-					</view> -->
-					<!-- <view class="form-btn2" @click="submit">
-						<view>立即标注地图</view>
-						<view>客户轻松上门</view>
-					</view> -->
+						</view> -->
+					</view>
+					<image class="close" src="/static/index/close.png" mode="" @click="cancel"></image>
 				</view>
-				<image class="close" src="/static/index/close.png" mode="" @click="cancel"></image>
-			</view>
-		</uni-popup>
+			</uni-popup>
+		</view>
 	</view>
 </template>
 
 <script>
+	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 	import Json from '@/Json';
 	export default {
 		components: {
-			UniPopup
+			UniPopup,
+			uniLoadMore
 		},
 		data() {
 			return {
 				setObj: {}, // 授权后用户信息对象
 				guest: {},  // 表单信息对象
+				loadingType: "loading",
+				loadingMore: true, // 加载更多
 				showDailog: false, // 是否显示信息弹窗
 				current: 0, // 轮播index
 				noticeList: [],
@@ -141,6 +148,7 @@
 			}
 		},
 		onShow() {
+			this.loadingMore = false
 			this.noticeList = Json.noticeList
 			this.setObj = uni.getStorageSync('userMsg')
 			let obj = uni.getStorageSync('postMsg')
@@ -320,8 +328,11 @@
 
 <style lang="scss">
 	#app {
-		background: #9ECBEE;
 		padding-bottom: 180rpx;
+
+		.page {
+			background: #9ECBEE;
+		}
 
 		.header {
 			position: absolute;

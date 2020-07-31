@@ -367,8 +367,8 @@
 		position: absolute;
 		top: 0;
 		right: 1px;
-		width: 32upx;
-		height: 32upx;
+		width: 36upx;
+		height: 36upx;
 		z-index: 999;
 		border-radius: 50%;
 	}
