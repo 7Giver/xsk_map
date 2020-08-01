@@ -14,11 +14,11 @@
                         </view>
                     </view>
                 </view>
-                <view class="bottom" v-if="!userInfo.is_mark">
+                <view class="bottom" v-if="!userInfo.mark_status">
                     <view class="left">您还未标注地图</view>
                     <view class="right" @click="goHome">去标注</view>
                 </view>
-                <view class="bottom" v-else>
+                <view class="bottom" v-if="userInfo.mark_status == 2">
                     <view class="left" v-if="userInfo.is_mark">恭喜您 地图已标注</view>
                 </view>
                 <view class="bottom" v-if="userInfo.mark_status == 1">

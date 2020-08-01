@@ -8,7 +8,7 @@
 				<image class="img" :src="path" mode="widthFix" v-else>
 			</view>
 			<view class="title">商户风采<text>(最多6张图 大小5M以内)</text></view>
-			<img-upload :imgArr="imgArray" imgCount="6" ref="imgUpload" @upLoads="upLoads"></img-upload>
+			<img-upload :imgArr="imgArray" imgCount="6" ref="imgUpload" @upLoads="upLoads" @submit="submit"></img-upload>
 			<kps-image-cutter @ok="onok" @cancel="oncancle" :url="url" :fixed="false" :maxWidth="500" :minHeight="300"></kps-image-cutter>
 			<button class="submit" type="warn" @click="submit">提交</button>
 		</view>

@@ -26,7 +26,7 @@
 				<view class="item">
 					<view class="left">商户地址：
 						<text v-if="!editAddress && guest.address">{{guest.address}}</text>
-						<textarea v-else v-model="guest.address" @blur="saveMsg('address')" :focus="true" placeholder="请填写真实有效店铺/公司地址" style="height: 100rpx" />
+						<textarea v-else v-model="guest.address" @blur="saveMsg('address')" placeholder="请填写真实有效店铺/公司地址" style="height: 100rpx" />
 					</view>
 					<view class="edit" @click="eidtMsg('address')" v-if="guest.address">修改</view>
 				</view>
@@ -171,18 +171,42 @@
 		computed: {
     		...mapState(['userInfo'])
   		},
-		onLoad() {
+		onShow() {
 			// this.areaList = Json.areaList
 			this.setObj = uni.getStorageSync('userMsg')
-			this.guest = this.userInfo
+			// this.getUserInfo()
+			this.getUserInfo()
+			// console.log(this.userInfo)
+			// this.guest = this.userInfo
 			this.getAreaList()
 		},
 		methods: {
+			...mapMutations({
+				setUserInfo: 'setUserInfo'
+			}),
 			// 返回我的页面
 			back() {
 				uni.switchTab({
 					url: '/pages/mine/mine'
 				})
+			},
+			// 获取用户信息
+			getUserInfo() {
+				let value = uni.getStorageSync('userMsg')
+				if (value) {
+					// console.log(222)
+					this.$test
+						.post(`/?r=api/user/info`, {
+							wxid: value.wxid || this.userInfo.wxid
+						})
+						.then(response => {
+							if (response.code === 200) {
+								this.$set(response.data, 'wxid', value.wxid)
+								this.setUserInfo(response.data)
+								this.guest = this.userInfo
+							}
+						})
+				}
 			},
 			// 获取省市信息
 			getAreaList() {

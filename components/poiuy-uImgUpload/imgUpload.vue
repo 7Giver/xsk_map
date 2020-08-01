@@ -173,6 +173,7 @@
 					success: function(res) {
 						if (res.confirm) {
 							_this.imgArray.splice(i, 1);
+							_this.$emit('submit')
 						} else if (res.cancel) {}
 					}
 				});

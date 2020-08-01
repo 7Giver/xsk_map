@@ -151,6 +151,7 @@
 			this.noticeList = Json.noticeList
 			this.checkItems = Json.checkItems
 			this.getUserdata()
+			this.goShare()
 			// 设置选中地图
 			uni.setStorage({
 				key: "mapStr",
@@ -398,6 +399,30 @@
 						data: obj
 					});
 				}
+			},
+			// 调用微信自定义分享
+			goShare() {
+				let obj = {
+					title: `地图定位标注`,
+					desc: `地图搜索推广  客户轻松来访`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/ac/acd236b509b370efe5e57d238bd81011.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							desc: obj.desc, // 分享描述
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
+							console.log('response', response)
+						})
+					})
+				}
+				// #endif
 			},
 			// 提交信息
 			submit() {
