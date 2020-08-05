@@ -3,9 +3,9 @@
 		<uni-nav-bar title="支付页" left-icon="back" @clickLeft="back"></uni-nav-bar>
 		<view class="header">
 			<view class="user">
-				<image :src="user.headimgurl" mode=""></image>
+				<image :src="userInfo.avatar" mode=""></image>
 				<view class="right">
-					<view class="nickname">{{ user.nickname }}</view>
+					<view class="nickname">{{ userInfo.nick_name }}</view>
 					<view class="icon_block">
 						<view class="item" v-for="(item, index) in map" :key="index">
 							<image :src="item.image" mode=""></image>
@@ -25,12 +25,12 @@
 				<view class="title">限时优惠</view>
 				<view class="number">
 					<view>地图批量标注</view>
-					<view><text>￥</text>1299</view>
+					<view><text>￥</text>{{origin_cost}}</view>
 				</view>
 			</view>
 			<view class="coupon_block">
 				<view>优惠券</view>
-				<view><text>{{ -1000 }}</text>元</view>
+				<view><text>{{-coupon}}</text>元</view>
 			</view>
 			<!-- 赠品 -->
 			<view class="gift_block">
@@ -89,7 +89,7 @@
 		<!-- 底部 -->
 		<view class="bottom">
 			<view class="left">
-				<view>实付:<text>￥299</text></view>
+				<view>实付:<text>￥{{payment}}</text></view>
 				<view>当前名额仅剩 6 名</view>
 			</view>
 			<view class="right" @click="submit">立即支付</view>
@@ -119,11 +119,13 @@
 		},
 		data() {
 			return {
-				user: {},
 				getMsg: {},
 				map: [], // 选择地图
 				order_sn: '', // 支付订单号
 				current: 0, // 轮播index
+				origin_cost: 1198, //原价
+				coupon: 1000, //优惠价
+				payment: 198, //支付价格
 				showDailog: false, // 展示弹窗
 				agreement: true, // 同意协议
 				checkItems: [],  // 选中地图
@@ -172,7 +174,6 @@
     		...mapState(['userInfo'])
   		},
 		onLoad(option) {
-			this.user = uni.getStorageSync("userMsg");
 			this.checkItems = Json.checkItems;
 			this.order_sn = option.order_sn
 			this.getOrderDetail()
@@ -239,6 +240,9 @@
 						// console.log(response)
 						if (response.code === 200) {
 							this.getMsg = response.data
+							this.origin_cost = response.data.origin_price
+							this.coupon = response.data.sub_price
+							this.payment = response.data.price
 							this.getMap()
 						}
 					});

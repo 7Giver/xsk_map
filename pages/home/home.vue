@@ -136,6 +136,7 @@
 				order_sn: '',  // 待支付订单号
 				count: '', // 倒计时
 				setObj: {}, // 授权后用户信息对象
+				timer: null, //定时器
 				showDailog: false, // 是否显示信息弹窗
 				showDailog1: false, // 是否显示展示弹窗
 				hasOrder: false, // 控制进行中订单显示
@@ -259,37 +260,39 @@
 							if (response.data.order_sn) {
 								let endtime = response.data.end_time
 								this.order_sn = response.data.order_sn
-								endtime ? this.countDown(endtime) : false
+								if (endtime) {
+									this.timer = setInterval(() => {
+										this.hasOrder = true
+										this.countDown(endtime)
+									}, 1000)
+								}
 							}
 						}
 					})
 			},
 			// 计算倒计时
 			countDown(endtime) {
-				let myclock = setInterval(() => {
-					// var endtime = parseInt(new Date('2020/07/31,11:46').getTime()/1000)
-					var nowtime = parseInt(new Date().getTime()/1000);
-					var lefttime = parseInt(endtime - nowtime);
-					var d = parseInt(lefttime / (24*60*60))
-					var h = parseInt(lefttime / (60 * 60) % 24);
-					var m = parseInt(lefttime / 60 % 60);
-					var s = parseInt(lefttime % 60);
-					d = addZero(d)
-					h = addZero(h);
-					m = addZero(m);
-					s = addZero(s);
-					this.count = `${m}:${s}`;
-					this.hasOrder = true
-					if (lefttime <= 0) {
-						this.hasOrder = false
-						clearInterval(myclock)
-						// console.log('clear!')
-					}
-					//小于10补0
-					function addZero(i) {
-						return i < 10 ? "0" + i: i + "";
-					}
-				}, 1000)
+				// var endtime = parseInt(new Date('2020/07/31,11:46').getTime()/1000)
+				var nowtime = parseInt(new Date().getTime()/1000);
+				var lefttime = parseInt(endtime - nowtime);
+				var d = parseInt(lefttime / (24*60*60))
+				var h = parseInt(lefttime / (60 * 60) % 24);
+				var m = parseInt(lefttime / 60 % 60);
+				var s = parseInt(lefttime % 60);
+				d = addZero(d)
+				h = addZero(h);
+				m = addZero(m);
+				s = addZero(s);
+				this.count = `${m}:${s}`;
+				if (lefttime <= 0) {
+					this.hasOrder = false
+					clearInterval(this.timer)
+					// console.log('clear!')
+				}
+				//小于10补0
+				function addZero(i) {
+					return i < 10 ? "0" + i: i + "";
+				}
 			},
 			// 多选点击事件 展示信息弹窗
 			_checkItem(index) {
@@ -687,8 +690,9 @@
 			background: url('/static/index/clock.png') no-repeat center / 100% 100%;
 
 			>view {
-				color: #FC585B;
-				font-size: 24rpx;
+				color: #FF4435;
+				font-size: 26rpx;
+				font-weight: bold;
 			}
 		}
 

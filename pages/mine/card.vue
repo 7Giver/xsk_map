@@ -144,11 +144,10 @@
 						// console.log(response)
 						if (response.code === 200) {
 							let value = response.data
+							this.guest = value
 							if (!value.is_mark) {
 								let list = value.show_pics.slice(0,1)
 								this.guest.show_pics = list
-							} else {
-								this.guest = value
 							}
 							this.getMap()
 						}
@@ -196,16 +195,19 @@
 			},
 			// 获取选中地图
 			getMap() {
-				let str = this.guest.maps
-				let arr = str.split(',')
-				let newArr = []
-				arr.forEach(item => {
-					let result = Json.checkItems.filter(val => {
-						return val.id == item
+				let value = this.guest.maps
+				if (value) {
+					let str = this.guest.maps
+					let arr = str.split(',')
+					let newArr = []
+					arr.forEach(item => {
+						let result = Json.checkItems.filter(val => {
+							return val.id == item
+						})
+						newArr.push(result)
 					})
-					newArr.push(result)
-				})
-				this.mapList = newArr.flat(2)
+					this.mapList = newArr.flat(2)
+				}
 			},
 			// 调起电话
 			goCall(tel) {

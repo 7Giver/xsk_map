@@ -299,8 +299,6 @@ export default {
 
 	.scroll_content {
 		height: 100vh;
-		
-		padding-bottom: 100rpx;
 	}
 
 	.list_block {

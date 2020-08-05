@@ -51,12 +51,20 @@
 				<view class="message" @click="goCall(tel)">客服热线：{{tel}}</view>
 			</view>
 		</view>
+		<view class="load_order" @click="getOrder" v-if="hasOrder">
+			<view>待支付</view>
+			<view>{{count}}</view>
+		</view>
 	</view>
 </template>
 <script>
 	export default {
 		data() {
 			return {
+				order_sn: '', //待支付单号
+				count: '', // 倒计时
+				timer: null, // 定时器
+				hasOrder: false, //延迟订单显示
 				tel: '4000-929-777'
 			}
 		},
@@ -66,13 +74,80 @@
 				duration: 0
 			})
 		},
+		onShow() {
+			this.getloadingOrder()
+		},
 		methods: {
 			// 调起电话
 			goCall(tel) {
 				uni.makePhoneCall({
     				phoneNumber: tel
 				});
-			}
+			},
+			// 获取进行中订单
+			getloadingOrder() {
+				let value = uni.getStorageSync('userMsg');
+				if (value) {
+					this.$test
+						.post(`/?r=api/index/index`, {
+							wxid: value.wxid
+						})
+						.then(response => {
+							// console.log(response)
+							if (response.code === 200) {
+								if (response.data.order_sn) {
+									let endtime = response.data.end_time
+									this.order_sn = response.data.order_sn
+									if (endtime) {
+										this.timer = setInterval(() => {
+											this.hasOrder = true
+											this.countDown(endtime)
+										}, 1000)
+									}
+								}
+							}
+						})
+				}
+				
+			},
+			// 计算倒计时
+			countDown(endtime) {
+				// var endtime = parseInt(new Date('2020/07/31,11:46').getTime()/1000)
+				var nowtime = parseInt(new Date().getTime()/1000);
+				var lefttime = parseInt(endtime - nowtime);
+				var d = parseInt(lefttime / (24*60*60))
+				var h = parseInt(lefttime / (60 * 60) % 24);
+				var m = parseInt(lefttime / 60 % 60);
+				var s = parseInt(lefttime % 60);
+				d = addZero(d)
+				h = addZero(h);
+				m = addZero(m);
+				s = addZero(s);
+				this.count = `${m}:${s}`;
+				this.hasOrder = true
+				if (lefttime <= 0) {
+					this.hasOrder = false
+					clearInterval(this.timer)
+					// console.log('clear!')
+				}
+				//小于10补0
+				function addZero(i) {
+					return i < 10 ? "0" + i: i + "";
+				}
+			},
+			// 获取进行中订单信息并下单
+			getOrder() {
+				if (this.order_sn) {
+					uni.navigateTo({
+						url: '/pages/pay/pay?order_sn='+this.order_sn
+					})
+				} else {
+					uni.showToast({
+						title: '下单失败',
+						icon: 'none'
+					})
+				}
+			},
 		}
 	}
 </script>
@@ -247,6 +322,28 @@
 					text-align: center;
 					font-size: 32rpx;
 				}
+			}
+		}
+
+		// 进行中订单浮窗
+		.load_order {
+			position: fixed;
+			right: 30rpx;
+			bottom: 280rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			width: 140rpx;
+			height: 140rpx;
+			border-radius: 50%;
+			overflow: hidden;
+			background: url('/static/index/clock.png') no-repeat center / 100% 100%;
+
+			>view {
+				color: #FF4435;
+				font-size: 26rpx;
+				font-weight: bold;
 			}
 		}
 	}

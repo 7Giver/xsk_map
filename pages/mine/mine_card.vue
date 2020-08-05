@@ -8,7 +8,7 @@
 					<image :src="guest.avatar || setObj.headimgurl" mode="">
 				</view>
 				<view class="content">
-					<view class="nickname">{{guest.name || setObj.nickname}}</view>
+					<view class="nickname">{{guest.name}}</view>
 					<view class="title">{{guest.sign || '大众消费的导航，为您需求指方向。'}}</view>
 					<view class="message">
 						<view class="item">
@@ -151,11 +151,10 @@
 							// console.log(response)
 							if (response.code === 200) {
 								let value = response.data
+								this.guest = value
 								if (!value.is_mark) {
 									let list = value.show_pics.slice(0,1)
 									this.guest.show_pics = list
-								} else {
-									this.guest = value
 								}
 								this.getMap()
 							}

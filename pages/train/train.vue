@@ -12,14 +12,14 @@
 				<view class="item">
 					<view class="left">商户名称：
 						<text v-if="!editName && guest.company">{{guest.company}}</text>
-						<input v-else type="text" v-model="guest.company" @blur="saveMsg('company')" focus placeholder="请填写店铺/公司名称" />
+						<input v-else type="text" v-model="guest.company" @blur="saveMsg('company')" placeholder="请填写店铺/公司名称" />
 					</view>
 					<view class="edit" @click="eidtMsg('name')" v-if="guest.company">修改</view>
 				</view>
 				<view class="item">
 					<view class="left">联系电话：
 						<text v-if="!editTel && guest.mobile">{{guest.mobile}}</text>
-						<input v-else type="number" v-model="guest.mobile" @blur="saveMsg('mobile')" focus maxlength="11" placeholder="请填写真实有效的手机号码" />
+						<input v-else type="number" v-model="guest.mobile" @blur="saveMsg('mobile')" maxlength="11" placeholder="请填写真实有效的手机号码" />
 					</view>
 					<view class="edit" @click="eidtMsg('tel')" v-if="guest.mobile">修改</view>
 				</view>
@@ -172,13 +172,9 @@
     		...mapState(['userInfo'])
   		},
 		onShow() {
-			// this.areaList = Json.areaList
-			this.setObj = uni.getStorageSync('userMsg')
-			// this.getUserInfo()
 			this.getUserInfo()
-			// console.log(this.userInfo)
-			// this.guest = this.userInfo
 			this.getAreaList()
+			this.goShare()
 		},
 		methods: {
 			...mapMutations({
@@ -194,10 +190,10 @@
 			getUserInfo() {
 				let value = uni.getStorageSync('userMsg')
 				if (value) {
-					// console.log(222)
+					this.setObj = value
 					this.$test
 						.post(`/?r=api/user/info`, {
-							wxid: value.wxid || this.userInfo.wxid
+							wxid: value.wxid
 						})
 						.then(response => {
 							if (response.code === 200) {
@@ -206,6 +202,8 @@
 								this.guest = this.userInfo
 							}
 						})
+				} else {
+					this.$getAuthorize()
 				}
 			},
 			// 获取省市信息
@@ -219,19 +217,47 @@
 						}
 					});
 			},
+			// 调用微信自定义分享
+			goShare() {
+				let obj = {
+					title: `快速获客`,
+					desc: `海量精准客源等你来领`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/d7/d7fadb2c8ee2b68a8d43f693b4027527.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							desc: obj.desc, // 分享描述
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
+							console.log('response', response)
+						})
+					})
+				}
+				// #endif
+			},
 			// 点击编辑信息
 			eidtMsg(type) {
 				switch(type) {
 					case 'name':
 						this.editName = true
 						this.editAddress = false
+						this.editTel = false
 						break;
 					case 'tel':
 						this.editTel = true
+						this.editName = false
 						this.editAddress = false
 						break;
 					case 'address':
 						this.editAddress = true
+						this.editTel = false
+						this.editName = false
 						break;
 				}
 			},
@@ -414,6 +440,15 @@
 					});
 					return false
 				}
+				let setObj = {
+					tel: this.guest.mobile,
+					company_name: this.guest.company,
+					address: this.guest.address
+				}
+				uni.setStorage({
+					key: "postMsg",
+					data: setObj
+				})
 				let str = uni.getStorageSync('mapStr')
 				let wxid = uni.getStorageSync('userMsg').wxid
 				let obj = {
