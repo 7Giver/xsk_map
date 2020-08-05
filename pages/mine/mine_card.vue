@@ -89,7 +89,7 @@
 			<view class="connect_tip">
 				<view class="title">温馨提示</view>
 				<view class="content">
-					<view class="main">当前用户尚未开通此功能</view>
+					<view class="main">您尚未开通此功能</view>
 					<view class="message">此功能需要开通地图标注服务</view>
 				</view>
 				<view class="bottom">
@@ -132,7 +132,6 @@
 		onShow() {
 			this.setObj = uni.getStorageSync('userMsg')
 			this.getMineInfo()
-			this.goShare()
 		},
 		methods: {
 			open() {
@@ -157,6 +156,7 @@
 									this.guest.show_pics = list
 								}
 								this.getMap()
+								this.goShare()
 							}
 						})
 				}
@@ -275,11 +275,12 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
+				let url = window.location.href.split('#')[0]
 				let obj = {
-					title: `${this.userInfo.name}的商户地图名片请惠存`,
+					title: `${this.userInfo.name}的名片请惠存`,
 					desc: `姓名：${this.userInfo.name}  商户：${this.userInfo.company}`,
-					shareUrl: window.location.href,
-					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/ac/acd236b509b370efe5e57d238bd81011.png'
+					shareUrl: `${url}#/pages/mine/card?id=${this.guest.id}&share=1`,
+					imgUrl: this.guest.avatar
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {
@@ -334,7 +335,7 @@
 					display: block;
 					width: 160rpx;
 					height:160rpx;
-					border: 18rpx solid #fff;
+					border: 12rpx solid #fff;
 					border-radius: 50%;
 				}
 			}

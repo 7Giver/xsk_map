@@ -111,6 +111,7 @@
 				guest: {
 					show_pics: []
 				},
+				share: '', //是否分享
 				imgUrl: '',
 				current: 0, // 轮播index
 				background: '/static/mine/card/background.png',
@@ -125,9 +126,9 @@
   		},
 		onLoad(option) {
 			let id = option.id
+			this.share = option.share
 			id ? this.getClientInfo(id) : false
 			this.imgUrl = Json.nodata
-			// this.getLocal()
 		},
 		methods: {
 			...mapMutations({
@@ -150,8 +151,36 @@
 								this.guest.show_pics = list
 							}
 							this.getMap()
+							uni.setNavigationBarTitle({
+								title: `${this.guest.name}的名片`
+							})
+							this.share ? this.goShare() : false
 						}
 					});
+			},
+			// 调用微信自定义分享
+			goShare() {
+				let obj = {
+					title: `${this.guest.name}的名片请惠存`,
+					desc: `姓名：${this.guest.name}  商户：${this.guest.company}`,
+					shareUrl: `${window.location.href}&share=1`,
+					imgUrl: this.guest.avatar
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							desc: obj.desc, // 分享描述
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
+							console.log('response', response)
+						})
+					})
+				}
+				// #endif
 			},
 			// 展示更多
 			showmore() {
@@ -311,7 +340,7 @@
 					display: block;
 					width: 160rpx;
 					height:160rpx;
-					border: 18rpx solid #fff;
+					border: 12rpx solid #fff;
 					border-radius: 50%;
 				}
 			}
