@@ -9,10 +9,11 @@
 					<image :src="item.avatar" mode="">
 					<view class="content">
 						<view class="left">
-							<view class="nickname">{{item.name}}</view>
-							<view class="text">手机：{{item.mobile}}</view>
-							<view class="text">商户：{{item.company}}</view>
-							<view class="text">地区：{{item.city}}</view>
+							<view class="nickname">{{item.name || '尚未完善'}}</view>
+							<view class="text">手机：{{item.mobile || '尚未完善'}}</view>
+							<view class="text">商户：{{item.company || '尚未完善'}}</view>
+							<view class="text" v-if="item.province">地区：{{item.province}} {{item.city}}</view>
+							<view class="text" v-else>地区：尚未完善</view>
 						</view>
 						<view class="btn" @click.stop="goCall(item.mobile)">拨打</view>
 					</view>
@@ -142,22 +143,40 @@
 				justify-content: space-between;
 				padding-left: 30rpx;
 
-				.nickname {
-					color: #333537;
-					font-size: 32rpx;
-					font-weight: bold;
-					padding-bottom: 6rpx;
-				}
+				.left {
+					flex: 1;
+					padding-right: 16rpx;
 
-				.text {
-					color: #999999;
-					font-size: 26rpx;
+					.nickname {
+						color: #333537;
+						font-size: 32rpx;
+						font-weight: bold;
+						padding-bottom: 6rpx;
+						display: -webkit-box;
+						-webkit-line-clamp: 2;
+						-webkit-box-orient: vertical;
+						word-break: break-all;
+						overflow: hidden;
+						white-space: normal;
+					}
+
+					.text {
+						color: #999999;
+						font-size: 26rpx;
+						display: -webkit-box;
+						-webkit-line-clamp: 1;
+						-webkit-box-orient: vertical;
+						word-break: break-all;
+						overflow: hidden;
+						white-space: normal;
+					}
 				}
 			}
 
 			.btn {
 				color: #fff;
 				font-size: 26rpx;
+				white-space: nowrap;
 				padding: 10rpx 30rpx;
 				background: #FF423A;
 				border-radius: 40rpx;
