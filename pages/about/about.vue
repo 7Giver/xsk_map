@@ -76,6 +76,7 @@
 		},
 		onShow() {
 			this.getloadingOrder()
+			this.goShare()
 		},
 		methods: {
 			// 调起电话
@@ -108,7 +109,30 @@
 							}
 						})
 				}
-				
+			},
+			// 调用微信自定义分享
+			goShare() {
+				let obj = {
+					title: `关于我们`,
+					desc: `5000多万人次客源引流 连续六年行业第一`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/b6/b64d67cc23b73b2555ddb792822d8391.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							desc: obj.desc, // 分享描述
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
+							console.log('response', response)
+						})
+					})
+				}
+				// #endif
 			},
 			// 计算倒计时
 			countDown(endtime) {

@@ -62,13 +62,9 @@
 					</view>
 				</view>
 				<view class="input-content">
-					<!-- <view class="my_item">
-						<view class="label">真实姓名</view>
-						<input type="text" v-model="guest.name" maxlength="16" placeholder="请填写真实有效姓名" />
-					</view> -->
 					<view class="my_item">
 						<view class="label">手机号码</view>
-						<input id="tel" type="number" v-model="guest.tel" @blur="saveMsg" maxlength="11" placeholder="请填写真实有效的手机号码" />
+						<input id="tel" type="number" v-model="guest.tel" @input="getDetail" maxlength="11" placeholder="请填写真实有效的手机号码" />
 					</view>
 					<view class="my_item">
 						<view class="label">店铺/公司名称</view>
@@ -79,20 +75,6 @@
 						<input type="text" v-model="guest.address" @blur="saveMsg" placeholder="请填写真实有效店铺/公司地址" />
 					</view>
 					<view class="form-btn1" @click="submit">立即标注地图 客户轻松上门</view>
-					<!-- <view class="form-btn" @click="submit">
-						<view class="left">
-							<view>限时优惠<br>￥299</view>
-							<view>剩余9个名额</view>
-						</view>
-						<view class="right">
-							<view>立即标注地图</view>
-							<view>客户轻松上门</view>
-						</view>
-					</view> -->
-					<!-- <view class="form-btn2" @click="submit">
-						<view>立即标注地图</view>
-						<view>客户轻松上门</view>
-					</view> -->
 				</view>
 				<image class="close" src="/static/index/close.png" mode="" @click="cancel"></image>
 			</view>
@@ -222,7 +204,7 @@
                 	return result;
             	}
 			},
-			// 上传合法手机号
+			// 上传合法手机号，获取信息
 			postMobile(tel) {
 				this.$test
 					.post(`/?r=api/index/mobile`, {
@@ -232,6 +214,12 @@
 					.then(response => {
 						// console.log(response)
 						if (response.code === 200) {
+							let result = response.data
+							this.$set(this.guest, 'company_name', result.company)
+							this.$set(this.guest, 'address', result.address)
+							if (result.company_id) {
+								this.$set(this.guest, 'company_id', result.company_id)
+							}
 						}
 					})
 			},
@@ -403,6 +391,13 @@
 					});
 				}
 			},
+			// 监听手机号输入
+			getDetail(e) {
+				let value = e.target.value
+				if (value.length == 11) {
+					this.postMobile(this.guest.tel)
+				}
+			},
 			// 调用微信自定义分享
 			goShare() {
 				let obj = {
@@ -486,7 +481,8 @@
 					name: this.guest.company_name,
 					tel: this.guest.tel,
 					map: str,
-					address: this.guest.address
+					address: this.guest.address,
+					company_id: this.guest.company_id || ''
 				}
 				// console.log(result)
 				this.$test
@@ -793,60 +789,6 @@
 					border-radius: 40rpx;
 					margin: 30rpx auto 20rpx;
 					background: linear-gradient(90deg, #FF586E, #FF7D60);
-				}
-
-				.form-btn2 {
-					width: 80%;
-					color: #fff;
-					font-size: 30rpx;
-					padding: 10rpx 0;
-					text-align: center;
-					border-radius: 20rpx;
-					margin: 16rpx auto 20rpx;
-					background: #D92D1C;
-
-					.right {
-						flex: 1;
-						font-size: 30rpx;
-						text-align: center;
-						letter-spacing: 1px;
-						line-height: 50rpx;
-					}
-				}
-
-				.form-btn {
-					display: flex;
-					align-items: center;
-					color: #fff;
-					font-size: 34rpx;
-					text-align: center;
-					border-radius: 20rpx;
-					margin: 30rpx auto 20rpx;
-					background: #D92D1C;
-
-					.left {
-						text-align: center;
-						margin: 20rpx auto;
-						padding: 0 20rpx;
-						border-right: 1px solid rgba(255, 255, 255, 0.6);
-
-						&:first-child {
-							color: #FFEA00;
-							font-size: 26rpx;
-						}
-
-						:last-child {
-							font-size: 22rpx;
-						}
-					}
-
-					.right {
-						flex: 1;
-						font-size: 30rpx;
-						text-align: center;
-						letter-spacing: 1px;
-						line-height: 50rpx;
-					}
 				}
 			}
 		}

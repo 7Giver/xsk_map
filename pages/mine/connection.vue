@@ -103,6 +103,7 @@ export default {
 		// this.userList = Json.userList
 		this.getAreaList()
 		this.getConnection()
+		this.goShare()
 	},
     methods: {
 		// 获取省市信息
@@ -273,7 +274,30 @@ export default {
 				this.classifyArr[1] = this.childArr[e.detail.value]
 			}
 		},
-		
+		// 调用微信自定义分享
+		goShare() {
+			let obj = {
+				title: `人脉市集`,
+				desc: `重新定义销售 帮助企业获客`,
+				shareUrl: window.location.href,
+				imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/c4/c4977d8fe898027b50d8a5f2420c60dc.png'
+			}
+			// #ifdef H5
+			if (this.$jwx && this.$jwx.isWechat()) {
+				this.$jwx.initJssdk(res => {
+					let shareData = {
+						title: obj.title, // 分享标题
+						desc: obj.desc, // 分享描述
+						shareUrl: obj.shareUrl, // 分享链接
+						imgUrl: obj.imgUrl, // 分享图标
+					}
+					this.$jwx.onMenuShareAppMessage(shareData, function(response) {
+						console.log('response', response)
+					})
+				})
+			}
+			// #endif
+		},
 	},
 };
 </script>

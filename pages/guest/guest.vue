@@ -163,6 +163,7 @@
 			obj ? this.guest = obj : false
 			this.getShow()
 			this.getloadingOrder()
+			this.goShare()
 		},
 		onTabItemTap() {
 			uni.pageScrollTo({
@@ -181,6 +182,9 @@
 					.then(response => {
 						// console.log(response)
 						if (response.code === 200) {
+							let result = response.data
+							this.$set(this.guest, 'company_name', result.company)
+							this.$set(this.guest, 'address', result.address)
 						}
 					})
 			},
@@ -228,6 +232,30 @@
 							}
 						})
 				}
+			},
+			// 调用微信自定义分享
+			goShare() {
+				let obj = {
+					title: `增加客源`,
+					desc: `立即标注 给您增加海量客源`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/16/16b244d0c4094b003e8f412f8ac8013d.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							desc: obj.desc, // 分享描述
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
+							console.log('response', response)
+						})
+					})
+				}
+				// #endif
 			},
 			// 计算倒计时
 			countDown(endtime) {
@@ -400,10 +428,7 @@
 <style lang="scss">
 	#app {
 		padding-bottom: 180rpx;
-
-		.page {
-			background: #9ECBEE;
-		}
+		background: #9ECBEE;
 
 		.header {
 			position: absolute;

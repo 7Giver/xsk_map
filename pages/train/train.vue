@@ -562,7 +562,7 @@
 					.left {
 						>text {
 							line-height: 40rpx;
-							margin-top: 10rpx;
+							margin-top: 12rpx;
 						}
 					}
 				}

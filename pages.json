@@ -64,6 +64,10 @@
             "path" : "pages/mine/connection",
             "style" : {}
         }
+        ,{
+            "path" : "pages/train/train_pay",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

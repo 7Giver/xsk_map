@@ -5,7 +5,7 @@ var testjs = require("@/common/vconsole.min.js");
 export default {
     onLaunch: function () {
         // console.log('App Launch')
-        uni.removeStorageSync('postMsg');
+        // uni.removeStorageSync('postMsg');
 
         // #ifdef H5
         uni.setStorageSync('state_ios_href', location.href)
