@@ -27,6 +27,11 @@
             </view>
         </view>
 		<view class="container">
+            <view class="item" @click="goNext('train')" v-if="userInfo.mark_status">
+                <image src="/static/mine/people.png" mode="">
+                <text>快速获客</text>
+                <image :class="[userInfo.is_mark ? 'hot ani' : 'hot']" src="/static/mine/hot.png" mode="widthFix">
+            </view>
             <view class="item" @click="goNext('card')">
 				<image src="/static/mine/min_card.png" mode="">
 			    <text>搜搜名片</text>
@@ -35,7 +40,7 @@
                 <image src="/static/mine/team.png" mode="">
                 <text>人脉市集</text>
             </view>
-            <view class="item" @click="goNext('train')">
+            <view class="item" @click="goNext('train')" v-if="!userInfo.mark_status">
                 <image src="/static/mine/people.png" mode="">
                 <text>快速获客</text>
                 <image :class="[userInfo.is_mark ? 'hot ani' : 'hot']" src="/static/mine/hot.png" mode="widthFix">

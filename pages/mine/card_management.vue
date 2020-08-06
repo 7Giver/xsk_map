@@ -78,7 +78,9 @@ export default {
 			this.$refs.imgUpload.upload(res => {
 				// console.log(res.code)
 				if (res.code == 0) {
-					this.targetArray = res.urlArray
+					res.urlArray.forEach(item => {
+						this.targetArray.push(item)
+					})
                 }
 			});
 		},

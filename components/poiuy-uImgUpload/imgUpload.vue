@@ -187,14 +187,15 @@
 					let successNum = 0;
 					let urlArr = [];
 					for (let item of _this.imgArray) {
-						_this.uploadImg(item, res => {
-							if (res.code == 200) {
-								successNum++;
-								urlArr.push(res.data);
-							} else {
-								urlArr.push(res);
-							}
-							if (urlArr.length == _this.imgArray.length) {
+						let value = item.split(':')[0]
+						if (value == 'blob') {
+							_this.uploadImg(item, res => {
+								if (res.code == 200) {
+									successNum++;
+									urlArr.push(res.data);
+								} else {
+									urlArr.push(res);
+								}
 								if(successNum>0){
 									this.startUpload = false;
 									callback(_this.result(urlArr, successNum));
@@ -202,8 +203,25 @@
 									this.startUpload = false;
 									callback(urlArr); //错误的返回
 								}
-							}
-						});
+							});
+						}
+						// _this.uploadImg(item, res => {
+						// 	if (res.code == 200) {
+						// 		successNum++;
+						// 		urlArr.push(res.data);
+						// 	} else {
+						// 		urlArr.push(res);
+						// 	}
+						// 	if (urlArr.length == _this.imgArray.length) {
+						// 		if(successNum>0){
+						// 			this.startUpload = false;
+						// 			callback(_this.result(urlArr, successNum));
+						// 		}else{
+						// 			this.startUpload = false;
+						// 			callback(urlArr); //错误的返回
+						// 		}
+						// 	}
+						// });
 					}
 				} else {
 					callback({

@@ -1,25 +1,25 @@
 <template>
-	<view id="app">
+	<view id="app" v-cloak>
 		<uni-nav-bar title="支付页" left-icon="back" @clickLeft="back"></uni-nav-bar>
 		<view class="banner">
 			<image src="/static/train/border.png" mode="widthFix">
 		</view>
 		<view class="top_block">
-			<image :src="userInfo.avatar" mode="widthFix">
+			<image :src="guest.avatar" mode="widthFix">
 			<view class="right">
 				<view class="item">
 					<view class="left">商户名称：
-						<text>{{userInfo.company}}</text>
+						<text>{{guest.company}}</text>
 					</view>
 				</view>
 				<view class="item">
 					<view class="left">联系电话：
-						<text>{{userInfo.mobile}}</text>
+						<text>{{guest.company_tel}}</text>
 					</view>
 				</view>
 				<view class="item">
 					<view class="left">商户地址：
-						<text>{{userInfo.address}}</text>
+						<text>{{guest.company_address}}</text>
 					</view>
 				</view>
 			</view>
@@ -28,22 +28,35 @@
 		<view class="content">
 			<view class="title">您选择的投放区域</view>
 			<view class="area_block">
-				<view class="item" v-for="(item, index) in result.putInList" :key="index">
+				<view class="item" v-for="(item, index) in guest.area" :key="index">
 					<view class="main">
 						<text v-if="index == 0">区域一</text>
 						<text v-else-if="index == 1">区域二</text>
 						<text v-else>区域三</text>
-						<view>{{item.address}}</view>
+						<view>
+							<text>{{item.province}}</text>
+							<text>{{item.city}}</text>
+						</view>
 					</view>
 				</view>
 			</view>
 			<view class="title">您选择的客源数量</view>
 			<view class="tip_block">
-				<view>{{result.client}}+</view>
+				<view>{{guest.customer_num}}+</view>
 			</view>
 			<view class="title">您选择的投放时长</view>
 			<view class="tip_block">
-				<view>{{result.time}}个月</view>
+				<view>{{guest.market_type}}个月</view>
+			</view>
+			<view class="title">支付方式</view>
+			<view class="pay_list">
+				<view class="item">
+					<view class="left">
+						<image src="/static/pay/wx.png" alt="" />
+						<view>微信支付</view>
+					</view>
+					<image src="/static/pay/pay_check.png" mode=""></image>
+				</view>
 			</view>
 		</view>
 		<!-- 协议 -->
@@ -56,7 +69,7 @@
 		</view>
 		<!-- 底部 -->
 		<view class="bottom">
-			<view class="left">实付:<text>￥{{total_cash}}</text></view>
+			<view class="left">实付:<text>￥{{guest.amount}}</text></view>
 			<view class="right" @click="submit">立即支付</view>
 		</view>
 	</view>
@@ -71,8 +84,11 @@
 		},
 		data() {
 			return {
+				guest: {
+					area: []
+				}, //用户信息对象
+				order_sn: '', // 订单号
 				agreement: true, // 同意协议
-				total_cash: 1699, // 总价
 				result: {
 					putInList: [
 						{address: '江苏 无锡'},
@@ -87,15 +103,32 @@
 		computed: {
     		...mapState(['userInfo'])
   		},
-		onLoad() {
-
+		onLoad(option) {
+			this.order_sn = option.order_sn || ''
+			this.getOrderDetail()
 		},
 		methods: {
+			// 获取订单详情
+			getOrderDetail() {
+				let order = this.order_sn
+				if (order) {
+					this.$test
+						.post(`/?r=api/order/direct-info`, {
+							order_sn: order
+						})
+						.then(response => {
+							// console.log(response)
+							if (response.code === 200) {
+								this.guest = response.data
+							}
+						})
+				}
+			},
 			// 同意协议
 			checkagree() {
 				this.agreement = !this.agreement
 			},
-			// 返回我的页面
+			// 返回上级页面
 			back() {
 				uni.redirectTo({
 					url: '/pages/train/train'
@@ -103,15 +136,33 @@
 			},
 			// 调用支付
 			submit() {
-
+				if (!this.agreement) {
+					uni.showToast({
+						title: '请同意服务协议',
+						icon: 'none'
+					});
+					return false
+				}
+				if (this.order_sn) {
+					window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${this.order_sn}`
+				} else {
+					uni.showToast({
+						title: '下单失败',
+						icon: 'none'
+					})
+				}
 			}
 		}
 	}
 </script>
 
 <style lang="scss">
+[v-cloak] {
+    display: none !important;
+}
+
 #app {
-	padding-bottom: 150rpx;
+	padding-bottom: 180rpx;
 
 	.banner {
 		width: 100%;
@@ -182,7 +233,7 @@
 	}
 
 	.content {
-		padding: 26rpx 38rpx;
+		padding: 26rpx 38rpx 60rpx;
 
 		.title {
 			display: flex;
@@ -231,6 +282,10 @@
 							width: 22rpx;
 							margin-left: 20rpx;
 						}
+
+						>text:first-child {
+							margin-right: 20rpx;
+						}
 					}
 				}
 			}
@@ -250,6 +305,42 @@
 				margin-right: 50rpx;
 				border-radius: 8rpx;
 				background: #4B7EF6;
+			}
+		}
+
+		.pay_list {
+			margin: 26rpx auto 0;
+			border-top: 1px solid #F0F0F0;
+			border-bottom: 1px solid #F0F0F0;
+
+			.item {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 16rpx 18rpx;
+
+				.left {
+					display: flex;
+					align-items: center;
+
+					>image {
+						width: 60rpx;
+						height: 60rpx;
+						border-radius: 50%;
+						margin-right: 12rpx;
+					}
+
+					>view {
+						font-size: 32rpx;
+						padding-bottom: 8rpx;
+					}
+				}
+
+				>image {
+					width: 50rpx;
+					height: 50rpx;
+					border-radius: 50%;
+				}
 			}
 		}
 	}

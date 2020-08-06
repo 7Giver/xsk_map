@@ -86,17 +86,18 @@
 			</view>
 		</view>
 		<!-- 协议 -->
-		<view class="agreement" @click="checkagree">
+		<!-- <view class="agreement" @click="checkagree">
 			<view class="checked">
 				<image v-if="agreement" src="/static/pay/check.png" mode=""></image>
 				<image v-else src="/static/pay/nocheck.png" mode=""></image>
 			</view>
 			<view>我已阅读并同意<text>《直通车投放服务协议》</text></view>
-		</view>
+		</view> -->
 		<!-- 底部 -->
 		<view class="bottom">
-			<view class="left">实付:<text>￥{{total_cash}}</text></view>
-			<view class="right" @click="submit">立即支付</view>
+			<!-- <view class="left">实付:<text>￥{{total_cash}}</text></view>
+			<view class="right" @click="submit">立即支付</view> -->
+			<view class="right" @click="submit">立即申请</view>
 		</view>
 		<!-- 弹出层 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
@@ -419,13 +420,13 @@
 					});
 					return false
 				}
-				if (!this.agreement) {
-					uni.showToast({
-						title: '请阅读服务协议',
-						icon: 'none'
-					});
-					return false
-				}
+				// if (!this.agreement) {
+				// 	uni.showToast({
+				// 		title: '请阅读服务协议',
+				// 		icon: 'none'
+				// 	});
+				// 	return false
+				// }
 				if (!this.checkList.length) {
 					uni.showToast({
 						title: '请选择投放区域',
@@ -467,7 +468,10 @@
 					.then(response => {
 						// console.log(response)
 						if (response.code === 200) {
-							window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${response.data.order_sn}`
+							uni.navigateTo({
+								url: `/pages/train/train_pay?order_sn=${response.data.order_sn}`
+							})
+							// window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${response.data.order_sn}`
 						}
 					});
 			}
@@ -704,7 +708,7 @@
 		bottom: 0;
 		display: flex;
 		width: 100%;
-		line-height: 120rpx;
+		line-height: 110rpx;
 		background: #fff;
 		border-top: 1px solid #F0F0F0;
 
