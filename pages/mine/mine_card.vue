@@ -83,7 +83,7 @@
 				</swiper>
 			</view> -->
 		</view>
-		<view class="showPoster" @click="goShowPoster()" v-if="showPosterBtn">生成海报</view>
+		<!-- <view class="showPoster" @click="goShowPoster()" v-if="showPosterBtn">生成海报</view> -->
 		<!-- 弹出层 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
 			<view class="connect_tip">
@@ -343,7 +343,7 @@
 							shareUrl: obj.shareUrl, // 分享链接
 							imgUrl: obj.imgUrl, // 分享图标
 						}
-						this.$jwx.updateTimelineShareData(shareData, function(response) {
+						this.$jwx.onMenuShareTimeline(shareData, function(response) {
 							// console.log('response', response)
 						})
 					})

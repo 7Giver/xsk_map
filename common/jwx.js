@@ -37,7 +37,8 @@ export default {
 					signature: res.data.data.signature,
 					jsApiList: [ //这里是需要用到的接口名称  
 						'checkJsApi', //判断当前客户端版本是否支持指定JS接口  
-						'onMenuShareAppMessage', //分享接口  
+						'onMenuShareAppMessage', //分享接口 
+						'onMenuShareTimeline', //分享朋友圈
 						'getLocation', //获取位置  
 						'openLocation', //打开位置  
 						'scanQRCode', //扫一扫接口  
@@ -75,15 +76,15 @@ export default {
 			})
 		})
 	},
-	// 分享到朋友圈（新版）
-	updateTimelineShareData: function(shareData, callback) {
+	// 分享到朋友圈
+	onMenuShareTimeline: function(shareData, callback) {
 		if (!this.isWechat()) {
-			//console.log('不是微信客户端')  
+			//console.log('不是微信客户端')
 			return
 		}
 		// console.log('shareData', shareData)
 		jweixin.ready(function() {
-			jweixin.updateTimelineShareData({ 
+			jweixin.onMenuShareTimeline({ 
 				title: shareData.title, // 分享标题
 				link: shareData.shareUrl, // 分享链接
 				imgUrl: shareData.imgUrl, // 分享图标

@@ -156,14 +156,17 @@
 							uni.setNavigationBarTitle({
 								title: `${this.guest.name}的电子微名片`
 							})
-							this.share ? this.goShare() : false
+							if (this.share) {
+								this.goShare()
+								this.goShareCircle()
+							}
 						}
 					});
 			},
 			// 调用微信自定义分享
 			goShare() {
 				let obj = {
-					title: `${this.guest.name}的名片请惠存`,
+					title: `${this.guest.name}的电子微名片`,
 					desc: `姓名：${this.guest.name}  商户：${this.guest.company}`,
 					shareUrl: `${window.location.href}&share=1`,
 					imgUrl: this.guest.avatar
@@ -179,6 +182,28 @@
 						}
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
 							console.log('response', response)
+						})
+					})
+				}
+				// #endif
+			},
+			// 调用微信分享朋友圈
+			goShareCircle() {
+				let obj = {
+					title: `${this.guest.name}的电子微名片`,
+					shareUrl: `${window.location.href}&share=1`,
+					imgUrl: this.guest.avatar
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareTimeline(shareData, function(response) {
+							// console.log('response', response)
 						})
 					})
 				}

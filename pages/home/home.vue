@@ -438,15 +438,13 @@
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {
-					this.$jwx.initJssdk(res => {
-						let shareData = {
-							title: obj.title, // 分享标题
-							shareUrl: obj.shareUrl, // 分享链接
-							imgUrl: obj.imgUrl, // 分享图标
-						}
-						this.$jwx.updateTimelineShareData(shareData, function(response) {
-							// console.log('response', response)
-						})
+					let shareData = {
+						title: obj.title, // 分享标题
+						shareUrl: obj.shareUrl, // 分享链接
+						imgUrl: obj.imgUrl, // 分享图标
+					}
+					this.$jwx.onMenuShareTimeline(shareData, function(response) {
+						// console.log('response', response)
 					})
 				}
 				// #endif

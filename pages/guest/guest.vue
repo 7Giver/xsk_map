@@ -273,7 +273,7 @@
 							shareUrl: obj.shareUrl, // 分享链接
 							imgUrl: obj.imgUrl, // 分享图标
 						}
-						this.$jwx.updateTimelineShareData(shareData, function(response) {
+						this.$jwx.onMenuShareTimeline(shareData, function(response) {
 							// console.log('response', response)
 						})
 					})
