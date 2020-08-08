@@ -68,6 +68,10 @@
             "path" : "pages/train/train_pay",
             "style" : {}
         }
+        ,{
+            "path" : "pages/train/subject",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

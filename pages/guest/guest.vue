@@ -164,6 +164,7 @@
 			this.getShow()
 			this.getloadingOrder()
 			this.goShare()
+			this.goShareCircle()
 		},
 		onTabItemTap() {
 			uni.pageScrollTo({
@@ -251,7 +252,29 @@
 							imgUrl: obj.imgUrl, // 分享图标
 						}
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
-							console.log('response', response)
+							// console.log('response', response)
+						})
+					})
+				}
+				// #endif
+			},
+			// 调用微信分享朋友圈
+			goShareCircle() {
+				let obj = {
+					title: `增加客源`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/16/16b244d0c4094b003e8f412f8ac8013d.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.updateTimelineShareData(shareData, function(response) {
+							// console.log('response', response)
 						})
 					})
 				}

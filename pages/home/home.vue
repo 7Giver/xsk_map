@@ -68,11 +68,11 @@
 					</view>
 					<view class="my_item">
 						<view class="label">店铺/公司名称</view>
-						<input type="text" v-model="guest.company_name" @blur="saveMsg" placeholder="请填写真实有效店铺/公司名称" />
+						<input id="company_name" type="text" v-model="guest.company_name" @input="saveMsg" @blur="saveMsg" placeholder="请填写真实有效店铺/公司名称" />
 					</view>
 					<view class="my_item">
 						<view class="label">店铺/公司地址</view>
-						<input type="text" v-model="guest.address" @blur="saveMsg" placeholder="请填写真实有效店铺/公司地址" />
+						<input id="address" type="text" v-model="guest.address" @input="saveMsg" @blur="saveMsg" placeholder="请填写真实有效店铺/公司地址" />
 					</view>
 					<view class="form-btn1" @click="submit">立即标注地图 客户轻松上门</view>
 				</view>
@@ -101,6 +101,7 @@
 						<image src="/static/guest/right.png" mode=""></image>
 					</view> -->
 				</view>
+				<image class="close" src="/static/index/close.png" mode="" @click="cancel1"></image>
 			</view>
 		</uni-popup>
 	</view>
@@ -135,6 +136,7 @@
 			this.checkItems = Json.checkItems
 			this.getUserdata()
 			this.goShare()
+			this.goShareCircle()
 			// 设置选中地图
 			uni.setStorage({
 				key: "mapStr",
@@ -313,6 +315,10 @@
 			cancel() {
 				this.showDailog = false;
 			},
+			// 关闭展示弹窗
+			cancel1() {
+				this.showDailog1 = false;
+			},
 			// 监听信息弹窗状态
 			change(e) {
 				// console.log(e.show)
@@ -366,30 +372,24 @@
 			// 监听input输入
 			saveMsg(e) {
 				let type = e.target.id
-				if (type == 'tel') {
-					if (!(/^1[3456789]\d{9}$/.test(this.guest.tel))) {
-						uni.showToast({
-							title: '请输入正确的手机号',
-							icon: 'none',
-							duration: 1000
-						});
-						return false
-					}
-					this.postMobile(this.guest.tel)
-				} else {
-					if (!(/^1[3456789]\d{9}$/.test(this.guest.tel))) {
-						return false
-					}
-					let obj = {
-						tel: this.guest.tel,
-						company_name: this.guest.company_name,
-						address: this.guest.address
-					}
-					uni.setStorage({
-						key: "postMsg",
-						data: obj
-					});
+				let value = e.target.value
+				switch (type) {
+					case 'company_name':
+						this.guest.company_name = value
+						break;
+					case 'address':
+						this.guest.address = value
+						break;
 				}
+				let obj = {
+					tel: this.guest.tel,
+					company_name: this.guest.company_name,
+					address: this.guest.address
+				}
+				uni.setStorage({
+					key: "postMsg",
+					data: obj
+				});
 			},
 			// 监听手机号输入
 			getDetail(e) {
@@ -399,7 +399,6 @@
 						uni.showToast({
 							title: '请输入正确的手机号',
 							icon: 'none',
-							duration: 1000
 						});
 						return false
 					}
@@ -424,7 +423,29 @@
 							imgUrl: obj.imgUrl, // 分享图标
 						}
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
-							console.log('response', response)
+							// console.log('response', response)
+						})
+					})
+				}
+				// #endif
+			},
+			// 调用微信分享朋友圈
+			goShareCircle() {
+				let obj = {
+					title: `地图定位标注`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/ac/acd236b509b370efe5e57d238bd81011.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.updateTimelineShareData(shareData, function(response) {
+							// console.log('response', response)
 						})
 					})
 				}
@@ -704,20 +725,20 @@
 			height: 86%;
 		}
 
+		.close {
+			display: block;
+			position: absolute;
+			left: 50%;
+			bottom: -115rpx;
+			transform: translate(-50%, -50%);
+			width: 60rpx;
+			height: 60rpx;
+		}
+
 		.uni-tip {
 			padding: 30rpx 30rpx 30rpx;
 			background: #83C7FC;
 			border-radius: 20rpx;
-
-			.close {
-				display: block;
-				position: absolute;
-				left: 50%;
-				bottom: -115rpx;
-				transform: translate(-50%, -50%);
-				width: 60rpx;
-				height: 60rpx;
-			}
 
 			.notice {
 				display: flex;

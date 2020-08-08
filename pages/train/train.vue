@@ -1,6 +1,7 @@
 <template>
 	<view id="app" v-cloak>
 		<uni-nav-bar title="快速获客" left-icon="back" @clickLeft="back"></uni-nav-bar>
+		<!-- <uni-nav-bar title="快速获客" left-icon="back" rightText="了解详情" @clickLeft="back" @clickRight="goNext"></uni-nav-bar> -->
 		<view class="banner">
 			<image src="/static/train/banner.png" mode="widthFix">
 			<image src="/static/train/border.png" mode="widthFix">
@@ -177,6 +178,7 @@
 			this.getUserInfo()
 			this.getAreaList()
 			this.goShare()
+			this.goShareCircle()
 		},
 		methods: {
 			...mapMutations({
@@ -270,7 +272,29 @@
 							imgUrl: obj.imgUrl, // 分享图标
 						}
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
-							console.log('response', response)
+							// console.log('response', response)
+						})
+					})
+				}
+				// #endif
+			},
+			// 调用微信分享朋友圈
+			goShareCircle() {
+				let obj = {
+					title: `快速获客`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/d7/d7fadb2c8ee2b68a8d43f693b4027527.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.updateTimelineShareData(shareData, function(response) {
+							// console.log('response', response)
 						})
 					})
 				}
@@ -422,6 +446,12 @@
 			// 选择投放时长
 			selectTime(index) {
 				this.timeIndex = index
+			},
+			// 跳转直通车专题页
+			goNext() {
+				uni.navigateTo({
+					url: '/pages/train/subject'
+				})
 			},
 			// 立即支付
 			submit() {
@@ -689,7 +719,7 @@
 			}
 
 			.add {
-				width: 44%;
+				width: 300rpx;
 				height: 46rpx;
 				margin: 0 auto 30rpx;
 				background: #D8D8D8;
@@ -816,6 +846,13 @@
 				height: 65rpx;
 			}
 		}
+	}
+
+	// nav导航自定义
+
+	::v-deep.uni-nav-bar-right-text {
+		color: #4B7EF6;
+		font-size: 24rpx;
 	}
 }
 </style>

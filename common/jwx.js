@@ -14,9 +14,9 @@ export default {
 	},
 	initJssdk: function(callback) {
 		let platform = uni.getSystemInfoSync().platform
-		console.log('warn', platform)
+		// console.log('warn', platform)
 		let href = platform == 'ios' ? uni.getStorageSync('state_ios_href') : window.location.href
-		console.log('warn-href', href.split('#')[0])
+		// console.log('warn-href', href.split('#')[0])
 		let url = href.split('#')[0]
 		// var uri = encodeURIComponent(url); //获取当前url然后传递给后台获取授权和签名信息
 		uni.request({
@@ -26,7 +26,7 @@ export default {
 				url: url
 			},
 			success: (res) => {
-				console.log('initJssdk:', res.data)
+				// console.log('initJssdk:', res.data)
 				//返回需要的参数appId,timestamp,noncestr,signature等  
 				//注入config权限配置  
 				jweixin.config({
@@ -54,16 +54,37 @@ export default {
 			}
 		})
 	},
+	// 分享给好友（旧版）
 	onMenuShareAppMessage: function(shareData, callback) {
 		if (!this.isWechat()) {
 			//console.log('不是微信客户端')  
 			return
 		}
-		console.log('shareData', shareData)
+		// console.log('shareData', shareData)
 		jweixin.ready(function() {
 			jweixin.onMenuShareAppMessage({
 				title: shareData.title, // 分享标题
 				desc: shareData.desc, // 分享描述
+				link: shareData.shareUrl, // 分享链接
+				imgUrl: shareData.imgUrl, // 分享图标
+				success(res) {
+					if (callback) {
+						callback(res)
+					}
+				}
+			})
+		})
+	},
+	// 分享到朋友圈（新版）
+	updateTimelineShareData: function(shareData, callback) {
+		if (!this.isWechat()) {
+			//console.log('不是微信客户端')  
+			return
+		}
+		// console.log('shareData', shareData)
+		jweixin.ready(function() {
+			jweixin.updateTimelineShareData({ 
+				title: shareData.title, // 分享标题
 				link: shareData.shareUrl, // 分享链接
 				imgUrl: shareData.imgUrl, // 分享图标
 				success(res) {

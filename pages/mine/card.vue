@@ -154,7 +154,7 @@
 							}
 							this.getMap()
 							uni.setNavigationBarTitle({
-								title: `${this.guest.name}的名片`
+								title: `${this.guest.name}的电子微名片`
 							})
 							this.share ? this.goShare() : false
 						}

@@ -1,6 +1,6 @@
 <template>
 	<view id="app">
-		<uni-nav-bar title="搜搜名片" left-icon="back" @clickLeft="goNext('mine')"></uni-nav-bar>
+		<uni-nav-bar :title="guest.name+'的电子微名片'||'搜搜名片'" left-icon="back" @clickLeft="goNext('mine')"></uni-nav-bar>
 		<view class="header">
 			<image class="background" :src="guest.bg_image || background" mode="widthFix">
 			<view class="card">
@@ -84,7 +84,6 @@
 			</view> -->
 		</view>
 		<view class="showPoster" @click="goShowPoster()" v-if="showPosterBtn">生成海报</view>
-		<!-- <view @click="goShare">分享</view> -->
 		<!-- 弹出层 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
 			<view class="connect_tip">
@@ -171,8 +170,12 @@
 									let list = value.show_pics.slice(0,1)
 									this.guest.show_pics = list
 								}
+								uni.setNavigationBarTitle({
+									title: `${this.guest.name}的电子微名片`
+								})
 								this.getMap()
 								this.goShare()
+								this.goShareCircle()
 							}
 						})
 				}
@@ -318,7 +321,30 @@
 							imgUrl: obj.imgUrl, // 分享图标
 						}
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
-							console.log('response', response)
+							// console.log('response', response)
+						})
+					})
+				}
+				// #endif
+			},
+			// 调用微信分享朋友圈
+			goShareCircle() {
+				let url = window.location.href.split('#')[0]
+				let obj = {
+					title: `${this.userInfo.name}的电子微名片`,
+					shareUrl: `${url}#/pages/mine/card?id=${this.guest.id}&share=1`,
+					imgUrl: this.guest.avatar
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.updateTimelineShareData(shareData, function(response) {
+							// console.log('response', response)
 						})
 					})
 				}

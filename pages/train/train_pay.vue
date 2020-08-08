@@ -1,5 +1,5 @@
 <template>
-	<view id="app" v-cloak>
+	<view id="app" v-show="pageShow">
 		<uni-nav-bar title="支付页" left-icon="back" @clickLeft="back"></uni-nav-bar>
 		<view class="banner">
 			<image src="/static/train/border.png" mode="widthFix">
@@ -50,12 +50,21 @@
 			</view>
 			<view class="title">支付方式</view>
 			<view class="pay_list">
-				<view class="item">
+				<view class="item" @click="checkPay(1)">
 					<view class="left">
 						<image src="/static/pay/wx.png" alt="" />
 						<view>微信支付</view>
 					</view>
-					<image src="/static/pay/pay_check.png" mode=""></image>
+					<image src="/static/pay/pay_check.png" mode="" v-if="payType==1"></image>
+					<image src="/static/pay/pay_nocheck.png" mode="" v-else></image>
+				</view>
+				<view class="item" @click="checkPay(2)">
+					<view class="left">
+						<image src="/static/pay/alipay.png" alt="" />
+						<view>支付宝支付</view>
+					</view>
+					<image src="/static/pay/pay_check.png" mode="" v-if="payType==2"></image>
+					<image src="/static/pay/pay_nocheck.png" mode="" v-else></image>
 				</view>
 			</view>
 		</view>
@@ -71,6 +80,11 @@
 		<view class="bottom">
 			<view class="left">实付:<text>￥{{guest.amount}}</text></view>
 			<view class="right" @click="submit">立即支付</view>
+		</view>
+		<!-- 提示遮罩 -->
+		<view class="mask_block" v-if="showMask">
+			<image class="arrow" src="/static/pay/pic_2.png" mode="widthFix"></image>
+			<image class="title" src="/static/pay/pic_1.png" mode="widthFix"></image>
 		</view>
 	</view>
 </template>
@@ -88,6 +102,9 @@
 					area: []
 				}, //用户信息对象
 				order_sn: '', // 订单号
+				payType: 1, // 支付方式
+				pageShow: false, // 页面显示
+				showMask: false, // 提示遮罩
 				agreement: true, // 同意协议
 				result: {
 					putInList: [
@@ -105,24 +122,34 @@
   		},
 		onLoad(option) {
 			this.order_sn = option.order_sn || ''
-			this.getOrderDetail()
+			if (option.order_sn) {
+				let ua = navigator.userAgent.toLowerCase()
+				this.getOrderDetail(option.order_sn)
+				if (ua.match(/MicroMessenger/i) == "micromessenger") {
+					// console.log('微信浏览器')
+					this.pageShow = true
+				}else{
+					// console.log('普通浏览器')
+					window.location.href = `${this.$testURL}?r=api/alipay/pay&order_sn=${this.order_sn}`  //支付宝
+				}
+			}
+		},
+		onHide() {
+			this.showMask = false
 		},
 		methods: {
 			// 获取订单详情
-			getOrderDetail() {
-				let order = this.order_sn
-				if (order) {
-					this.$test
-						.post(`/?r=api/order/direct-info`, {
-							order_sn: order
-						})
-						.then(response => {
-							// console.log(response)
-							if (response.code === 200) {
-								this.guest = response.data
-							}
-						})
-				}
+			getOrderDetail(order) {
+				this.$test
+					.post(`/?r=api/order/direct-info`, {
+						order_sn: order
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							this.guest = response.data
+						}
+					})
 			},
 			// 同意协议
 			checkagree() {
@@ -134,6 +161,10 @@
 					url: '/pages/train/train'
 				})
 			},
+			// 切换支付方式
+			checkPay(type) {
+				type == 1 ? this.payType = 1 : this.payType = 2
+			},
 			// 调用支付
 			submit() {
 				if (!this.agreement) {
@@ -144,7 +175,9 @@
 					return false
 				}
 				if (this.order_sn) {
-					window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${this.order_sn}`
+					this.payType == 1
+						? window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${this.order_sn}`  //微信支付
+						: this.showMask = true //支付宝 显示遮罩
 				} else {
 					uni.showToast({
 						title: '下单失败',
@@ -157,10 +190,6 @@
 </script>
 
 <style lang="scss">
-[v-cloak] {
-    display: none !important;
-}
-
 #app {
 	padding-bottom: 180rpx;
 
@@ -311,13 +340,16 @@
 		.pay_list {
 			margin: 26rpx auto 0;
 			border-top: 1px solid #F0F0F0;
-			border-bottom: 1px solid #F0F0F0;
 
 			.item {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
 				padding: 16rpx 18rpx;
+				
+				&:not(:last-child) {
+					border-bottom: 1px solid #F0F0F0;
+				}
 
 				.left {
 					display: flex;
@@ -326,7 +358,6 @@
 					>image {
 						width: 60rpx;
 						height: 60rpx;
-						border-radius: 50%;
 						margin-right: 12rpx;
 					}
 
@@ -396,6 +427,36 @@
 			font-size: 32rpx;
 			text-align: center;
 			background: linear-gradient(90deg, #FF5664, #FF3D2F);
+		}
+	}
+
+	.mask_block {
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 998;
+		background: rgba(0, 0, 0, .6);
+		display: flex;
+		align-items: flex-end;
+		flex-direction: column;
+
+		>image {
+			display: block;
+			
+		}
+
+		.arrow {
+			width: 80rpx;
+			margin-top: 26rpx;
+			margin-right: 90rpx;
+		}
+
+		.title {
+			width: 480rpx;
+			margin-top: 10rpx;
+			margin-right: 50rpx;
 		}
 	}
 }

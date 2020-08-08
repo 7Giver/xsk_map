@@ -77,6 +77,7 @@
 		onShow() {
 			this.getloadingOrder()
 			this.goShare()
+			this.goShareCircle()
 		},
 		methods: {
 			// 调起电话
@@ -128,7 +129,29 @@
 							imgUrl: obj.imgUrl, // 分享图标
 						}
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
-							console.log('response', response)
+							// console.log('response', response)
+						})
+					})
+				}
+				// #endif
+			},
+			// 调用微信分享朋友圈
+			goShareCircle() {
+				let obj = {
+					title: `关于我们`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/b6/b64d67cc23b73b2555ddb792822d8391.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.updateTimelineShareData(shareData, function(response) {
+							// console.log('response', response)
 						})
 					})
 				}
