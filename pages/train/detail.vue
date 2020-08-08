@@ -149,9 +149,10 @@
 			},
 			// 获取订单详情
 			getDetail() {
+				let value = uni.getStorageSync('userMsg')
 				this.$test
 					.post(`/?r=api/order/direct-detail`, {
-						order_sn: this.order
+						wxid: this.userInfo.wxid || value.wxid
 					})
 					.then(response => {
 						// console.log(response)
@@ -162,6 +163,7 @@
 			},
 			// 获取客源列表
 			getClientList() {
+				let value = uni.getStorageSync('userMsg')
 				if (this.loadingType === 'noMore') {
 				  //防止重复加载
 				  return false;
@@ -169,7 +171,7 @@
 				this.loadingType = 'loading';
 				this.$test
 					.post(`/?r=api/order/customer-list`, {
-						order_sn: this.order,
+						wxid: this.userInfo.wxid || value.wxid,
 						page: this.page
 					})
 					.then(response => {

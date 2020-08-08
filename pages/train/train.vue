@@ -19,7 +19,7 @@
 				<view class="item">
 					<view class="left">联系电话：
 						<text v-if="!editTel && guest.mobile">{{guest.mobile}}</text>
-						<input v-else type="number" v-model="guest.mobile" @blur="saveMsg('mobile')" maxlength="11" placeholder="请填写真实有效的手机号码" />
+						<input v-else type="number" v-model="guest.mobile" @input="getDetail" @blur="saveMsg('mobile')" maxlength="11" placeholder="请填写真实有效的手机号码" />
 					</view>
 					<view class="edit" @click="eidtMsg('tel')" v-if="guest.mobile">修改</view>
 				</view>
@@ -57,10 +57,11 @@
 						</view>
 					</view>
 					<view class="btn">
-						<image src="/static/train/add.png" mode="widthFix" v-if="index==0 && putInList.length<3" @click="addArea">
-						<image src="/static/train/minus.png" mode="widthFix" v-else @click="delArea(index)">
+						<!-- <image src="/static/train/add.png" mode="widthFix" v-if="index==0 && putInList.length<3" @click="addArea"> -->
+						<image src="/static/train/minus.png" mode="widthFix" v-show="index!==0 && putInList.length>1" @click="delArea(index)">
 					</view>
 				</view>
+				<view class="add" v-if="putInList.length<3" @click="addArea"></view>
 			</view>
 			<view class="title">您希望增加多少客源？</view>
 			<view class="tip_block">
@@ -189,22 +190,31 @@
 			},
 			// 获取用户信息
 			getUserInfo() {
+				let msg = uni.getStorageSync('postMsg')
 				let value = uni.getStorageSync('userMsg')
-				if (value) {
+				if (msg) {
 					this.setObj = value
-					this.$test
-						.post(`/?r=api/user/info`, {
-							wxid: value.wxid
-						})
-						.then(response => {
-							if (response.code === 200) {
-								this.$set(response.data, 'wxid', value.wxid)
-								this.setUserInfo(response.data)
-								this.guest = this.userInfo
-							}
-						})
+					this.guest = {
+						company: msg.company_name,
+						mobile: msg.tel,
+						address: msg.address
+					}
 				} else {
-					this.$getAuthorize()
+					if (value) {
+						this.$test
+							.post(`/?r=api/user/info`, {
+								wxid: value.wxid
+							})
+							.then(response => {
+								if (response.code === 200) {
+									this.$set(response.data, 'wxid', value.wxid)
+									this.setUserInfo(response.data)
+									this.guest = this.userInfo
+								}
+							})
+					} else {
+						this.$getAuthorize()
+					}
 				}
 			},
 			// 获取省市信息
@@ -217,6 +227,30 @@
 							this.getAllClassify()
 						}
 					});
+			},
+			// 监听手机号输入
+			getDetail(e) {
+				let value = e.target.value
+				if (value.length == 11) {
+					if (!(/^1[3456789]\d{9}$/.test(value))) {
+						uni.showToast({
+							title: '请输入正确的手机号',
+							icon: 'none',
+							duration: 1000
+						});
+						return false
+					}
+					this.$test
+						.post(`/?r=api/index/mobile`, {
+							wxid: this.userInfo.wxid || this.setObj.wxid,
+							mobile: tel
+						})
+						.then(response => {
+							// console.log(response)
+							if (response.code === 200) {
+							}
+						})
+				}
 			},
 			// 调用微信自定义分享
 			goShare() {
@@ -643,12 +677,37 @@
 				}
 
 				.btn {
+					width: 70rpx;
 					padding-left: 18rpx;
+					overflow: hidden;
 
 					>image {
 						display: block;
 						width: 52rpx;
 					}
+				}
+			}
+
+			.add {
+				width: 44%;
+				height: 46rpx;
+				margin: 0 auto 30rpx;
+				background: #D8D8D8;
+				position: relative;
+
+				&::before,
+				&::after {
+					content: "";
+					position: absolute;
+					height: 30rpx;
+					width: 2px;
+					top: 4px;
+					left: 50%;
+					background: #fff;
+				}
+
+				&::after {
+					transform: rotate(90deg);
 				}
 			}
 		}

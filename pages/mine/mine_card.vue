@@ -83,6 +83,7 @@
 				</swiper>
 			</view> -->
 		</view>
+		<view class="showPoster" @click="goShowPoster()" v-if="showPosterBtn">生成海报</view>
 		<!-- <view @click="goShare">分享</view> -->
 		<!-- 弹出层 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
@@ -95,6 +96,17 @@
 				<view class="bottom">
 					<view class="cancel" @click="cancel">取消</view>
 					<view class="submit" @click="goNext('home')">去标注</view>
+				</view>
+			</view>
+		</uni-popup>
+		<!-- 展示海报 -->
+		<uni-popup :show="showPoster" type="center" :animation="true" :custom="true" :mask-click="true" @change="posterChange">
+			<view class="poster_block">
+				<canvas canvas-id="canvas" id="canvas" v-show="canvasShow" style="width:1050;height:1400;"></canvas>
+				<image :src="canvas_img" mode="" v-if="canvas_img"></image>
+				<view class="tips">
+					<view>长按海报下载保存</view>
+					<image src="/static/train/close.png" mode="" @click="posterCancel"></image>
 				</view>
 			</view>
 		</uni-popup>
@@ -122,6 +134,10 @@
 				background: '/static/mine/card/background.png',
 				showMore: false, // 显示更多
 				showDailog: false, // 弹窗显示隐藏
+				showPoster: false, //海报展示弹窗
+				showPosterBtn: true, // 生成海报按钮显示
+				canvasShow: true, // 隐藏canvas
+				canvas_img: '', // 输出的canvas图片
 				showItems: [],  //商户风采数组
 				mapList: [] // 选中地图
 			}
@@ -167,9 +183,19 @@
 					this.showDailog = false
 				}
 			},
+			posterChange(e) {
+				if (!e.show) {
+					this.showPoster = false
+				}
+			},
 			// 关闭信息弹窗
 			cancel() {
 				this.showDailog = false;
+			},
+			// 关闭海报弹窗
+			posterCancel() {
+				this.showPoster = false;
+				this.showPosterBtn = true
 			},
 			// 全屏展示图片
 			fullImg() {
@@ -301,14 +327,146 @@
 			// 展示更多
 			showmore() {
 				this.showMore = true
-			}
+			},
+			// 展示海报
+			goShowPoster() {
+				this.showPoster = true
+				this.showPosterBtn = false
+				this.$nextTick(() => {
+					this.drawCanvas()
+				})
+			},
+			// 渲染canvas
+			drawCanvas() {
+				const { windowWidth, windowHeight } = uni.getSystemInfoSync();
+				let bg_width = windowWidth * 0.8
+				let bg_height = 385
+				this.$nextTick(() => {
+					const ctx = uni.createCanvasContext('canvas', this)
+					// 设置背景色
+					ctx.fillStyle = "#fff"
+					ctx.fillRect(0, 0, bg_width, bg_height)
+					// 商户信息
+					ctx.fillStyle = "#ABABAB"
+					ctx.font = "15px Arial"
+					ctx.fillText("店名：", 20, 210)
+					ctx.fillText("手机：", 20, 235)
+					ctx.fillText("微信：", 20, 260)
+					ctx.fillStyle = "#333537"
+					ctx.fillText(this.guest.company||'尚未完善', 60, 210)
+					ctx.fillText(this.guest.mobile||'尚未完善', 60, 235)
+					ctx.fillText(this.guest.wechat_id||'尚未完善', 60, 260)
+					// 绘制直线
+					ctx.beginPath()
+					ctx.moveTo(16,280);
+					ctx.lineTo(bg_width-16, 280);
+					ctx.setLineWidth(1)
+					ctx.strokeStyle = "#e5e5e5"
+					ctx.stroke()
+					// 二维码
+					ctx.drawImage(this.guest.qrcode, 15, 290, 70, 70)
+					// 右侧信息
+					const grd = ctx.createLinearGradient(0, 0, 200, 0)
+					grd.addColorStop(0, '#66CCFF')
+					grd.addColorStop(1, '#9999FF')
+					ctx.fillStyle = grd;
+					ctx.font = "italic bold 14px Arial"
+					ctx.fillText("长按识别快速定位我的位置", 95, 308)
+					// 地址自动换行
+					ctx.fillStyle = "#B4BAB8"
+					ctx.font = "14px Arial"
+					let text = this.guest.address
+					canvasTextAutoLine(text, 95, 335, 18)
+					// 自定义背景
+					ctx.drawImage(this.guest.bg_image||this.background, 0, 0, bg_width, 150)
+					// 用户头像
+					ctx.drawImage(drawRoundedImg(20, 120, 60, 60, 30, this.guest.avatar))
+					ctx.draw()
+					// 转为base64图片
+					setTimeout(() => {
+						this.canvasToImg()
+					}, 400)
+					
+					/*
+					* 圆角矩形
+					* @parama int/float x            矩形位置x坐标
+					* @parama int/float y            矩形位置y坐标
+					* @parama int/float w            矩形宽度
+					* @parama int/float h            矩形高度
+					* @parama int/float r            圆角半径
+					* @parama object <img>           矩形背景图
+					*/
+					function drawRoundedImg(x,y,w,h,r,bgimg){
+						ctx.strokeStyle = "transparent";
+						ctx.save();
+						ctx.beginPath();
+						ctx.moveTo(x+r,y);
+						ctx.arcTo(x+w,y,x+w,y+h,r);
+						ctx.arcTo(x+w,y+h,x,y+h,r);
+						ctx.arcTo(x,y+h,x,y,r);
+						ctx.arcTo(x,y,x+w,y,r);
+						ctx.stroke();
+						ctx.clip();
+						ctx.drawImage(bgimg, x, y, w, h);
+						ctx.restore();
+						ctx.closePath();
+					}
+
+					/*
+					str: 要绘制的字符串
+					initX: 绘制字符串起始x坐标
+					initY: 绘制字符串起始y坐标
+					lineHeight: 字行高，自己定义个值即可
+					*/
+					function canvasTextAutoLine(str,initX,initY,lineHeight){
+						var lineWidth = 0;
+						var canvasWidth = bg_width-20; 
+						var lastSubStrIndex= 0; 
+						for (let i=0; i<str.length; i++) { 
+							lineWidth += ctx.measureText(str[i]).width; 
+							if (lineWidth > canvasWidth - initX) {//减去initX,防止边界出现的问题
+								ctx.fillText(str.substring(lastSubStrIndex,i),initX,initY);
+								initY += lineHeight;
+								lineWidth = 0;
+								lastSubStrIndex = i;
+							} 
+							if (i==str.length-1) {
+								ctx.fillText(str.substring(lastSubStrIndex,i+1),initX,initY);
+							}
+						}
+					}
+				})
+			},
+			// canvas转图片
+			canvasToImg() {
+				const { windowWidth, windowHeight } = uni.getSystemInfoSync();
+				let bg_width = windowWidth * 0.8
+				let bg_height = 385
+				this.$nextTick(() => {
+					uni.canvasToTempFilePath({
+						width: bg_width,
+						height: bg_height,
+						destWidth: bg_width*4,
+						destHeight: bg_height*4,
+						quality: 1,
+						canvasId: 'canvas',
+						success: (res) => {
+							// 在H5平台下，tempFilePath 为 base64
+							// console.log(res.tempFilePath)
+							this.canvas_img = res.tempFilePath
+							this.canvasShow = false
+						} 
+					})
+				})
+			},
+			
 		}
 	}
 </script>
 
 <style lang="scss">
 #app {
-	padding-bottom: 80rpx;
+	padding-bottom: 180rpx;
 	background: linear-gradient(70deg, #50637C, #303641);
 
 	.header {
@@ -610,10 +768,11 @@
 
 	// 提示弹窗
 	::v-deep.uni-popup__wrapper-box {
-		width: 70%;
+		width: 80%;
 	}
 
 	.connect_tip {
+		margin: 0 auto;
 		text-align: center;
 		overflow: hidden;
 		border-radius: 32rpx;
@@ -671,6 +830,62 @@
 
 			.cancel {
 				color: #2996FF;
+			}
+		}
+	}
+
+	.showPoster {
+		position: fixed;
+		left: 50%;
+		bottom: 30rpx;
+		width: 50%;
+		color: #fff;
+		font-size: 34rpx;
+		text-align: center;
+		padding: 10rpx 0;
+		border-radius: 40rpx;
+		background: linear-gradient(90deg,rgba(153,153,255,1) 0%, rgba(102,204,255,1) 100%);
+		transform: translate(-50%, -50%);
+	}
+
+	.poster_block {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 770rpx;
+
+		>canvas {
+			width: 100%;
+			height: 100%;
+		}
+
+		>image {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+
+		.tips {
+			position: absolute;
+			left: 50%;
+			bottom: -210rpx;
+			transform: translate(-50%, -50%);
+			display: flex;
+			align-items: center;
+			flex-direction: column;
+
+			>view {
+				color: #fff;
+				font-size: 32rpx;
+				text-align: center;
+				padding: 0 20rpx;
+				margin-bottom: 20rpx;
+			}
+
+			>image {
+				display: block;
+				width: 65rpx;
+				height: 65rpx;
 			}
 		}
 	}

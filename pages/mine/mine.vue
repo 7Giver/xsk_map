@@ -256,7 +256,8 @@ export default {
 					url = '/pages/mine/connection'
 					break;
 				case 'train':
-					url = '/pages/train/train'
+                    let value = this.userInfo.is_direct
+                    value ? url = '/pages/train/detail' : url = '/pages/train/train'
 					break;
 				default:
 					url = ''

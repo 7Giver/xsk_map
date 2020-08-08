@@ -31,6 +31,7 @@
 						</view>
 					</view>
 				</view>
+				<!-- <view @click="capture()">获取截图</view> -->
 			</view>
 		</view>
 		<view class="show_block">
@@ -100,7 +101,8 @@
 <script>
 	import { mapState, mapMutations } from 'vuex';
 	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
-	import h5Copy from '@/js_sdk/junyi-h5-copy/junyi-h5-copy.js'
+	import h5Copy from '@/js_sdk/junyi-h5-copy/junyi-h5-copy.js';
+	import html2canvas from '@/common/html2canvas.min.js';
 	import Json from '@/Json';
 	export default {
 		components: {
@@ -182,6 +184,20 @@
 				}
 				// #endif
 			},
+			// 保存页面截图
+			capture() {
+				var targetDom = document.getElementById('app')
+				// console.log(targetDom)
+				var copyDom = targetDom.cloneNode(true);  
+				// copyDom.width(targetDom.width() + "px");  
+				// copyDom.height(targetDom.height() + "px");  
+				document.body.append(copyDom);
+				html2canvas(copyDom, {
+					allowTaint: true, //允许跨域（图片跨域相关）
+				}).then(function(canvas) {
+    				document.body.appendChild(canvas);
+				});
+            },
 			// 展示更多
 			showmore() {
 				this.showMore = true
@@ -623,12 +639,9 @@
 		}
 	}
 
-	// 提示弹窗
-	::v-deep.uni-popup__wrapper-box {
-		width: 70%;
-	}
-
 	.connect_tip {
+		width: 90%;
+		margin: 0 auto;
 		text-align: center;
 		background: url('/static/sousou/bg.png') no-repeat center / 100% 100%;
 

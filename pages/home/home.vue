@@ -395,6 +395,14 @@
 			getDetail(e) {
 				let value = e.target.value
 				if (value.length == 11) {
+					if (!(/^1[3456789]\d{9}$/.test(value))) {
+						uni.showToast({
+							title: '请输入正确的手机号',
+							icon: 'none',
+							duration: 1000
+						});
+						return false
+					}
 					this.postMobile(this.guest.tel)
 				}
 			},
