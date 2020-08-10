@@ -61,7 +61,11 @@
 				</view>
 			</view>
 		</view>
-		<view class="confim_btn" @click="goNext()"></view>
+		<view class="confim_btn" @click="goNext()">
+			<view>点击立即开启直通车</view>
+			<text>无限量自动领取精准客户</text>
+			<image class="finger" src="/static/train/finger.gif" mode="widthFix">
+		</view>
 	</view>
 </template>
 
@@ -96,14 +100,14 @@
 					}
 				],
 				showList: [
-					'/static/train/zsal_1.png',
-					'/static/train/zsal_2.png',
-					'/static/train/page01.png',
 					'/static/train/page02.png',
 					'/static/train/page03.png',
 					'/static/train/page04.png',
 					'/static/train/page05.png',
 					'/static/train/page06.png',
+					'/static/train/zsal_1.png',
+					'/static/train/zsal_2.png',
+					'/static/train/page01.png',
 				]
 			};
 		},
@@ -133,7 +137,7 @@
 
 <style lang="scss">
 #app {
-	padding-bottom: 50rpx;
+	padding-bottom: 230rpx;
 	background: #DBEDFF;
 
 	.header {
@@ -327,10 +331,81 @@
 	}
 
 	.confim_btn {
-		width: 90%;
+		position: fixed;
+		left: 7.5%;
+		bottom: 60rpx;
+		z-index: 2;
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		width: 85%;
 		height: 120rpx;
-		margin: 50rpx auto 0;
-		background: url('/static/train/button.png') no-repeat center / 100% 100%;
+		color: #fff;
+		text-align: center;
+		letter-spacing: 1px;
+		text-shadow: 2px 4px 2px #FF6134;
+		border-radius: 20rpx;
+		background: linear-gradient(180deg, #FF9F65, #FF6134);
+		animation: mymove 5s infinite;
+		animation-direction: alternate;
+		animation-timing-function: ease-in-out;
+
+		@keyframes mymove {
+			0% {
+				transform: scale(1);
+				/*开始为原始大小*/
+			}
+
+			25% {
+				transform: scale(1.1);
+				/*放大1.1倍*/
+			}
+
+			50% {
+				transform: scale(1);
+			}
+
+			75% {
+				transform: scale(1.1);
+			}
+		}
+
+		>view {
+			display: flex;
+			align-items: center;
+			font-size: 38rpx;
+			margin-top: 12rpx;
+
+			&::after,
+			&::before {
+				content: "";
+				width: 100rpx;
+				height: 1px;
+				opacity: 0.75;
+			}
+
+			&::before {
+				margin-right: 14rpx;
+				background: linear-gradient(-90deg, #FFDCCC, #FF8B56);
+			}
+
+			&::after {
+				margin-left: 14rpx;
+				background: linear-gradient(90deg, #FFDCCC, #FF8B56);
+			}
+		}
+
+		>text {
+			font-size: 24rpx;
+			margin-top: 2rpx;
+		}
+
+		.finger {
+			position: absolute;
+			top: -28rpx;
+			right: 10rpx;
+			width: 200rpx;
+		}
 	}
 }
 </style>

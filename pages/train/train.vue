@@ -852,7 +852,7 @@
 
 	::v-deep.uni-nav-bar-right-text {
 		color: #4B7EF6;
-		font-size: 24rpx;
+		font-size: 28rpx;
 	}
 }
 </style>
