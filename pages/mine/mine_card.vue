@@ -1,6 +1,6 @@
 <template>
 	<view id="app">
-		<uni-nav-bar :title="guest.name+'的电子微名片'||'搜搜名片'" left-icon="back" @clickLeft="goNext('mine')"></uni-nav-bar>
+		<uni-nav-bar :title="guest.name+'的电子微名片'||'搜搜名片'" left-icon="back" @clickLeft="goNext('mine')" v-if="showNavbar"></uni-nav-bar>
 		<view class="header">
 			<image class="background" :src="guest.bg_image || background" mode="widthFix">
 			<view class="card">
@@ -83,7 +83,10 @@
 				</swiper>
 			</view> -->
 		</view>
-		<!-- <view class="showPoster" @click="goShowPoster()" v-if="showPosterBtn">生成海报</view> -->
+		<view class="showPoster" @click="goShowPoster()" v-if="showPosterBtn">生成海报</view>
+		<view class="canvas_block">
+			<canvas canvas-id="canvas" id="canvas" style="width:1050;height:1400;opacity:0;"></canvas>
+		</view>
 		<!-- 弹出层 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
 			<view class="connect_tip">
@@ -101,8 +104,7 @@
 		<!-- 展示海报 -->
 		<uni-popup :show="showPoster" type="center" :animation="true" :custom="true" :mask-click="true" @change="posterChange">
 			<view class="poster_block">
-				<canvas canvas-id="canvas" id="canvas" v-show="canvasShow" style="width:1050;height:1400;"></canvas>
-				<image :src="canvas_img" mode="" v-if="canvas_img"></image>
+				<image :src="canvas_img" mode=""></image>
 				<view class="tips">
 					<view>长按海报下载保存</view>
 					<image src="/static/train/close.png" mode="" @click="posterCancel"></image>
@@ -131,11 +133,11 @@
 				},
 				current: 0, // 轮播index
 				background: '/static/mine/card/background.png',
+				showNavbar: false, //显示导航条
 				showMore: false, // 显示更多
 				showDailog: false, // 弹窗显示隐藏
 				showPoster: false, //海报展示弹窗
-				showPosterBtn: true, // 生成海报按钮显示
-				canvasShow: true, // 隐藏canvas
+				showPosterBtn: false, // 生成海报按钮显示
 				canvas_img: '', // 输出的canvas图片
 				showItems: [],  //商户风采数组
 				mapList: [] // 选中地图
@@ -147,6 +149,9 @@
 		onShow() {
 			this.setObj = uni.getStorageSync('userMsg')
 			this.getMineInfo()
+		},
+		onLoad() {
+			this.showNavbar = true
 		},
 		methods: {
 			open() {
@@ -166,6 +171,7 @@
 							if (response.code === 200) {
 								let value = response.data
 								this.guest = value
+								this.drawCanvas()
 								if (!value.is_mark) {
 									let list = value.show_pics.slice(0,1)
 									this.guest.show_pics = list
@@ -358,15 +364,15 @@
 			goShowPoster() {
 				this.showPoster = true
 				this.showPosterBtn = false
-				this.$nextTick(() => {
-					this.drawCanvas()
-				})
 			},
 			// 渲染canvas
 			drawCanvas() {
 				const { windowWidth, windowHeight } = uni.getSystemInfoSync();
 				let bg_width = windowWidth * 0.8
 				let bg_height = 385
+				let company = this.guest.company||'尚未完善'
+				let mobile = this.guest.mobile||'尚未完善'
+				let wechat_id = this.guest.wechat_id||'尚未完善'
 				this.$nextTick(() => {
 					const ctx = uni.createCanvasContext('canvas', this)
 					// 设置背景色
@@ -376,12 +382,27 @@
 					ctx.fillStyle = "#ABABAB"
 					ctx.font = "15px Arial"
 					ctx.fillText("店名：", 20, 210)
+
+					ctx.fillStyle = "#ABABAB"
+					ctx.font = "15px Arial"
 					ctx.fillText("手机：", 20, 235)
+
+					ctx.fillStyle = "#ABABAB"
+					ctx.font = "15px Arial"
 					ctx.fillText("微信：", 20, 260)
+
 					ctx.fillStyle = "#333537"
-					ctx.fillText(this.guest.company||'尚未完善', 60, 210)
-					ctx.fillText(this.guest.mobile||'尚未完善', 60, 235)
-					ctx.fillText(this.guest.wechat_id||'尚未完善', 60, 260)
+					ctx.font = "15px Arial"
+					ctx.fillText(company, 60, 210)
+
+					ctx.fillStyle = "#333537"
+					ctx.font = "15px Arial"
+					ctx.fillText(mobile, 60, 235)
+
+					ctx.fillStyle = "#333537"
+					ctx.font = "15px Arial"
+					ctx.fillText(wechat_id, 60, 260)
+
 					// 绘制直线
 					ctx.beginPath()
 					ctx.moveTo(16,280);
@@ -390,28 +411,29 @@
 					ctx.strokeStyle = "#e5e5e5"
 					ctx.stroke()
 					// 二维码
-					ctx.drawImage(this.guest.qrcode, 15, 290, 70, 70)
+					ctx.drawImage(this.guest.qrcode, bg_width-83, 290, 70, 70)
 					// 右侧信息
 					const grd = ctx.createLinearGradient(0, 0, 200, 0)
 					grd.addColorStop(0, '#66CCFF')
 					grd.addColorStop(1, '#9999FF')
 					ctx.fillStyle = grd;
 					ctx.font = "italic bold 14px Arial"
-					ctx.fillText("长按识别快速定位我的位置", 95, 308)
+					ctx.fillText("长按识别快速定位我的位置", 16, 308)
 					// 地址自动换行
 					ctx.fillStyle = "#B4BAB8"
 					ctx.font = "14px Arial"
 					let text = this.guest.address
-					canvasTextAutoLine(text, 95, 335, 18)
+					canvasTextAutoLine(text, 16, 335, 18)
 					// 自定义背景
 					ctx.drawImage(this.guest.bg_image||this.background, 0, 0, bg_width, 150)
 					// 用户头像
+					// ctx.drawImage(this.guest.avatar, 20, 120, 60, 60)
 					ctx.drawImage(drawRoundedImg(20, 120, 60, 60, 30, this.guest.avatar))
 					ctx.draw()
 					// 转为base64图片
 					setTimeout(() => {
 						this.canvasToImg()
-					}, 400)
+					}, 350)
 					
 					/*
 					* 圆角矩形
@@ -446,7 +468,7 @@
 					*/
 					function canvasTextAutoLine(str,initX,initY,lineHeight){
 						var lineWidth = 0;
-						var canvasWidth = bg_width-20; 
+						var canvasWidth = bg_width-95; 
 						var lastSubStrIndex= 0; 
 						for (let i=0; i<str.length; i++) { 
 							lineWidth += ctx.measureText(str[i]).width; 
@@ -480,7 +502,7 @@
 							// 在H5平台下，tempFilePath 为 base64
 							// console.log(res.tempFilePath)
 							this.canvas_img = res.tempFilePath
-							this.canvasShow = false
+							this.showPosterBtn = true
 						} 
 					})
 				})
@@ -913,6 +935,19 @@
 				width: 65rpx;
 				height: 65rpx;
 			}
+		}
+	}
+	
+	.canvas_block {
+		position: absolute;
+		top: 0;
+		width: 100%;
+		height: 770rpx;
+		z-index: -1;
+
+		>canvas {
+			width: 100%;
+			height: 100%
 		}
 	}
 }

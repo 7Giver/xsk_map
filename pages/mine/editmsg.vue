@@ -55,7 +55,7 @@
 				<view class="top">
 					<view class="label">详细地址</view>
 					<view class="right">
-						<input type="text" v-model="guest.address" placeholder="请填写有效地址" />
+						<input type="text" v-model="guest.address" maxlength="40" placeholder="请填写有效地址" />
 					</view>
 				</view>
 			</view>

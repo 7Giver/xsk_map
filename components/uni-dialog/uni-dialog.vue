@@ -1,5 +1,5 @@
 <template>
-	<view v-if="showPopup" class="uni-popup">
+	<view v-if="showPopup" class="uni-popup" @touchmove.stop.prevent="moveStop">
 		<!-- 遮罩层结构 -->
 		<view :class="[ani, animation ? 'ani' : '', !custom ? 'uni-custom' : '']" class="uni-popup__mask" @click="close(true)" />
 		        
@@ -80,7 +80,8 @@
 						this.showPopup = false;
 					}, 300)
 				})
-			}
+			},
+			moveStop() {}
 		}
 	}
 </script>
