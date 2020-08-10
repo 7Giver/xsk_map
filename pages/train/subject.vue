@@ -22,9 +22,9 @@
 				<view class="notice">
 					<image class="icon_l" src="/static/train/icon_lb.png" mode="widthFix"></image>
 					<view class="cont">
-						<swiper vertical="true" autoplay="true" circular="true" class="notice_swiper">
+						<swiper vertical="true" autoplay="true" circular="true" class="notice_swiper" @change="goRandom">
 							<swiper-item v-for="(item, index) in noticeList" :key="index">
-								<view><text>{{item.nickname}}</text>5分钟前成功开通直通车</view>
+								<view><text>{{item.nickname}}</text>{{randomTime}}分钟前成功开通直通车</view>
 							</swiper-item>
 						</swiper>
 					</view>
@@ -73,13 +73,22 @@
 	export default {
 		data() {
 			return {
+				randomTime: 5, //随机时间
 				old: {
 					scrollTop: 0
 				},
 				noticeList: [
-					{nickname: '周梦梦'},
-					{nickname: 'ARIT'},
-					{nickname: '嘎嘣脆'},
+					{nickname: '彭万*'},
+					{nickname: '林*'},
+					{nickname: '范长*'},
+					{nickname: '王*'},
+					{nickname: '范长*'},
+					{nickname: '洪学*'},
+					{nickname: '吴国*'},
+					{nickname: '张*'},
+					{nickname: '孙杵*'},
+					{nickname: '孙书*'},
+					{nickname: '郝爱*'},
 				],
 				icon_list: [
 					{
@@ -112,7 +121,7 @@
 			};
 		},
 		onShow() {
-
+			this.goRandom()
 		},
 		methods: {
 			scroll(e) {
@@ -125,6 +134,10 @@
 					urls: this.showList,
 					current: 0
 				})
+			},
+			// 随机数
+			goRandom() {
+				this.randomTime = Math.floor(Math.random()*(30-5))+5
 			},
 			goNext() {
 				uni.navigateTo({
