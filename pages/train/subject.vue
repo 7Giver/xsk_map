@@ -3,19 +3,19 @@
 		<view class="header">
 			<image class="bg_img" src="/static/train/pic_1.png" mode="widthFix"></image>
 			<view class="msg_block">
-				<view class="title">直通车累计为<text>{{336897}}</text>位用户提供了</view>
+				<view class="title">直通车累计为<text>{{randomObj.client}}</text>位用户提供了</view>
 				<view class="train_data">
 					<view class="item">
 						<view>人脉</view>
-						<view>{{9987455}}</view>
+						<view>{{randomObj.friendShip}}</view>
 					</view>
 					<view class="item">
 						<view>需求</view>
-						<view>{{9987455}}</view>
+						<view>{{randomObj.demand}}</view>
 					</view>
 					<view class="item">
 						<view>订单</view>
-						<view>{{9987455}}</view>
+						<view>{{randomObj.orders}}</view>
 					</view>
 				</view>
 				<!-- 公告 -->
@@ -32,6 +32,12 @@
 			</view>
 		</view>
 		<view class="container">
+			<view class="train_block">
+				<view class="title">搜搜直通车简介</view>
+				<view class="content">
+					<view class="text">搜搜集团旗下搜搜直通车，于2015年起，已累计为17万客户提供了<text>2500多万客源</text>，以及超过5亿人次的品牌曝光。与<text>百度</text>、<text>360</text>、<text>搜狗</text>建立稳定持续的战略合作关系。搜索引擎代理投放产业发起者，树立了行业品牌标杆持续引领行业发展。</view>
+				</view>
+			</view>
 			<view class="train_block">
 				<view class="title">每日签单真实案例</view>
 				<view class="content">
@@ -73,7 +79,13 @@
 	export default {
 		data() {
 			return {
-				randomTime: 5, //随机时间
+				randomObj: {  //随机数对象
+					client: 170360,
+					friendShip: 25013580,
+					demand: 23645894,
+					orders: 15261843,
+				},
+				randomTime: 0, //随机时间
 				old: {
 					scrollTop: 0
 				},
@@ -121,7 +133,13 @@
 			};
 		},
 		onShow() {
+			uni.setNavigationBarTitle({
+				title: "搜搜直通车快速获客"
+			})
+			this.setRandom()
 			this.goRandom()
+			this.goShare()
+			this.goShareCircle()
 		},
 		methods: {
 			scroll(e) {
@@ -135,6 +153,29 @@
 					current: 0
 				})
 			},
+			//首页随机数
+			setRandom() {
+				let plus = Math.floor(Math.random()*(100-10))+10
+				let randomObj = uni.getStorageSync('randomObjV2')
+                if (randomObj) {
+					randomObj.client = randomObj.client*1 + plus
+					randomObj.friendShip = randomObj.friendShip*1 + plus
+					randomObj.demand = randomObj.demand*1 + plus
+					randomObj.orders = randomObj.orders*1 + plus
+					uni.setStorage({
+						key: "randomObjV2",
+						data: randomObj
+					})
+					this.randomObj = randomObj
+                } else {
+                    uni.setStorage({
+						key: "randomObjV2",
+						data: this.randomObj
+					})
+				}
+				uni.removeStorageSync('randomObjV1');
+				uni.removeStorageSync('randomObj');
+			},
 			// 随机数
 			goRandom() {
 				this.randomTime = Math.floor(Math.random()*(30-5))+5
@@ -143,7 +184,53 @@
 				uni.navigateTo({
 					url: '/pages/train/train'
 				})
-			}
+			},
+			// 调用微信自定义分享
+			goShare() {
+				let obj = {
+					title: `搜搜直通车快速获客`,
+					desc: `精准获取本地人脉 开启无限获客新模式`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/ed/ed3413bfbcb35385ee657537d71a98ab.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							desc: obj.desc, // 分享描述
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
+							// console.log('response', response)
+						})
+					})
+				}
+				// #endif
+			},
+			// 调用微信分享朋友圈
+			goShareCircle() {
+				let obj = {
+					title: `搜搜直通车快速获客`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/ed/ed3413bfbcb35385ee657537d71a98ab.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareTimeline(shareData, function(response) {
+							// console.log('response', response)
+						})
+					})
+				}
+				// #endif
+			},
 		}
 	}
 </script>
@@ -168,7 +255,7 @@
 
 			.title {
 				width: 86%;
-				padding: 10rpx 0;
+				padding: 9rpx 0;
 				margin: 0 auto;
 				color: #fff;
 				font-size: 30rpx;
@@ -191,7 +278,7 @@
 
 				.item {
 					color: #fff;
-					padding: 24rpx 0 38rpx;
+					padding: 16rpx 0 16rpx;
 					font-size: 32rpx;
 					letter-spacing: 1px;
 					text-align: center;
@@ -249,7 +336,6 @@
 
 		.train_block {
 			position: relative;
-			padding-bottom: 24rpx;
 			margin: 74rpx auto 0;
 			border-radius: 20rpx;
 			background: #B9DCFF;
@@ -292,8 +378,24 @@
 				}
 			}
 
+			&:first-child {
+				.content {
+					padding: 60rpx 40rpx 28rpx;
+				}	
+			}
+
 			.content {
-				padding: 80rpx 40rpx 20rpx;
+				padding: 78rpx 40rpx 40rpx;
+
+				.text {
+					color: #004E77;
+					font-size: 28rpx;
+					line-height: 56rpx;
+
+					>text {
+						color: #FF1616;
+					}
+				}
 
 				.scroll-view {
 					white-space: nowrap;

@@ -72,6 +72,10 @@
             "path" : "pages/train/subject",
             "style" : {}
         }
+        ,{
+            "path" : "pages/train/source_details",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

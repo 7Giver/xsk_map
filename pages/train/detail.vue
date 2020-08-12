@@ -1,6 +1,7 @@
 <template>
 	<view id="app">
 		<scroll-view class="scroll_content" scroll-y @scrolltolower="getMoreList">
+			<uni-nav-bar title="搜搜直通车快速获客" left-icon="back" @clickLeft="back"></uni-nav-bar>
 			<view class="banner">
 				<image src="/static/train/banner02.png" mode="widthFix">
 				<image src="/static/train/border.png" mode="widthFix">
@@ -59,7 +60,7 @@
 						<text>拨打</text>
 					</view>
 					<view class="client_list" v-if="!loadingMore && clientList.length !== 0">
-						<view class="item" v-for="(item, index) in clientList.slice(0,6)" :key="index">
+						<view class="item" v-for="(item, index) in clientList.slice(0,6)" :key="index" @click="goDetail(item.id)">
 							<text>{{item.name}}</text>
 							<text>{{item.city}}</text>
 							<text>{{item.add_time}}</text>
@@ -71,7 +72,7 @@
 					</view>
 					<view class="more" v-if="!loadingMore && clientList.length !== 0" @click="showMore">加载更多</view>
 					<view class="client_list" v-if="loadingMore && clientList.length !== 0">
-						<view class="item" v-for="(item, index) in clientList" :key="index">
+						<view class="item" v-for="(item, index) in clientList" :key="index" @click="goDetail(item.id)">
 							<text>{{item.name}}</text>
 							<text>{{item.city}}</text>
 							<text>{{item.add_time}}</text>
@@ -92,9 +93,11 @@
 
 <script>
 	import { mapState, mapMutations } from 'vuex';
+	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	export default {
 		components: {
+			uniNavBar,
 			uniLoadMore
 		},
 		data() {
@@ -113,6 +116,9 @@
     		...mapState(['userInfo'])
   		},
 		onLoad(option) {
+			uni.setNavigationBarTitle({
+				title: "搜搜直通车快速获客"
+			})
 			let order = option.order_sn
 			this.order = order
 			this.guest = this.userInfo
@@ -121,6 +127,12 @@
 			this.getClientList()
 		},
 		methods: {
+			// 返回我的页面
+			back() {
+				uni.switchTab({
+					url: '/pages/mine/mine'
+				})
+			},
 			// 获取缓存
 			getLocal() {
 				let obj = uni.getStorageSync('postMsg')
@@ -202,6 +214,14 @@
 						}
 					});
 			},
+			// 跳转客源详情
+			goDetail(id) {
+				// console.log(index)
+				return false
+				uni.navigateTo({
+					url: '/pages/train/source_details?id='+id
+				})
+			}
 		}
 	}
 </script>

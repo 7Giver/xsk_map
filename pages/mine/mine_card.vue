@@ -894,6 +894,7 @@
 		border-radius: 40rpx;
 		background: linear-gradient(90deg,rgba(153,153,255,1) 0%, rgba(102,204,255,1) 100%);
 		transform: translate(-50%, -50%);
+		z-index: 99;
 	}
 
 	.poster_block {

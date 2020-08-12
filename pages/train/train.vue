@@ -1,11 +1,11 @@
 <template>
 	<view id="app" v-cloak>
 		<!-- <uni-nav-bar title="快速获客" left-icon="back" @clickLeft="back"></uni-nav-bar> -->
-		<uni-nav-bar title="快速获客" left-icon="back" rightText="了解详情" @clickLeft="back" @clickRight="goNext"></uni-nav-bar>
+		<uni-nav-bar title="搜搜直通车快速获客" left-icon="back" rightText="了解详情" @clickLeft="back" @clickRight="goNext"></uni-nav-bar>
 		<view class="banner">
-			<image src="/static/train/banner.png" mode="widthFix">
+			<image src="/static/train/banner.png?v=7" mode="widthFix" @click="posterShow">
 			<image src="/static/train/border.png" mode="widthFix">
-			<image @click="posterShow" class="finger" src="/static/train/finger.gif" mode="widthFix">
+			<!-- <image @click="posterShow" class="finger" src="/static/train/finger.gif" mode="widthFix"> -->
 		</view>
 		<view class="top_block">
 			<image :src="guest.avatar || setObj.headimgurl" mode="widthFix">
@@ -175,6 +175,9 @@
     		...mapState(['userInfo'])
   		},
 		onShow() {
+			uni.setNavigationBarTitle({
+				title: "搜搜直通车快速获客"
+			})
 			this.getUserInfo()
 			this.getAreaList()
 			this.goShare()
@@ -591,6 +594,7 @@
 					flex: 1;
 					display: flex;
 					white-space: nowrap;
+					color: #232739;
 					font-weight: bold;
 
 					input {
