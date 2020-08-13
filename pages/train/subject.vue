@@ -20,7 +20,7 @@
 				</view>
 				<!-- 公告 -->
 				<view class="notice">
-					<image class="icon_l" src="/static/train/icon_lb.png" mode="widthFix"></image>
+					<image class="icon_l" src="/static/train/icon_lb.png" mode=""></image>
 					<view class="cont">
 						<swiper vertical="true" autoplay="true" circular="true" class="notice_swiper" @change="goRandom">
 							<swiper-item v-for="(item, index) in noticeList" :key="index">
@@ -41,9 +41,30 @@
 			<view class="train_block">
 				<view class="title">每日签单真实案例</view>
 				<view class="content">
-					<scroll-view class="scroll-view" scroll-x="true" @scroll="scroll" scroll-left="120">
+					<scroll-view class="scroll-view" scroll-x="true" @scroll="scroll">
 						<view class="scroll-view-item" v-for="(item, index) in showList" :key="index" @click="fullImg">
 							<image :src="item" mode="widthFix"></image>
+						</view>
+                	</scroll-view>
+				</view>
+			</view>
+			<view class="train_block">
+				<view class="title">直通车投放效果展示</view>
+				<view class="content">
+					<scroll-view class="scroll-view" scroll-x="true" @scroll="scroll_video">
+						<view class="video_block" v-for="(item, index) in videoList" :key="index">
+							<video 
+								id="myVideo"
+								:src="item.video"
+								:poster="item.poster"
+								:muted="true"
+								:show-fullscreen-btn="true"
+								:enable-progress-gesture="false"
+								:object-fit="index == 0 ? 'contain' : 'fill'"
+								@error="videoErrorCallback"
+								controls
+							>
+							</video>
 						</view>
                 	</scroll-view>
 				</view>
@@ -89,6 +110,24 @@
 				old: {
 					scrollTop: 0
 				},
+				videoList: [
+					{
+						video: 'http://qe9i29b4d.bkt.clouddn.com/video/e7/e71468eca4550533548846b5f85bd8ba.mp4',
+						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/2b/2bd5f6fab5ab32b24998be5b8f6f636a.png'
+					},
+					{
+						video: 'http://qe9i29b4d.bkt.clouddn.com/video/73/7309a5c693660ea4071fe5613733db98.mp4',
+						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/ca/ca51a428173f57d46205933c8ec53d2d.png'
+					},
+					{
+						video: 'http://qe9i29b4d.bkt.clouddn.com/video/f3/f3469a54e71d0b9e953f9b4250f07845.mp4',
+						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/ca/ca51a428173f57d46205933c8ec53d2d.png'
+					},
+					{
+						video: 'http://qe9i29b4d.bkt.clouddn.com/video/f4/f4766f3383374a9764b5721517ac8a72.mp4',
+						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/e5/e5f74955ab746c7c561243eff0ad7dfd.png'
+					}
+				],
 				noticeList: [
 					{nickname: '彭万*'},
 					{nickname: '林*'},
@@ -145,6 +184,9 @@
 			scroll(e) {
 				// console.log(e)
 				this.old.scrollTop = e.detail.scrollTop
+			},
+			scroll_video(e) {
+
 			},
 			// 全屏展示图片
 			fullImg(url) {
@@ -231,6 +273,13 @@
 				}
 				// #endif
 			},
+			// 视频报错回调
+			videoErrorCallback(e) {
+				uni.showModal({
+					content: e.target.errMsg,
+					showCancel: false
+				})
+			},
 		}
 	}
 </script>
@@ -299,6 +348,7 @@
 
 			.icon_l {
 				width: 28rpx;
+				height: 24rpx;
 				margin-left: 16rpx;
 			}
 
@@ -420,6 +470,21 @@
 				>image {
 					display: flex;
 					width: 100%;
+				}
+
+				.video_block {
+					width: 510rpx;
+					height: 370rpx;
+					display: inline-block;
+
+					&:not(:last-child) {
+						margin-right: 20rpx;
+					}
+
+					#myVideo {
+						width: 100%;
+						height: 100%;
+					}
 				}
 			}
 		}

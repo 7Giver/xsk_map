@@ -57,7 +57,7 @@
 						<text>区域</text>
 						<text>状态</text>
 						<text>日期</text>
-						<text> </text>
+						<text>详情</text>
 					</view>
 					<view class="client_list" v-if="!loadingMore && clientList.length !== 0">
 						<view class="item" v-for="(item, index) in clientList.slice(0,6)" :key="index" @click="goDetail(item.id)">
@@ -381,7 +381,7 @@
 					}
 
 					&:nth-child(5) {
-						flex: 0.85;
+						flex: 1.1;
 					}
 				}
 			}
@@ -409,9 +409,9 @@
 							flex: 1.8;
 						}
 
-						&:nth-child(5) {
-							flex: 0.85;
-						}
+						// &:nth-child(5) {
+						// 	flex: 0.85;
+						// }
 					}
 
 					>view {
