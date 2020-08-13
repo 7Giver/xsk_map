@@ -55,19 +55,19 @@
 					<view class="main_title">
 						<text>姓名</text>
 						<text>区域</text>
+						<text>状态</text>
 						<text>日期</text>
-						<text>电话号码</text>
-						<text>拨打</text>
+						<text> </text>
 					</view>
 					<view class="client_list" v-if="!loadingMore && clientList.length !== 0">
 						<view class="item" v-for="(item, index) in clientList.slice(0,6)" :key="index" @click="goDetail(item.id)">
 							<text>{{item.name}}</text>
 							<text>{{item.city}}</text>
+							<text v-if="item.is_tention==0">未选择</text>
+							<text v-if="item.is_tention==1">有意向</text>
+							<text v-if="item.is_tention==2">无意向</text>
 							<text>{{item.add_time}}</text>
-							<text>{{item.mobile}}</text>
-							<view @click="goCall(item.mobile)">
-								<image src="/static/train/tel.png" mode="widthFix">
-							</view>
+							<view>详情</view>
 						</view>
 					</view>
 					<view class="more" v-if="!loadingMore && clientList.length !== 0" @click="showMore">加载更多</view>
@@ -75,11 +75,11 @@
 						<view class="item" v-for="(item, index) in clientList" :key="index" @click="goDetail(item.id)">
 							<text>{{item.name}}</text>
 							<text>{{item.city}}</text>
+							<text v-if="item.is_tention==0">未选择</text>
+							<text v-if="item.is_tention==1">有意向</text>
+							<text v-if="item.is_tention==2">无意向</text>
 							<text>{{item.add_time}}</text>
-							<text>{{item.mobile}}</text>
-							<view @click="goCall(item.mobile)">
-								<image src="/static/train/tel.png" mode="widthFix">
-							</view>
+							<view>详情</view>
 						</view>
 					</view>
 					<view class="listNone" v-if="clientList.length == 0">暂无数据</view>
@@ -217,7 +217,7 @@
 			// 跳转客源详情
 			goDetail(id) {
 				// console.log(index)
-				return false
+				// return false
 				uni.navigateTo({
 					url: '/pages/train/source_details?id='+id
 				})
@@ -376,7 +376,6 @@
 						flex: 1.5;
 					}
 						
-					&:nth-child(3),
 					&:nth-child(4) {
 						flex: 1.8;
 					}
@@ -406,7 +405,6 @@
 							flex: 1.5;
 						}
 						
-						&:nth-child(3),
 						&:nth-child(4) {
 							flex: 1.8;
 						}
@@ -418,11 +416,23 @@
 
 					>view {
 						display: flex;
+						align-items: center;
 						justify-content: center;
-
+						color: #4B7EF6;
+						
 						>image {
 							width: 36rpx;
 							border-radius: 50%;
+						}
+
+						&::after {
+							content: "";
+							width: 12rpx;
+							height: 12rpx;
+							border-top: 1px solid #4B7EF6;
+							border-right: 1px solid #4B7EF6;
+							transform: rotate(45deg);
+							margin-left: 4rpx;
 						}
 					}
 				}

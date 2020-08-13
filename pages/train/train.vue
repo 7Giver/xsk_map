@@ -248,7 +248,8 @@
 					this.$test
 						.post(`/?r=api/index/mobile`, {
 							wxid: this.userInfo.wxid || this.setObj.wxid,
-							mobile: tel
+							mobile: value,
+							type: 2
 						})
 						.then(response => {
 							// console.log(response)

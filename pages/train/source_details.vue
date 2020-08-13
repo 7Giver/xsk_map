@@ -4,12 +4,12 @@
 			<image src="/static/train/border.png" mode="widthFix">
 		</view>
 		<view class="header">
-			<view class="item">客源姓名：<text>欧阳娜娜</text></view>
-			<view class="item">客源区域：<text>南京</text></view>
-			<view class="item"><view>日</view><view>期：</view><text>2020-08-12</text></view>
+			<view class="item">客源姓名：<text>{{guest.name}}</text></view>
+			<view class="item">客源区域：<text>{{guest.province}} {{guest.city}}</text></view>
+			<view class="item"><view>日</view><view>期：</view><text>{{guest.add_time}}</text></view>
 			<view class="item">联系电话：
-				<text>19801891997</text>
-				<view class="phone" @click="goCall">
+				<text>{{guest.mobile}}</text>
+				<view class="phone" @click="goCall(guest.mobile)">
 					<image src="/static/train/phone.png" mode="widthFix">
 					<text>拨打</text>
 				</view>
@@ -18,14 +18,14 @@
 		<view class="block"></view>
 		<view class="content">
 			<view class="title">客源详情</view>
-			<textarea placeholder="请输入客源详情"/>
+			<view class="source_detail">{{guest.detail || '暂无详情'}}</view>
 			<view class="title">客源意向</view>
 			<view class="source_block">
-				<view :class="{'on':sourceIndex == 0}" @click="selectSource(0)">有意向</view>
-				<view :class="{'on':sourceIndex == 1}" @click="selectSource(1)">无意向</view>
+				<view :class="{'on':sourceIndex == 1}" @click="selectSource(1)">有意向</view>
+				<view :class="{'on':sourceIndex == 2}" @click="selectSource(2)">无意向</view>
 			</view>
 			<view class="title">备注</view>
-			<textarea placeholder="请输入备注信息"/>
+			<textarea v-model="guest.remark" placeholder="请输入备注信息"/>
 		</view>
 		<view class="submit_btn" @click="submit">更新信息</view>
 	</view>
@@ -35,7 +35,8 @@
 	export default {
 		data() {
 			return {
-				sourceIndex: 0, //客源意向
+				guest: {}, // 客源信息
+				sourceIndex: 1, //客源意向
 			};
 		},
 		onLoad(option) {
@@ -49,25 +50,49 @@
 						id: id
 					})
 					.then(response => {
-						console.log(response)
+						// console.log(response)
 						if (response.code === 200) {
-							// this.guest = response.data
+							this.guest = response.data
+							this.sourceIndex = this.guest.is_tention
 						}
-					});
+					})
 			},
 			//选择客源意向
 			selectSource(index) {
-				index === 0 ? this.sourceIndex = 0 : this.sourceIndex = 1
+				index === 1 ? this.sourceIndex = 1 : this.sourceIndex = 2
 			},
 			// 调起电话
 			goCall(tel) {
 				uni.makePhoneCall({
     				phoneNumber: tel
-				});
+				})
 			},
 			// 提交信息
 			submit() {
-				
+				let obj = {
+					id: this.guest.id,
+					remark: this.guest.remark,
+					is_tention: this.sourceIndex
+				}
+				// console.log(obj)
+				this.$test
+					.post(`/?r=api/customer/remark`, obj)
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							uni.showToast({
+								title: '提交成功',
+								icon: 'none',
+								success: res => {
+									setTimeout(() => {
+										uni.redirectTo({
+											url: '/pages/train/detail'
+										})
+									}, 600)
+								}
+							})
+						}
+					})
 			}
 		}
 	}
@@ -155,6 +180,13 @@
 				margin-right: 18rpx;
 				background: #4B7EF6;
 			}
+		}
+
+		.source_detail {
+			color: #666;
+			font-size: 30rpx;
+			margin: 40rpx auto;
+			padding-left: 30rpx;
 		}
 
 		>textarea {

@@ -1,7 +1,7 @@
 <template>
 	<view id="app">
 		<view class="banner">
-			<image src="/static/about/banner.png" mode="widthFix"></image>
+			<image src="/static/about/banner.png?v=7" mode="widthFix"></image>
 		</view>
 		<view class="content">
 			<view class="bg_box">
