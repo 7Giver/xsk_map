@@ -76,6 +76,12 @@
             "path" : "pages/train/source_details",
             "style" : {}
         }
+        ,{
+            "path" : "pages/train/train_service",
+            "style" : {
+                "navigationBarTitleText": "直通车投放服务协议"
+            }
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

@@ -69,12 +69,12 @@
 			</view>
 		</view>
 		<!-- 协议 -->
-		<view class="agreement" @click="checkagree">
-			<view class="checked">
+		<view class="agreement">
+			<view class="checked" @click="checkagree">
 				<image v-if="agreement" src="/static/pay/check.png" mode=""></image>
 				<image v-else src="/static/pay/nocheck.png" mode=""></image>
 			</view>
-			<view>我已阅读并同意<text>《直通车投放服务协议》</text></view>
+			<view @click="goTrainService">我已阅读并同意<text>《直通车投放服务协议》</text></view>
 		</view>
 		<!-- 底部 -->
 		<view class="bottom">
@@ -159,6 +159,12 @@
 			back() {
 				uni.redirectTo({
 					url: '/pages/train/train'
+				})
+			},
+			// 直通车协议
+			goTrainService() {
+				uni.navigateTo({
+					url: '/pages/train/train_service?order_sn='+this.order_sn
 				})
 			},
 			// 切换支付方式

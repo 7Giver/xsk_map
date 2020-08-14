@@ -117,15 +117,15 @@
 					},
 					{
 						video: 'http://qe9i29b4d.bkt.clouddn.com/video/73/7309a5c693660ea4071fe5613733db98.mp4',
-						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/ca/ca51a428173f57d46205933c8ec53d2d.png'
+						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/e5/e5f74955ab746c7c561243eff0ad7dfd.png'
 					},
 					{
 						video: 'http://qe9i29b4d.bkt.clouddn.com/video/f3/f3469a54e71d0b9e953f9b4250f07845.mp4',
-						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/ca/ca51a428173f57d46205933c8ec53d2d.png'
+						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/e5/e5f74955ab746c7c561243eff0ad7dfd.png'
 					},
 					{
 						video: 'http://qe9i29b4d.bkt.clouddn.com/video/f4/f4766f3383374a9764b5721517ac8a72.mp4',
-						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/e5/e5f74955ab746c7c561243eff0ad7dfd.png'
+						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/ca/ca51a428173f57d46205933c8ec53d2d.png'
 					}
 				],
 				noticeList: [
@@ -215,8 +215,6 @@
 						data: this.randomObj
 					})
 				}
-				uni.removeStorageSync('randomObjV1');
-				uni.removeStorageSync('randomObj');
 			},
 			// 随机数
 			goRandom() {
