@@ -106,15 +106,6 @@
 				pageShow: false, // 页面显示
 				showMask: false, // 提示遮罩
 				agreement: true, // 同意协议
-				result: {
-					putInList: [
-						{address: '江苏 无锡'},
-						{address: '江苏 苏州'},
-						{address: '江苏 南京'},
-					],
-					client: 100,
-					time: 3
-				}
 			};
 		},
 		computed: {

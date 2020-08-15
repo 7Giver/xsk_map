@@ -8,7 +8,7 @@
             <view>您好，<text>{{userInfo.name}}</text></view>
 			<view>我是您的专属客服，下面是我的二维码，请长按并识别添加我哦！</view>
 			<view class="img">
-				<image src="/static/mine/2_code.png" mode="widthFix">
+				<image :src="qrcode" mode="widthFix">
 			</view>
         </view>
 		<view class="bottom" @click="goCall(tel)">
@@ -29,19 +29,40 @@ export default {
 	},
 	data() {
 		return {
+			qrcode: '', //客服二维码
 			tel: '4000-929-777'
 		}
 	},
 	computed: {
     	...mapState(['userInfo'])
-  	},
+	},
+	onShow() {
+		this.getServiceCode()
+	},
 	methods: {
 		// 调起电话
 		goCall(tel) {
 			uni.makePhoneCall({
 				phoneNumber: tel
 			});
-		}
+		},
+		// 获取订单详情
+		getServiceCode() {
+			let value = uni.getStorageSync('userMsg')
+			this.$test
+				.post(`/?r=api/user/server`, {
+					wxid: this.userInfo.wxid || value.wxid
+				})
+				.then(response => {
+					// console.log(response)
+					if (response.code === 200) {
+						let resultData = response.data
+						resultData.qrcode
+							? this.qrcode = resultData.qrcode
+							: this.qrcode = '/static/mine/2_code.png'
+					}
+				});
+		},
 	}
 }
 </script>
