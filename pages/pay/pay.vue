@@ -92,7 +92,7 @@
 					<image v-if="agreement" src="/static/pay/check.png" mode=""></image>
 					<image v-else src="/static/pay/nocheck.png" mode=""></image>
 				</view>
-				<view>我已阅读并同意《地图标注支付服务协议》</view>
+				<view>我已阅读并同意<text @click.stop="goPayService">《地图标注服务协议》</text></view>
 			</view>
 		</view>
 		<!-- 底部 -->
@@ -199,7 +199,7 @@
 				if (ua.match(/MicroMessenger/i) == "micromessenger") {
 					// console.log('微信浏览器')
 					this.pageShow = true
-				}else{
+				} else {
 					// console.log('普通浏览器')
 					window.location.href = `${this.$testURL}?r=api/alipay/pay&order_sn=${this.order_sn}`  //支付宝
 				}
@@ -221,6 +221,12 @@
 			// 同意协议
 			checkagree() {
 				this.agreement = !this.agreement;
+			},
+			// 直通车协议
+			goPayService() {
+				uni.navigateTo({
+					url: '/pages/pay/pay_service?order_sn='+this.order_sn
+				})
 			},
 			// 获取选中地图
 			getMap() {
@@ -585,6 +591,10 @@
 				>view {
 					color: #333;
 					font-size: 24rpx;
+
+					>text {
+						color: #4B7EF6;
+					}
 				}
 			}
 		}

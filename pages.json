@@ -82,6 +82,10 @@
                 "navigationBarTitleText": "直通车投放服务协议"
             }
         }
+        ,{
+            "path" : "pages/pay/pay_service",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

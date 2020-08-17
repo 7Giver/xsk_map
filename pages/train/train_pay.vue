@@ -69,12 +69,12 @@
 			</view>
 		</view>
 		<!-- 协议 -->
-		<view class="agreement">
-			<view class="checked" @click="checkagree">
+		<view class="agreement" @click="checkagree">
+			<view class="checked">
 				<image v-if="agreement" src="/static/pay/check.png" mode=""></image>
 				<image v-else src="/static/pay/nocheck.png" mode=""></image>
 			</view>
-			<view @click="goTrainService">我已阅读并同意<text>《直通车投放服务协议》</text></view>
+			<view>我已阅读并同意<text @click.stop="goTrainService">《直通车投放服务协议》</text></view>
 		</view>
 		<!-- 底部 -->
 		<view class="bottom">
