@@ -1,5 +1,6 @@
 <template>
 	<view id="app">
+		<uni-nav-bar title="客源详情" left-icon="back" @clickLeft="back"></uni-nav-bar>
 		<view class="banner">
 			<image src="/static/train/border.png" mode="widthFix">
 		</view>
@@ -32,7 +33,11 @@
 </template>
 
 <script>
+	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 	export default {
+		components: {
+			uniNavBar
+		},
 		data() {
 			return {
 				guest: {}, // 客源信息
@@ -56,6 +61,12 @@
 							this.sourceIndex = this.guest.is_tention
 						}
 					})
+			},
+			// 返回我的页面
+			back() {
+				uni.redirectTo({
+					url: '/pages/train/detail'
+				})
 			},
 			//选择客源意向
 			selectSource(index) {

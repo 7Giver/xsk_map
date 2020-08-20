@@ -86,6 +86,10 @@
             "path" : "pages/pay/pay_service",
             "style" : {}
         }
+        ,{
+            "path" : "pages/mine/bell",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

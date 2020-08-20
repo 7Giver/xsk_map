@@ -36,6 +36,10 @@
 				<image src="/static/mine/min_card.png" mode="">
 			    <text>搜搜名片</text>
             </view>
+            <view class="item" @click="goNext('bell')">
+				<image src="/static/mine/bell.png" mode="">
+			    <text>企业彩铃</text>
+            </view>
             <view class="item" @click="goNext('friend')">
                 <image src="/static/mine/team.png" mode="">
                 <text>人脉市集</text>
@@ -251,6 +255,9 @@ export default {
             switch (type) {
 				case 'card':
 					url = '/pages/mine/mine_card'
+                    break;
+                case 'bell':
+					url = '/pages/mine/bell'
 					break;
 				case 'friend':
 					url = '/pages/mine/connection'

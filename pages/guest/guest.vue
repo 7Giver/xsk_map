@@ -76,15 +76,15 @@
 						</view> -->
 						<view class="my_item">
 							<view class="label">手机号码</view>
-							<input id="tel" type="number" v-model="guest.tel" @blur="saveMsg" maxlength="11" placeholder="请填写真实有效的手机号码" />
+							<input id="tel" type="number" v-model="guest.tel" @blur="saveMsg" maxlength="11" placeholder="电话（预留在地图的电话）" />
 						</view>
 						<view class="my_item">
 							<view class="label">店铺/公司名称</view>
-							<input type="text" v-model="guest.company_name" @blur="saveMsg" placeholder="请填写真实有效店铺/公司名称" />
+							<input type="text" v-model="guest.company_name" @blur="saveMsg" placeholder="店名（招牌名称）" />
 						</view>
 						<view class="my_item">
 							<view class="label">店铺/公司地址</view>
-							<input type="text" v-model="guest.address" @blur="saveMsg" placeholder="请填写真实有效店铺/公司地址" />
+							<input type="text" v-model="guest.address" @blur="saveMsg" placeholder="地址（x省x市x区x镇x街x号）" />
 						</view>
 						<view class="form-btn1" @click="submit">立即标注地图 客户轻松上门</view>
 						<!-- <view class="form-btn" @click="submit">
