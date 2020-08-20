@@ -24,7 +24,7 @@
 			<view class="cash_block">
 				<view class="title">限时优惠</view>
 				<view class="number">
-					<view>地图批量标注</view>
+					<view>地图批量标注<text>（买一送一）</text></view>
 					<view><text>￥</text>{{origin_cost}}</view>
 				</view>
 			</view>
@@ -45,6 +45,14 @@
 					</view>
 					<view class="and"></view>
 					<view class="item" @click="_showItem(1)">
+						<image src="/static/pay/ring.png" mode="widthFix" style="width: 40rpx"></image>
+						<view class="text">
+							<view>企业彩铃</view>
+							<view>（点击预览）</view>
+						</view>
+					</view>
+					<view class="and"></view>
+					<view class="item" @click="_showItem(2)">
 						<image src="/static/pay/c_card.png" mode="widthFix"></image>
 						<view class="text">
 							<view>潜在客源</view>
@@ -146,7 +154,11 @@
 				showDailog: false, // 展示弹窗
 				agreement: true, // 同意协议
 				checkItems: [],  // 选中地图
-				showItems: [{cover: '/static/pay/mycard.png'},{cover: '/static/pay/people.png'},],  // 展示数据
+				showItems: [
+					{cover: '/static/pay/mycard.png'},
+					{cover: '/static/pay/ring_show.png'},
+					{cover: '/static/pay/people.png'},
+				],  // 展示数据
 				showlist: [
                     {
 						image: "/static/pay/address.png",
@@ -396,6 +408,11 @@
 						color: #603814;
 						font-size: 32rpx;
 						font-weight: bold;
+
+						>text {
+							color: #FF423A;
+							font-size: 28rpx;
+						}
 					}
 
 					>:last-child {
@@ -440,7 +457,6 @@
 				}
 
 				.right {
-					flex: 4;
 					display: flex;
 					align-items: center;
 					justify-content: space-between;
@@ -448,15 +464,19 @@
 					.item {
 						display: flex;
 						align-items: center;
+						flex-direction: column;
 
 						>image {
-							width: 60rpx;
+							display: block;
+							width: 50rpx;
+							margin-bottom: 10rpx;
 						}
 
 						.text {
 							font-size: 24rpx;
 							line-height: 30rpx;
 							text-align: center;
+							white-space: nowrap;
 
 							>:last-child {
 								color: #249BFA;
@@ -467,7 +487,7 @@
 					.and {
 						width: 20px;
 						height: 20px;
-						margin-right: 24rpx;
+						margin-right: 10rpx;
 						position: relative;
 
 						&::before,

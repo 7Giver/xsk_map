@@ -21,22 +21,29 @@
 					v-for="(item, index) in ringList"
 					:key="index"
 				>
-					<view class="left">
+					<view :class="[item.play ? 'left on' : 'left']">
 						<image :src="item.avatar" mode="widthFix">
 						<view class="">
 							<view class="title">{{item.title}}</view>
 							<view class="tips">{{item.profession}}</view>
 						</view>
 					</view>
-					<view class="right" @click="goPlayAudio(item.url)">
-						<view>
-							<image src="/static/mine/bell/listen.png" mode="widthFix">
+					<view class="right">
+						<view @click="goPlayAudio(item)" v-if="!item.play">
+							<image src="/static/mine/bell/listen.png" mode="widthFix" >
 							<text>试听</text>
+						</view>
+						<view @click="goStopAudio(item)" v-else>
+							<image src="/static/mine/bell/play.gif" mode="widthFix">
+							<text>停止</text>
 						</view>
 					</view>
 				</view>
 			</view>
-			<view class="more_btn" @click="goShowMore" v-if="!showMore">加载更多</view>
+			<view class="more_btn" @click="goShowMore" v-if="!showMore">
+				<image src="/static/mine/bell/load_more.png" mode="widthFix">
+				<text>加载更多</text>
+			</view>
 		</view>
 		<div class="block"></div>
 		<view class="poster_block">
@@ -92,7 +99,12 @@
 		},
 		onLoad() {
 			this.getBellList()
-			this.innerAudioContext = uni.createInnerAudioContext();
+			// this.innerAudioContext = uni.createInnerAudioContext();
+		},
+		onUnload() {
+			this.ringList.forEach(item => {
+				item.innerAudioContext.destroy()
+			})
 		},
 		methods: {
 			// 获取用户信息
@@ -124,16 +136,24 @@
 					.then(response => {
 						// console.log(response)
 						if (response.code === 200) {
-							this.bellList = response.data
+							this.bellList = this.methodArr(response.data)
 							this.bellList.forEach((item, index) => {
 								let avatar = this.goRandom(index)
 								this.$set(item, 'avatar', avatar)
+								this.$set(item, 'innerAudioContext', uni.createInnerAudioContext())
 							})
 							this.bellList.slice(0,5).forEach(item => {
 								this.ringList.push(item)
 							})
 						}
 					})
+			},
+			// 随机数组排序
+			methodArr(arr){
+				arr.sort(function(){
+					return Math.random()-0.5;
+				});
+				return arr
 			},
 			//获取循环头像
 			goRandom(index) {
@@ -180,14 +200,34 @@
 				}
 			},
 			// 音频播放
-			goPlayAudio(audio) {
-				this.innerAudioContext.autoplay = true;
-				this.innerAudioContext.src = audio;
-				this.innerAudioContext.onPlay(() => {
+			goPlayAudio(item) {
+				this.bellList.forEach(i => {
+					i.innerAudioContext.pause();
+				})
+				item.innerAudioContext.autoplay = true;
+				item.innerAudioContext.src = item.url;
+				item.innerAudioContext.onPlay(() => {
 					// console.log('开始播放');
+					this.ringList.forEach(i => {
+						this.$set(i, 'play', false)
+					})
+					this.$set(item, 'play', true)
 				})
 				
-				this.innerAudioContext.onError((res) => {
+				item.innerAudioContext.onError((res) => {
+					console.log(res.errMsg);
+					console.log(res.errCode);
+				});
+			},
+			// 暂停音频
+			goStopAudio(item) {
+				item.innerAudioContext.pause();
+				item.innerAudioContext.onPause(() => {
+					// console.log('暂停');
+					this.$set(item, 'play', false)
+				})
+
+				item.innerAudioContext.onError((res) => {
 					console.log(res.errMsg);
 					console.log(res.errCode);
 				});
@@ -263,7 +303,7 @@
 	.banner {
 		position: relative;
 		z-index: -1;
-		margin-bottom: -2rem;
+		margin-bottom: -1.8rem;
 
 		>image {
 			display: block;
@@ -321,8 +361,10 @@
 				.left {
 					flex: 1;
 					display: flex;
+					position: relative;
 
 					>image {
+						
 						display: block;
 						width: 130rpx;
 						height: 130rpx;
@@ -358,6 +400,16 @@
 					}
 				}
 
+				.on::after {
+					content: "";
+					position: absolute;
+					top: -40rpx;
+					left: 62rpx;
+					width: 70rpx;
+					height: 70rpx;
+					background: url('/static/mine/bell/play.gif') no-repeat center / 100% 100%;
+				}
+
 				.right {
 					padding: 3.6rpx;
 					border-radius: 60rpx;
@@ -386,15 +438,24 @@
 		}
 
 		.more_btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
 			width: 80%;
 			margin: 40rpx auto;
-			color: #3560DF;
+			color: rgba(53,96,223,.65);
 			font-size: 30rpx;
-			line-height: 90rpx;
+			line-height: 80rpx;
 			letter-spacing: 2rpx;
 			text-align: center;
 			background: #F1F0F4;
 			border-radius: 10rpx;
+
+			>image {
+				display: block;
+				width: 26rpx;
+				margin-right: 14rpx;
+			}
 		}
 	}
 
@@ -404,6 +465,8 @@
 	}
 
 	.poster_block {
+		background: #9BB3FD;
+		padding-bottom: 220rpx;
 
 		>image {
 			display: block;

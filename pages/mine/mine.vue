@@ -307,12 +307,12 @@ export default {
     position: absolute;
     overflow-x: hidden;
     padding-top: 360rpx;
-	padding-bottom: 60rpx;
+	padding-bottom: 100rpx;
 
 	.header {
         width: 160%;
 		position: absolute;
-        top: 14%;
+        top: 12.5%;
         left: 50%;
         height: 360rpx;
         transform: translate(-50%, -50%);
@@ -470,20 +470,20 @@ export default {
 
 			>image {
 				display: block;
-				width: 100rpx;
-                height: 100rpx;
+				width: 94rpx;
+                height: 94rpx;
 				margin-bottom: 14rpx;
 			}
 
 			>text {
-				font-size: 28rpx;
+				font-size: 26rpx;
 				font-weight: bold;
 			}
 
             .hot {
                 position: absolute;
-                top: 2rpx;
-                right: 58rpx;
+                top: 0rpx;
+                right: 40rpx;
                 width: 32rpx;
             }
 
@@ -519,7 +519,7 @@ export default {
 
     .content {
         width: 92%;
-        margin: 30rpx auto 40rpx;
+        margin: 20rpx auto 40rpx;
         background: #fff;
         border-radius: 28rpx;
 
@@ -531,15 +531,15 @@ export default {
 				position: relative;
 				display: flex;
 				align-items: center;
-                padding: 22rpx 0;
+                padding: 26rpx 0;
 
 				&:not(:last-child) {
-					border-bottom: 1px solid #EAEAEA;
+                    border-bottom: 1px solid #EAEAEA;	
 				}
 				
                 >image {
                     display: block;
-                    width: 56rpx;
+                    width: 70rpx;
 					margin-right: 20rpx;
                 }
 
