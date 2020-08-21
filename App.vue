@@ -44,7 +44,7 @@ export default {
 			let msg = {
 				address: "无锡锡宁路前村工业园a区23",
 				company_name: "大庆五金",
-				tel: "13026689953"
+				tel: "13023367790"
 			};
             uni.setStorage({
                 key: "userMsg",

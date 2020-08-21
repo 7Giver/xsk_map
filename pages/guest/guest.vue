@@ -383,6 +383,14 @@
 			},
 			// 提交信息
 			submit() {
+				let str = uni.getStorageSync('mapStr')
+				if (str == "") {
+					uni.showToast({
+						title: '地图至少选择一项！',
+						icon: 'none'
+					});
+					return false
+				}
 				if (!this.guest.tel) {
 					uni.showToast({
 						title: '请输入手机号',

@@ -2,7 +2,7 @@
 	<view id="app">
 		<uni-nav-bar title="企业彩铃" left-icon="back" @clickLeft="back"></uni-nav-bar>
 		<view class="banner">
-			<image src="/static/mine/bell/banner.png" mode="widthFix">
+			<image src="/static/mine/bell/banner.png?v=11" mode="widthFix">
 		</view>
 		<view class="content">
 			<view class="nav_block">

@@ -288,9 +288,6 @@
 			_checkItem(index) {
 				let checkList = this.checkItems;
 				if (index === 'all') {
-					// checkList.forEach(item => {
-					// 	item.checked = true
-					// })
 					var value = uni.getStorageSync('userMsg')
 					value ? this.showDailog = true : this.$getAuthorize()
 				} else {
@@ -456,7 +453,7 @@
 				})
 				if (checkAdult) {
 					uni.showToast({
-						title: '至少选择一项！',
+						title: '地图至少选择一项！',
 						icon: 'none'
 					});
 					return false
