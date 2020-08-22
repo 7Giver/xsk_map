@@ -405,28 +405,28 @@
 					});
 					return false
 				}
-				if (!this.guest.company_name) {
-					uni.showToast({
-						title: '请输入店铺名称',
-						icon: 'none'
-					});
-					return false
-				}
-				if (!this.guest.address) {
-					uni.showToast({
-						title: '请输入详细地址',
-						icon: 'none'
-					});
-					return false
-				}
+				// if (!this.guest.company_name) {
+				// 	uni.showToast({
+				// 		title: '请输入店铺名称',
+				// 		icon: 'none'
+				// 	});
+				// 	return false
+				// }
+				// if (!this.guest.address) {
+				// 	uni.showToast({
+				// 		title: '请输入详细地址',
+				// 		icon: 'none'
+				// 	});
+				// 	return false
+				// }
 				this.getMapUserInfo()
 			},
 			// 获取用户信息
 			getMapUserInfo() {
 				let obj = {
 					tel: this.guest.tel,
-					company_name: this.guest.company_name,
-					address: this.guest.address,
+					company_name: this.guest.company_name || '',
+					address: this.guest.address || '',
 				}
 				uni.setStorage({
 					key: "postMsg",

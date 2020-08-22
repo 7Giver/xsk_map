@@ -472,28 +472,29 @@
 					});
 					return false
 				}
-				if (!this.guest.company_name) {
-					uni.showToast({
-						title: '请输入店铺名称',
-						icon: 'none'
-					});
-					return false
-				}
-				if (!this.guest.address) {
-					uni.showToast({
-						title: '请输入详细地址',
-						icon: 'none'
-					});
-					return false
-				}
+				// if (!this.guest.company_name) {
+				// 	uni.showToast({
+				// 		title: '请输入店铺名称',
+				// 		icon: 'none'
+				// 	});
+				// 	return false
+				// }
+				// if (!this.guest.address) {
+				// 	uni.showToast({
+				// 		title: '请输入详细地址',
+				// 		icon: 'none'
+				// 	});
+				// 	return false
+				// }
 				this.postMapUserInfo()
 			},
 			// 提交用户信息
 			postMapUserInfo() {
 				let obj = {
 					tel: this.guest.tel,
-					company_name: this.guest.company_name,
-					address: this.guest.address
+					company_name: this.guest.company_name || '',
+					address: this.guest.address || '',
+					company_id: this.guest.company_id || ''
 				}
 				uni.setStorage({
 					key: "postMsg",
@@ -502,11 +503,11 @@
 				let str = uni.getStorageSync('mapStr')
 				let result = {
 					wxid: this.setObj.wxid,
-					name: this.guest.company_name,
-					tel: this.guest.tel,
+					name: obj.company_name,
+					tel: obj.tel,
 					map: str,
-					address: this.guest.address,
-					company_id: this.guest.company_id || ''
+					address: obj.address,
+					company_id: obj.company_id
 				}
 				// console.log(result)
 				this.$test

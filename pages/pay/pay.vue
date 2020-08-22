@@ -15,8 +15,8 @@
 			</view>
 			<view class="message">
 				<view>联系电话：{{ getMsg.tel }}</view>
-				<view>商户名称：{{ getMsg.company }}</view>
-				<view>商户地址：{{ getMsg.address }}</view>
+				<view>商户名称：{{ getMsg.company || '尚未完善' }}</view>
+				<view>商户地址：{{ getMsg.address || '尚未完善' }}</view>
 			</view>
 		</view>
 		<view class="content">

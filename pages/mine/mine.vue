@@ -16,7 +16,7 @@
                 </view>
                 <view class="bottom" v-if="!userInfo.mark_status">
                     <view class="left">您还未标注地图</view>
-                    <view class="right" @click="goHome">去标注</view>
+                    <view class="right" @click="goMark">去标注</view>
                 </view>
                 <view class="bottom" v-if="userInfo.mark_status == 2">
                     <view class="left" v-if="userInfo.is_mark">恭喜您 地图已标注</view>
@@ -231,10 +231,73 @@ export default {
             }
         },
 		// 跳转首页
-        goHome() {
-            uni.switchTab({
-                url: '/pages/home/home'
-            })
+        goMark() {
+            let value = this.testPost()
+            if (value) {
+                this.postMapUserInfo()
+            } else {
+                uni.showToast({
+                    title: '请完善信息',
+                    icon: 'none',
+                    success: () => {
+                        setTimeout(() => {
+                            uni.setStorage({
+                                key: "openPost",
+                                data: true
+                            })
+                            uni.switchTab({
+                                url: '/pages/home/home'
+                            })
+                        }, 800)
+                    }
+                });
+            }
+        },
+        //验证是否下单
+        testPost() {
+            let guest = uni.getStorageSync('postMsg')
+            if (!guest.tel) {
+                return false
+            }
+            if (!(/^1[3456789]\d{9}$/.test(guest.tel))) {
+                return false
+            }
+            // if (!guest.company_name) {
+            //     return false
+            // }
+            // if (!guest.address) {
+            //     return false
+            // }
+            return true
+        },
+        // 提交用户信下单
+        postMapUserInfo() {
+            let guest = uni.getStorageSync('postMsg')
+            let str = uni.getStorageSync('mapStr')
+            let result = {
+                wxid: this.setObj.wxid,
+                name: guest.company_name,
+                tel: guest.tel,
+                map: str,
+                address: guest.address,
+                company_id: guest.company_id
+            }
+            // console.log(result)
+            this.$test
+                .post(`/?r=api/order/map-submit`, result)
+                .then(response => {
+                    // console.log(response)
+                    if (response.code === 200) {
+                        uni.navigateTo({
+                            url: '/pages/pay/pay?order_sn=' + response.data.order_sn
+                        })
+                    } else {
+                        uni.showToast({
+                            title: response.msg,
+                            icon: 'none',
+                        });
+                    }
+                })
         },
         // 跳转页面
         gonext(index, url) {
@@ -282,7 +345,9 @@ export default {
 				    })
 					break;
 				case 1:
-					this.goHome()
+					uni.switchTab({
+                        url: '/pages/home/home'
+                    })
 					break;
 				case 2:
 					uni.navigateTo({
