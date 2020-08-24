@@ -40,12 +40,12 @@
 			</view>
 			<view class="block"></view>
 			<view class="content">
-				<view class="title">增加客源进度<text>(100+)</text></view>
+				<view class="title">增加客源进度<text>({{guest.customer_num}}+)</text></view>
 				<progress :percent="guest.customer_percent" activeColor="#FF4948" show-info stroke-width="3" />
 			</view>
 			<view class="block"></view>
 			<view class="content">
-				<view class="title">投放时长进度<text>(3个月)</text></view>
+				<view class="title">投放时长进度<text>({{guest.market_type}}个月)</text></view>
 				<progress :percent="guest.time_percent" activeColor="#FF4948" show-info stroke-width="3" />
 			</view>
 			<view class="block"></view>

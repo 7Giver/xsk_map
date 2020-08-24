@@ -197,29 +197,27 @@
 			getUserInfo() {
 				let msg = uni.getStorageSync('postMsg')
 				let value = uni.getStorageSync('userMsg')
-				if (msg) {
+				if (value) {
 					this.setObj = value
-					this.guest = {
-						company: msg.company_name,
-						mobile: msg.tel,
-						address: msg.address
-					}
-				} else {
-					if (value) {
-						this.$test
-							.post(`/?r=api/user/info`, {
-								wxid: value.wxid
-							})
-							.then(response => {
-								if (response.code === 200) {
-									this.$set(response.data, 'wxid', value.wxid)
-									this.setUserInfo(response.data)
-									this.guest = this.userInfo
+					this.$test
+						.post(`/?r=api/user/info`, {
+							wxid: value.wxid
+						})
+						.then(response => {
+							if (response.code === 200) {
+								this.$set(response.data, 'wxid', value.wxid)
+								this.setUserInfo(response.data)
+								this.guest = this.userInfo
+								if (msg) {
+									this.guest.company = msg.company_name
+									this.guest.mobile = msg.tel
+									this.guest.address = msg.address
 								}
-							})
-					} else {
-						this.$getAuthorize()
-					}
+								// console.log(this.guest)
+							}
+						})
+				} else {
+					this.$getAuthorize()
 				}
 			},
 			// 获取省市信息
@@ -857,7 +855,8 @@
 
 	::v-deep.uni-nav-bar-right-text {
 		color: #4B7EF6;
-		font-size: 28rpx;
+		font-size: 30rpx;
+		font-weight: bold;
 	}
 }
 </style>

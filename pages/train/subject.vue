@@ -84,7 +84,7 @@
 			<view class="train_block">
 				<view class="title">三大服务助您获客</view>
 				<view class="content">
-					<image src="/static/train/pic_3.png" mode="widthFix"></image>
+					<image src="/static/train/pic_3.png?v=7" mode="widthFix"></image>
 				</view>
 			</view>
 		</view>
