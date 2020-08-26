@@ -35,31 +35,62 @@ Vue.prototype.$jwx = jwx
 
 // 跳转授权
 Vue.prototype.$getAuthorize = () => {
-  uni.getStorage({
-    key: 'userMsg',
-    success: function(res) {
-      console.log('APP has-storage')
-      // console.log(res.data);
-    },
-    fail: (error) => {
-      console.log('APP no-storage')
-      let href = window.location.href
-      let temp = href.split('?')[1]; // 通过拆分链接判断是否获取参数存储
-      if (temp) {
-        let url = decodeURIComponent(window.location.href)
-        uni.setStorage({
-          key: 'userMsg',
-          data: getUrlparam(url)
-        })
-      } else {
-        let url = window.location.href.split('#')[1]
-        // window.location.href = `${baseURL}/api/geMapWxInfo`  // 正式
-        window.location.href = `${testURL}?r=api/user/authorize&path=${url}`  // 测试
+  let href = window.location.href
+  // let href = 'http://dt.sousou.com/#/pages/mine/mine?nickname=Heiz&openid=o8MX9wwt5ozZ033IVjTqqNsM4c1A&headimgurl=http%3A%2F%2Fthirdwx.qlogo.cn%2Fmmopen%2Fvi_32%2FkFbNaxXYDdlzenEeANr0qW0tDY2WOaQLT1nAtySsEXwia2mITxEDTlRzA8dlUeHsuhOxyVHISU2oMhvGBtRdLxw%2F132&wxid=wpxgorng'
+  let temp = href.split('?')[1]; // 通过拆分链接判断是否获取参数存储
+  if (temp) {
+    let url = decodeURIComponent(href)
+    uni.setStorage({
+      key: 'userMsg',
+      data: getUrlparam(url),
+      success: () => {
+        let url = getRoute(href)
+        switch (url) {
+          case '/pages/guest/guest':
+            uni.switchTab({
+              url: url,
+              success: function(e) {
+                location.reload();
+              }
+            })
+            break;
+          case '/pages/mine/mine':
+            uni.switchTab({
+              url: url,
+              success: function(e) {
+                location.reload();
+              }
+            })
+            break;
+          case '/pages/train/train':
+            uni.redirectTo({
+              url: url
+            })
+            break;
+          default:
+            uni.switchTab({
+              url: '/pages/home/home',
+              success: function(e) {
+                location.reload();
+              }
+            })
+        }
       }
-    },
-  });
+    })
+  } else {
+    let url = window.location.href.split('#')[1]
+    // window.location.href = `${baseURL}/api/geMapWxInfo`  // 正式
+    window.location.href = `${testURL}?r=api/user/authorize&path=${url}`  // 测试
+  }
+
+  function getRoute(url) {
+    let test = url.split('#')[1]
+    let route = test.split('?')[0];
+    return route
+  }
 
   function getUrlparam(url) {
+
     let askText = url.split('?')[1];
     let result = {};
     let askAry = askText.split('&');

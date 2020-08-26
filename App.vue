@@ -83,7 +83,7 @@ export default {
         // 获取用户信息
 		getUserInfo() {
             let value = uni.getStorageSync('userMsg')
-            if (value) {
+            if (Object.keys(value).length == 4) {
                 this.$test
                     .post(`/?r=api/user/info`, {
                         wxid: value.wxid || this.userInfo.wxid

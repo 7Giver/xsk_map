@@ -154,7 +154,7 @@
 			// 获取用户信息
 			getUserdata() {
 				var value = uni.getStorageSync('userMsg')
-				if (value) {
+				if (Object.keys(value).length == 4) {
 					this.setObj = value
 					console.log('has value!+++++++++')
 					console.log(value)
@@ -162,7 +162,7 @@
 					this.getloadingOrder()
 				} else {
 					console.log('no value!+++++++++')
-					this.getUserMsg()
+					// this.getUserMsg()
 				}
 				let obj = uni.getStorageSync('postMsg')
 				let open = uni.getStorageSync('openPost')
@@ -289,7 +289,7 @@
 				let checkList = this.checkItems;
 				if (index === 'all') {
 					var value = uni.getStorageSync('userMsg')
-					value ? this.showDailog = true : this.$getAuthorize()
+					Object.keys(value).length == 4 ? this.showDailog = true : this.$getAuthorize()
 				} else {
 					checkList[index].checked ?
 						checkList[index].checked = false :

@@ -139,12 +139,8 @@ export default {
 		}),
 		// 根据缓存获取用户信息
 		getLocal() {
-			let value = uni.getStorageSync('userMsg')
-            value ? this.setObj = value : this.$getAuthorize()
-            let href = window.location.href
-            let temp = href.split('?')[1]
-			// 根据userInfo是否为空和url是否有参数请求
-            Object.keys(this.userInfo).length == 0 ? this.getUserInfo() : this.getloadingOrder()
+            let value = uni.getStorageSync('userMsg')
+            Object.keys(value).length == 4 ? this.getUserInfo() : this.$getAuthorize()
             this.userInfo.is_mark
                 ? this.$delete(this.bannerList, 1)
                 : this.$delete(this.bannerList, 2)
@@ -152,7 +148,7 @@ export default {
         // 获取用户信息
 		getUserInfo() {
             let value = uni.getStorageSync('userMsg')
-            if (value) {
+            this.setObj = value
                 this.$test
                     .post(`/?r=api/user/info`, {
                         wxid: value.wxid || this.userInfo.wxid
@@ -164,7 +160,6 @@ export default {
                             this.getloadingOrder()
                         }
                     })
-            }
         },
         // 获取进行中订单
         getloadingOrder() {

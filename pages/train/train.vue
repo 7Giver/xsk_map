@@ -197,7 +197,7 @@
 			getUserInfo() {
 				let msg = uni.getStorageSync('postMsg')
 				let value = uni.getStorageSync('userMsg')
-				if (value) {
+				if (Object.keys(value).length == 4) {
 					this.setObj = value
 					this.$test
 						.post(`/?r=api/user/info`, {

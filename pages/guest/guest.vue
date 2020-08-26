@@ -341,7 +341,7 @@
 			// 点击按钮
 			_checkItem() {
 				var value = uni.getStorageSync('userMsg')
-				value ? this.showDailog = true : this.$getAuthorize()
+				Object.keys(value).length == 4 ? this.showDailog = true : this.$getAuthorize()
 			},
 			/** 回退弹窗取消方法 */
 			cancel() {
