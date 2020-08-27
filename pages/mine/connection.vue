@@ -128,6 +128,11 @@ export default {
 		},
 		// 获取人脉市集
 		getConnection() {
+			let value = uni.getStorageSync('userMsg')
+			if (Object.keys(value).length !== 4) {
+				this.$getAuthorize()
+				return false
+			}
 			if (this.loadingType === 'noMore') {
 				//防止重复加载
 				return false;
@@ -135,7 +140,7 @@ export default {
 			this.loadingType = 'loading';
 			this.$test
 				.post(`/?r=api/user/relations`, {
-					wxid: this.userInfo.wxid,
+					wxid: this.userInfo.wxid || value.wxid,
 					page: this.page,
 					city: this.name == '全国' ? '' : this.name
 				})

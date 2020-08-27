@@ -36,7 +36,7 @@ Vue.prototype.$jwx = jwx
 // 跳转授权
 Vue.prototype.$getAuthorize = () => {
   let href = window.location.href
-  // let href = 'http://dt.sousou.com/#/pages/mine/mine?nickname=Heiz&openid=o8MX9wwt5ozZ033IVjTqqNsM4c1A&headimgurl=http%3A%2F%2Fthirdwx.qlogo.cn%2Fmmopen%2Fvi_32%2FkFbNaxXYDdlzenEeANr0qW0tDY2WOaQLT1nAtySsEXwia2mITxEDTlRzA8dlUeHsuhOxyVHISU2oMhvGBtRdLxw%2F132&wxid=wpxgorng'
+  // let href = 'http://dt.sousou.com/#/pages/mine/connection?nickname=Heiz&openid=o8MX9wwt5ozZ033IVjTqqNsM4c1A&headimgurl=http%3A%2F%2Fthirdwx.qlogo.cn%2Fmmopen%2Fvi_32%2FkFbNaxXYDdlzenEeANr0qW0tDY2WOaQLT1nAtySsEXwia2mITxEDTlRzA8dlUeHsuhOxyVHISU2oMhvGBtRdLxw%2F132&wxid=wpxgorng'
   let temp = href.split('?')[1]; // 通过拆分链接判断是否获取参数存储
   if (temp) {
     let url = decodeURIComponent(href)
@@ -67,6 +67,11 @@ Vue.prototype.$getAuthorize = () => {
               url: url
             })
             break;
+          case '/pages/mine/connection':
+            uni.redirectTo({
+              url: url
+            })
+            break;
           default:
             uni.switchTab({
               url: '/pages/home/home',
@@ -90,7 +95,6 @@ Vue.prototype.$getAuthorize = () => {
   }
 
   function getUrlparam(url) {
-
     let askText = url.split('?')[1];
     let result = {};
     let askAry = askText.split('&');

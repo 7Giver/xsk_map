@@ -45,7 +45,19 @@
 			</view>
 			<view class="connect_us">
 				<view class="title">
-					<view class="num"><text>3</text></view><text>联系我们</text>
+					<view class="num"><text>3</text></view><text>公司荣誉</text>
+				</view>
+				<view class="swiper_block">
+					<swiper class="swiper" :autoplay="true" :interval="5000" @click="fullImg()">
+                        <swiper-item v-for="(item, index) in honourList" :key="index">
+                            <image :src="item" mode="widthFix"></image>
+                        </swiper-item>
+                    </swiper>
+				</view>
+			</view>
+			<view class="connect_us">
+				<view class="title">
+					<view class="num"><text>4</text></view><text>联系我们</text>
 				</view>
 				<image src="/static/about/connect.png" mode="widthFix"></image>
 				<view class="message" @click="goCall(tel)">客服热线：{{tel}}</view>
@@ -65,7 +77,19 @@
 				count: '', // 倒计时
 				timer: null, // 定时器
 				hasOrder: false, //延迟订单显示
-				tel: '4000-929-777'
+				tel: '4000-929-777',
+				honourList: [
+					'http://cdn.tuku658.com/image/8e/8e9b9e98c7d0d5d61978677c5190e206.jpg',
+					'http://cdn.tuku658.com/image/ef/ef054bd0968ce3543d3805795e356a70.jpg',
+					'http://cdn.tuku658.com/image/38/38551ebf149cb584a72f186164439183.jpg',
+					'http://cdn.tuku658.com/image/c1/c1b611158fb7a7cc47500f2f6b0f0a06.jpg',
+					'http://cdn.tuku658.com/image/43/43318ad53fa5376fabba0b11884ec170.jpg',
+					'http://cdn.tuku658.com/image/f9/f9649d1e29fc947d4bdbd6f83aafca47.jpg',
+					'http://cdn.tuku658.com/image/f0/f0500a776129c1de434d377dd9be4453.jpg',
+					'http://cdn.tuku658.com/image/cd/cd1abf2f957d328ccbde3442ebca5a22.jpg',
+					'http://cdn.tuku658.com/image/57/57c6623cacc3e61cda14a001a5f9a127.jpg',
+					'http://cdn.tuku658.com/image/78/78c51423409aafc2b5f82cb1b6edc1f2.jpg'
+				]
 			}
 		},
 		onTabItemTap() {
@@ -85,6 +109,13 @@
 				uni.makePhoneCall({
     				phoneNumber: tel
 				});
+			},
+			// 全屏展示图片
+			fullImg() {
+				uni.previewImage({
+					urls: this.honourList,
+					current: 0
+				})
 			},
 			// 获取进行中订单
 			getloadingOrder() {
@@ -368,6 +399,20 @@
 					color: #999;
 					text-align: center;
 					font-size: 32rpx;
+				}
+
+				.swiper_block {
+					height: 500rpx;
+
+					.swiper {
+						width: 100%;
+						height: 100%;
+
+						image {
+							display: block;
+							width: 100%;
+						}
+					}
 				}
 			}
 		}
