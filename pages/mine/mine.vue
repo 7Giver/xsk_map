@@ -139,6 +139,15 @@ export default {
 		}),
 		// 根据缓存获取用户信息
 		getLocal() {
+            //判断链接是否有参数覆盖
+            let href = window.location.href
+            let temp = href.split('?')[1];
+            if (temp) {
+                let url = decodeURIComponent(href)
+                let result = this.getUrlparam(url)
+                let value = result.hasOwnProperty('wxid') // 有wxid再去覆盖
+                value ? this.$getAuthorize() : false
+            }
             let value = uni.getStorageSync('userMsg')
             Object.keys(value).length == 4 ? this.getUserInfo() : this.$getAuthorize()
             this.userInfo.is_mark
@@ -185,7 +194,19 @@ export default {
                         }
                     })
             }
-            
+        },
+        // 获取url参数
+        getUrlparam(url) {
+            let askText = url.split('?')[1];
+            let result = {};
+            let askAry = askText.split('&');
+            askAry.forEach(item => {
+            let n = item.split('=');
+            let key = n[0];
+            let value = n[1];
+            result[key] = value;
+            });
+            return result
         },
         // 计算倒计时
         countDown(endtime) {
