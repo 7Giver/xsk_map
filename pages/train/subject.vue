@@ -37,6 +37,7 @@
 				<view class="content">
 					<view class="text">搜搜集团旗下搜搜直通车，于2015年起，已累计为17万客户提供了<text>2500多万客源</text>，以及超过5亿人次的品牌曝光。与<text>百度</text>、<text>360</text>、<text>搜狗</text>建立稳定持续的战略合作关系。搜索引擎代理投放产业发起者，树立了行业品牌标杆持续引领行业发展。</view>
 				</view>
+				<view class="show_more" @click="showMore">查看更多</view>
 			</view>
 			<view class="train_block">
 				<view class="title">每日签单真实案例</view>
@@ -278,6 +279,12 @@
 					showCancel: false
 				})
 			},
+			// 跳转公司介绍
+			showMore() {
+				uni.navigateTo({
+					url: '/pages/train/train_introduce'
+				})
+			}
 		}
 	}
 </script>
@@ -385,6 +392,7 @@
 		.train_block {
 			position: relative;
 			margin: 74rpx auto 0;
+			padding-bottom: 40rpx;
 			border-radius: 20rpx;
 			background: #B9DCFF;
 
@@ -483,6 +491,31 @@
 						width: 100%;
 						height: 100%;
 					}
+				}
+			}
+
+			.show_more {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 90%;
+				margin: 0 auto;
+				color: #0080FF;
+				font-size: 32rpx;
+				line-height: 80rpx;
+				letter-spacing: 1rpx;
+				text-align: center;
+				background: #AAD2F9;
+				border-radius: 70rpx;
+
+				&::after {
+					content: "";
+					width: 15rpx;
+					height: 15rpx;
+					border-top: 1px solid #4B7EF6;
+					border-right: 1px solid #4B7EF6;
+					transform: rotate(45deg);
+					margin-left: 2rpx;
 				}
 			}
 		}

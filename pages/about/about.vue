@@ -48,8 +48,8 @@
 					<view class="num"><text>3</text></view><text>公司荣誉</text>
 				</view>
 				<view class="swiper_block">
-					<swiper class="swiper" :autoplay="true" :interval="5000" @click="fullImg()">
-                        <swiper-item v-for="(item, index) in honourList" :key="index">
+					<swiper class="swiper" :autoplay="true" :interval="5000">
+                        <swiper-item v-for="(item, index) in honourList" :key="index" @click="fullImg(index)">
                             <image :src="item" mode="widthFix"></image>
                         </swiper-item>
                     </swiper>
@@ -111,10 +111,10 @@
 				});
 			},
 			// 全屏展示图片
-			fullImg() {
+			fullImg(index) {
 				uni.previewImage({
 					urls: this.honourList,
-					current: 0
+					current: index
 				})
 			},
 			// 获取进行中订单

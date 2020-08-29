@@ -90,6 +90,10 @@
             "path" : "pages/mine/bell",
             "style" : {}
         }
+        ,{
+            "path" : "pages/train/train_introduce",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
