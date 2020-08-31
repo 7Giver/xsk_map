@@ -262,7 +262,7 @@
 					title: `快速获客`,
 					desc: `海量精准客源等你来领`,
 					shareUrl: window.location.href,
-					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/d7/d7fadb2c8ee2b68a8d43f693b4027527.png'
+					imgUrl: `${this.$dataURL}/image/d7/d7fadb2c8ee2b68a8d43f693b4027527.png`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {
@@ -285,7 +285,7 @@
 				let obj = {
 					title: `快速获客`,
 					shareUrl: window.location.href,
-					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/d7/d7fadb2c8ee2b68a8d43f693b4027527.png'
+					imgUrl: `${this.$dataURL}/image/d7/d7fadb2c8ee2b68a8d43f693b4027527.png`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {

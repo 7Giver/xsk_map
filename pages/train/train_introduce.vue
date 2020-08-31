@@ -18,21 +18,21 @@
 			</view>
 			<view class="title">企业荣誉</view>
 			<view class="swiper_block">
-				<swiper class="swiper" :current="current" :circular="true" :autoplay="true" @change="swiperChange">
+				<swiper class="swiper" :current="current" :circular="false" :autoplay="false" @change="swiperChange">
 					<swiper-item v-for="(item, index) in honourList" :key="index" @click="fullImg(1,index)">
 						<image :src="item" mode="widthFix"></image>
 					</swiper-item>
 				</swiper>
-				<!-- <view class="swiper-btn left" v-if="honourList.length>1" @click="prev">
+				<view class="swiper-btn left" v-if="prevBtn" @click="prev">
 					<image src="/static/train/introduce/left.png" mode=""></image>
 				</view>
-				<view class="swiper-btn right" v-if="honourList.length>1" @click="next">
+				<view class="swiper-btn right" v-if="nextBtn" @click="next">
 					<image src="/static/train/introduce/right.png" mode=""></image>
-				</view> -->
+				</view>
 			</view>
 			<view class="title">团队风采</view>
 			<view class="swiper_block">
-				<swiper class="swiper" autoplay="true" circular="true" :interval="6000">
+				<swiper class="swiper" :current="current1" :autoplay="false" :interval="6000">
 					<swiper-item v-for="(item, index) in teamShow" :key="index">
 						<image :src="item" v-if="index !== 3" @click="fullImg(2,index)"></image>
 						<video 
@@ -47,6 +47,12 @@
 						</video>
 					</swiper-item>
 				</swiper>
+				<view class="swiper-btn left" v-if="prevBtn" @click="prev1">
+					<image src="/static/train/introduce/left.png" mode=""></image>
+				</view>
+				<view class="swiper-btn right" v-if="nextBtn" @click="next1">
+					<image src="/static/train/introduce/right.png" mode=""></image>
+				</view>
 			</view>
 			<view class="title">联系我们</view>
 			<view class="bottom_block">
@@ -65,6 +71,7 @@
 					</view>
 				</view>
 			</view>
+			<map style="width: 100%; height: 300px;" :latitude="latitude" :longitude="longitude" :markers="covers"></map>
 		</view>
 	</view>
 </template>
@@ -73,29 +80,42 @@
 	export default {
 		data() {
 			return {
+				nextBtn: true,
+				prevBtn: true,
 				current: 0,
+				current1: 0,
+				duration: 500,
+				id: 0, // 使用 marker点击事件 需要填写id
+				latitude: 28.425898718581525,
+				longitude: 118.14973451786041,
+				covers: [{
+					title: '搜搜科技集团',
+					latitude: 28.425898718581525,
+					longitude: 118.14973451786041,
+				}],
 				honourList: [
-					'http://cdn.tuku658.com/image/8e/8e9b9e98c7d0d5d61978677c5190e206.jpg',
-					'http://cdn.tuku658.com/image/ef/ef054bd0968ce3543d3805795e356a70.jpg',
-					'http://cdn.tuku658.com/image/38/38551ebf149cb584a72f186164439183.jpg',
-					'http://cdn.tuku658.com/image/c1/c1b611158fb7a7cc47500f2f6b0f0a06.jpg',
-					'http://cdn.tuku658.com/image/43/43318ad53fa5376fabba0b11884ec170.jpg',
-					'http://cdn.tuku658.com/image/f9/f9649d1e29fc947d4bdbd6f83aafca47.jpg',
-					'http://cdn.tuku658.com/image/f0/f0500a776129c1de434d377dd9be4453.jpg',
-					'http://cdn.tuku658.com/image/cd/cd1abf2f957d328ccbde3442ebca5a22.jpg',
-					'http://cdn.tuku658.com/image/57/57c6623cacc3e61cda14a001a5f9a127.jpg',
-					'http://cdn.tuku658.com/image/78/78c51423409aafc2b5f82cb1b6edc1f2.jpg'
+					`${this.$dataURL}/image/8e/qyry1.png`,
+					`${this.$dataURL}/image/8e/qyry2.png`,
+					`${this.$dataURL}/image/8e/qyry3.png`,
+					`${this.$dataURL}/image/8e/qyry4.png`,
+					`${this.$dataURL}/image/8e/qyry5.png`,
+					`${this.$dataURL}/image/8e/qyry6.png`,
+					`${this.$dataURL}/image/8e/yqry7.png`,
+					`${this.$dataURL}/image/8e/qyer8.png`,
+					`${this.$dataURL}/image/8e/qyry9.png`,
+					`${this.$dataURL}/image/8e/qyry10.png`,
 				],
 				teamShow: [
-					'http://cdn.tuku658.com/image/a8/a8df7e38b5e02128dec3eaac99220c53.png',
-					'http://cdn.tuku658.com/image/cc/cc78ea5a805c47c0641e2af39e2c1a8f.jpg',
-					'http://cdn.tuku658.com/image/7b/7bd827879be57d5bb062352c79995076.jpg',
-					'http://cdn.tuku658.com/video/18/187d961eec107eb1fc8c67bb89290f8c.mp4'
+					`${this.$dataURL}/image/a8/a8df7e38b5e02128dec3eaac99220c53.png`,
+					`${this.$dataURL}/image/cc/cc78ea5a805c47c0641e2af39e2c1a8f.jpg`,
+					`${this.$dataURL}/image/7b/7bd827879be57d5bb062352c79995076.jpg`,
+					`${this.$dataURL}/video/18/187d961eec107eb1fc8c67bb89290f8c.mp4`,
 				]
 			};
 		},
 		onLoad() {
-
+			this.goShare()
+			this.goShareCircle()
 		},
 		methods: {
 			// 监听轮播事件
@@ -125,13 +145,16 @@
 			prev() {
 				// let showItems = this.honourList;
 				// this.current = this.current > 0 ? this.current - 1 : showItems.length - 1;
+				// this.duration = 0
 				let num = this.honourList.length - 1
-				if (this.current <= 0) {
-					// console.log('<=0',this.current);
-					this.current = num
-				} else {
-					// console.log('>0',this.current);
-					this.current--
+				if (this.current > 0) {
+					if (this.current <= 0) {
+						// console.log('<=0',this.current);
+						this.current = num
+					} else {
+						// console.log('>0',this.current);
+						this.current--
+					}
 				}
 			},
 			// 下一张
@@ -139,11 +162,73 @@
 				// let showItems = this.honourList;
 				// this.current = this.current < (showItems.length - 1) ? this.current + 1 : 0;
 				let num = this.honourList.length - 1
-				if (this.current >= num) {
-					this.current = 0
-				} else {
-					this.current++
+				if (this.current < num) {
+					if (this.current >= num) {
+						this.current = 0
+					} else {
+						this.current++
+					}
 				}
+			},
+			// 风采上一张
+			prev1() {
+				let num = this.teamShow.length - 1
+				if (this.current1 > 0) {
+					this.current1--
+				}
+			},
+			// 风采下一张
+			next1() {
+				let num = this.teamShow.length - 1
+				if (this.current1 < num) {
+					this.current1++
+				}
+			},
+			// 调用微信自定义分享
+			goShare() {
+				let obj = {
+					title: `搜搜集团旗下直通车简介`,
+					desc: `立志成为中国企业的强壮翅膀，专业的团队为您提供优质商业服务！`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://cdn.tuku658.com/image/ed/dtgsjs.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							desc: obj.desc, // 分享描述
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
+							// console.log('response', response)
+						})
+					})
+				}
+				// #endif
+			},
+			// 调用微信分享朋友圈
+			goShareCircle() {
+				let obj = {
+					title: `搜搜集团旗下直通车简介`,
+					shareUrl: window.location.href,
+					imgUrl: 'http://cdn.tuku658.com/image/ed/dtgsjs.png'
+				}
+				// #ifdef H5
+				if (this.$jwx && this.$jwx.isWechat()) {
+					this.$jwx.initJssdk(res => {
+						let shareData = {
+							title: obj.title, // 分享标题
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareTimeline(shareData, function(response) {
+							// console.log('response', response)
+						})
+					})
+				}
+				// #endif
 			},
 		}
 	}
@@ -281,6 +366,9 @@
 				width: 100%;
 				height: 100%;
 			}
+		}
+		uni-map {
+			margin-top: 40rpx;
 		}
 	}
 }

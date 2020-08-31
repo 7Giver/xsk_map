@@ -113,21 +113,21 @@
 				},
 				videoList: [
 					{
-						video: 'http://qe9i29b4d.bkt.clouddn.com/video/e7/e71468eca4550533548846b5f85bd8ba.mp4',
-						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/2b/2bd5f6fab5ab32b24998be5b8f6f636a.png'
+						video: `${this.$dataURL}/video/e7/e71468eca4550533548846b5f85bd8ba.mp4`,
+						poster: `${this.$dataURL}/image/2b/2bd5f6fab5ab32b24998be5b8f6f636a.png`,
 					},
 					{
-						video: 'http://qe9i29b4d.bkt.clouddn.com/video/73/7309a5c693660ea4071fe5613733db98.mp4',
-						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/e5/e5f74955ab746c7c561243eff0ad7dfd.png'
+						video: `${this.$dataURL}/video/73/7309a5c693660ea4071fe5613733db98.mp4`,
+						poster: `${this.$dataURL}/image/e5/e5f74955ab746c7c561243eff0ad7dfd.png`,
 					},
 					{
-						video: 'http://qe9i29b4d.bkt.clouddn.com/video/f3/f3469a54e71d0b9e953f9b4250f07845.mp4',
-						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/e5/e5f74955ab746c7c561243eff0ad7dfd.png'
+						video: `${this.$dataURL}/video/f3/f3469a54e71d0b9e953f9b4250f07845.mp4`,
+						poster: `${this.$dataURL}/image/e5/e5f74955ab746c7c561243eff0ad7dfd.png`,
 					},
 					{
-						video: 'http://qe9i29b4d.bkt.clouddn.com/video/f4/f4766f3383374a9764b5721517ac8a72.mp4',
-						poster: 'http://qe9i29b4d.bkt.clouddn.com/image/ca/ca51a428173f57d46205933c8ec53d2d.png'
-					}
+						video: `${this.$dataURL}/video/f4/f4766f3383374a9764b5721517ac8a72.mp4`,
+						poster: `${this.$dataURL}/image/ca/ca51a428173f57d46205933c8ec53d2d.png`,
+					},
 				],
 				noticeList: [
 					{nickname: '彭万*'},
@@ -232,7 +232,7 @@
 					title: `搜搜直通车快速获客`,
 					desc: `精准获取本地人脉 开启无限获客新模式`,
 					shareUrl: window.location.href,
-					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/ed/ed3413bfbcb35385ee657537d71a98ab.png'
+					imgUrl: `${this.$dataURL}/image/ed/ed3413bfbcb35385ee657537d71a98ab.png`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {
@@ -255,7 +255,7 @@
 				let obj = {
 					title: `搜搜直通车快速获客`,
 					shareUrl: window.location.href,
-					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/ed/ed3413bfbcb35385ee657537d71a98ab.png'
+					imgUrl: `${this.$dataURL}/image/ed/ed3413bfbcb35385ee657537d71a98ab.png`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {

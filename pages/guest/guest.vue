@@ -240,7 +240,7 @@
 					title: `增加客源`,
 					desc: `立即标注 给您增加海量客源`,
 					shareUrl: window.location.href,
-					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/16/16b244d0c4094b003e8f412f8ac8013d.png'
+					imgUrl: `${this.$dataURL}/image/16/16b244d0c4094b003e8f412f8ac8013d.png`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {
@@ -263,7 +263,7 @@
 				let obj = {
 					title: `增加客源`,
 					shareUrl: window.location.href,
-					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/16/16b244d0c4094b003e8f412f8ac8013d.png'
+					imgUrl: `${this.$dataURL}/image/16/16b244d0c4094b003e8f412f8ac8013d.png`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {

@@ -408,7 +408,7 @@
 					title: `地图定位标注`,
 					desc: `地图搜索推广  客户轻松来访`,
 					shareUrl: window.location.href,
-					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/ac/acd236b509b370efe5e57d238bd81011.png'
+					imgUrl: `${this.$dataURL}/image/ac/acd236b509b370efe5e57d238bd81011.png`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {
@@ -431,7 +431,7 @@
 				let obj = {
 					title: `地图定位标注`,
 					shareUrl: window.location.href,
-					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/ac/acd236b509b370efe5e57d238bd81011.png'
+					imgUrl: `${this.$dataURL}/image/ac/acd236b509b370efe5e57d238bd81011.png`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {

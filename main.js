@@ -5,6 +5,7 @@ import store from './store'
 
 const baseURL = 'http://dt.sousou.com' // 正式地址
 const testURL = 'http://server.yingku878.com' // 测试地址
+const dataURL = 'http://cdn.tuku658.com' // 引用资源地址
 const http = uni_request({
     baseURL: baseURL, 
     // baseURL: testURL,  // 测试
@@ -124,6 +125,7 @@ Vue.component('card', card);
 
 Vue.prototype.$baseURL = baseURL
 Vue.prototype.$testURL = testURL
+Vue.prototype.$dataURL = dataURL
 Vue.prototype.$store = store
 Vue.prototype.$http = http
 Vue.prototype.$test = test

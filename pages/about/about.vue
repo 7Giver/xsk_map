@@ -61,6 +61,8 @@
 				</view>
 				<image src="/static/about/connect.png" mode="widthFix"></image>
 				<view class="message" @click="goCall(tel)">客服热线：{{tel}}</view>
+				<view class="message">公司地址：{{address}}</view>
+				<map style="width: 100%; height: 300px;" :latitude="latitude" :longitude="longitude" :markers="covers"></map>
 			</view>
 		</view>
 		<view class="load_order" @click="getOrder" v-if="hasOrder">
@@ -78,18 +80,27 @@
 				timer: null, // 定时器
 				hasOrder: false, //延迟订单显示
 				tel: '4000-929-777',
+				address: '江西省上饶市广丰区上广公路南侧鑫城大厦6-7楼',
+				id: 0, // 使用 marker点击事件 需要填写id
+				latitude: 28.425898718581525,
+				longitude: 118.14973451786041,
+				covers: [{
+					title: '搜搜科技集团',
+					latitude: 28.425898718581525,
+					longitude: 118.14973451786041,
+				}],
 				honourList: [
-					'http://cdn.tuku658.com/image/8e/8e9b9e98c7d0d5d61978677c5190e206.jpg',
-					'http://cdn.tuku658.com/image/ef/ef054bd0968ce3543d3805795e356a70.jpg',
-					'http://cdn.tuku658.com/image/38/38551ebf149cb584a72f186164439183.jpg',
-					'http://cdn.tuku658.com/image/c1/c1b611158fb7a7cc47500f2f6b0f0a06.jpg',
-					'http://cdn.tuku658.com/image/43/43318ad53fa5376fabba0b11884ec170.jpg',
-					'http://cdn.tuku658.com/image/f9/f9649d1e29fc947d4bdbd6f83aafca47.jpg',
-					'http://cdn.tuku658.com/image/f0/f0500a776129c1de434d377dd9be4453.jpg',
-					'http://cdn.tuku658.com/image/cd/cd1abf2f957d328ccbde3442ebca5a22.jpg',
-					'http://cdn.tuku658.com/image/57/57c6623cacc3e61cda14a001a5f9a127.jpg',
-					'http://cdn.tuku658.com/image/78/78c51423409aafc2b5f82cb1b6edc1f2.jpg'
-				]
+					`${this.$dataURL}/image/8e/qyry1.png`,
+					`${this.$dataURL}/image/8e/qyry2.png`,
+					`${this.$dataURL}/image/8e/qyry3.png`,
+					`${this.$dataURL}/image/8e/qyry4.png`,
+					`${this.$dataURL}/image/8e/qyry5.png`,
+					`${this.$dataURL}/image/8e/qyry6.png`,
+					`${this.$dataURL}/image/8e/yqry7.png`,
+					`${this.$dataURL}/image/8e/qyer8.png`,
+					`${this.$dataURL}/image/8e/qyry9.png`,
+					`${this.$dataURL}/image/8e/qyry10.png`,
+				],
 			}
 		},
 		onTabItemTap() {
@@ -148,7 +159,7 @@
 					title: `关于我们`,
 					desc: `5000多万人次客源引流 连续六年行业第一`,
 					shareUrl: window.location.href,
-					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/b6/b64d67cc23b73b2555ddb792822d8391.png'
+					imgUrl: `${this.$dataURL}/image/b6/b64d67cc23b73b2555ddb792822d8391.png`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {
@@ -171,7 +182,7 @@
 				let obj = {
 					title: `关于我们`,
 					shareUrl: window.location.href,
-					imgUrl: 'http://qe9i29b4d.bkt.clouddn.com/image/b6/b64d67cc23b73b2555ddb792822d8391.png'
+					imgUrl: `${this.$dataURL}/image/b6/b64d67cc23b73b2555ddb792822d8391.png`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {
@@ -231,7 +242,7 @@
 </script>
 <style lang="scss">
 	#app {
-		padding-bottom: 160rpx;
+		padding-bottom: 120rpx;
 
 		.banner {
 			background: #fff;
@@ -397,7 +408,6 @@
 				
 				.message {
 					color: #999;
-					text-align: center;
 					font-size: 32rpx;
 				}
 
@@ -413,6 +423,10 @@
 							width: 100%;
 						}
 					}
+				}
+
+				uni-map {
+					margin-top: 55rpx;
 				}
 			}
 		}
