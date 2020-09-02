@@ -69,19 +69,40 @@
 			<view>待支付</view>
 			<view>{{count}}</view>
 		</view>
+        <!-- 活动弹窗 -->
+		<uni-popup :show="activityDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="activityChange">
+			<view class="activity_block">
+				<!-- 未标注活动 -->
+				<view class="moon_block" v-if="!userInfo.is_direct">
+					<image src="/static/activity/dialog.png" mode="widthFix"></image>
+					<view class="look btn" @click.stop="goNext('moon')">立即查看</view>
+				</view>
+				<!-- 已标注活动 -->
+				<view class="national_day" v-else>
+					<image src="/static/activity/zhi_dialog.png" mode="widthFix"></image>
+					<view class="look btn" @click.stop="goNext('national')">立即查看</view>
+				</view>
+			</view>
+			<image class="close" src="/static/index/close.png" mode="" @click="activityCancel"></image>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
 import { mapState, mapMutations } from 'vuex';
+import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 // import Json from '@/Json';
 export default {
+    components: {
+        UniPopup
+    },
 	data() {
 		return {
             order_sn: '', // 待支付单号
             count: '', // 倒计时
 			timer: null, // 定时器
-			hasOrder: false, //延迟订单显示
+            hasOrder: false, //延迟订单显示
+            activityDailog: false,
 			current: 0,
             setObj: {},
 			iconList: [
@@ -108,6 +129,14 @@ export default {
 			],
 			bannerList: [
                 {
+                    id: 3,
+                    img: '/static/mine/banner03.png'
+                },
+                {
+                    id: 4,
+                    img: '/static/mine/banner04.png'
+                },
+                {
                     id: 0,
                     img: '/static/mine/banner.png'
                 },
@@ -128,6 +157,9 @@ export default {
 	onLoad() {
 		// this.iconList = Json.iconList
         this.getLocal()
+        this.$nextTick(() => {
+            this.activityDailog = true;
+        })
 
 		// uni.redirectTo({
 		// 	url: '/pages/sousou/sousou'
@@ -150,9 +182,20 @@ export default {
             }
             let value = uni.getStorageSync('userMsg')
             Object.keys(value).length == 4 ? this.getUserInfo() : this.$getAuthorize()
-            this.userInfo.is_mark
-                ? this.$delete(this.bannerList, 1)
-                : this.$delete(this.bannerList, 2)
+            if (this.userInfo.is_mark) {
+                deleteRow(this.bannerList, 3)
+                deleteRow(this.bannerList, 1)
+            } else {
+                deleteRow(this.bannerList, 4)
+                deleteRow(this.bannerList, 2)
+            }
+            function deleteRow (obj, id) {
+                for(let i in obj) {
+                    if(obj[i].id == id) {
+                        obj.splice(i,1)
+                    }
+                }
+            }
         },
         // 获取用户信息
 		getUserInfo() {
@@ -344,14 +387,22 @@ export default {
 				case 'train':
                     let value = this.userInfo.is_direct
                     value ? url = '/pages/train/detail' : url = '/pages/train/train'
-					break;
+                    break;
+                case 'moon':
+                    url = '/pages/activity/moon_festival'
+                    this.activityDailog = false
+                    break;
+                case 'national':
+                    url = '/pages/activity/national_day'
+                    this.activityDailog = false
+                    break;
 				default:
 					url = ''
 			}
 			uni.navigateTo({
 				url: url
 			})
-		},
+        },
 		// banner跳转
 		goWeb(id) {
             switch (id) {
@@ -368,6 +419,10 @@ export default {
 				case 2:
 					uni.navigateTo({
 					    url: '/pages/train/train'
+                    })
+                case 3:
+					uni.navigateTo({
+					    url: '/pages/activity/moon_festival'
 				    })
 					break;
 			}
@@ -377,7 +432,17 @@ export default {
             uni.navigateTo({
                 url: '/pages/mine/editmsg'
             })
-        }
+        },
+        // 监听展示弹窗状态
+        activityChange(e) {
+            if (!e.show) {
+                this.activityDailog = false;
+            }
+        },
+        // 关闭展示弹窗
+        activityCancel() {
+            this.activityDailog = false;
+        },
 	}
 }
 </script>
@@ -680,6 +745,59 @@ export default {
             font-size: 26rpx;
             font-weight: bold;
         }
+    }
+
+    // 活动弹窗
+    .activity_block {
+        padding: 0 20rpx;
+
+        image {
+            display: block;
+            width: 100%;
+        }
+
+        .btn {
+            position: absolute;
+            bottom: 30rpx;
+            left: 11%;
+            width: 80%;
+            font-weight: bold;
+            text-align: center;
+            font-size: 38rpx;
+            line-height: 86rpx;
+            border-radius: 130rpx;
+            animation: mymove 5s infinite;
+            animation-direction: alternate;
+            animation-timing-function: ease-in-out;
+        }
+
+        .moon_block {
+            position: relative;
+
+            .look {
+                color: #F34122;
+                background: linear-gradient(90deg, #FFCF95, #FFF6B8);
+            }
+        }
+
+        .national_day {
+            position: relative;
+
+            .look {
+                color: #B9081A;
+                background: linear-gradient(90deg, #F3BC70, #FFB64B);
+            }
+        }
+    }
+
+    .close {
+        display: block;
+        position: absolute;
+        left: 50%;
+        bottom: -115rpx;
+        transform: translate(-50%, -50%);
+        width: 60rpx;
+        height: 60rpx;
     }
 }
 </style>

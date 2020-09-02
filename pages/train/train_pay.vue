@@ -17,9 +17,9 @@
 						<text>{{guest.company_tel}}</text>
 					</view>
 				</view>
-				<view class="item">
+				<view class="item" v-if="guest.company_address">
 					<view class="left">商户地址：
-						<text>{{guest.company_address}}</text>
+						<text>{{guest.company_address || '尚未完善'}}</text>
 					</view>
 				</view>
 			</view>

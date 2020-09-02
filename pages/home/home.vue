@@ -68,11 +68,11 @@
 					</view>
 					<view class="my_item">
 						<view class="label">店铺/公司名称</view>
-						<input id="company_name" type="text" v-model="guest.company_name" @input="saveMsg" @blur="saveMsg" placeholder="店名（招牌名称）" />
+						<input id="company_name" type="text" v-model="guest.company_name" @input="saveMsg" placeholder="店名（招牌名称）" />
 					</view>
 					<view class="my_item">
 						<view class="label">店铺/公司地址</view>
-						<input id="address" type="text" v-model="guest.address" @input="saveMsg" @blur="saveMsg" placeholder="地址（x省x市x区x镇x街x号）" />
+						<input id="address" type="text" v-model="guest.address" @input="saveMsg" placeholder="地址（x省x市x区x镇x街x号）" />
 					</view>
 					<view class="form-btn1" @click="submit">立即标注地图 客户轻松上门</view>
 				</view>
@@ -104,11 +104,29 @@
 				<image class="close" src="/static/index/close.png" mode="" @click="cancel1"></image>
 			</view>
 		</uni-popup>
+		<!-- 活动弹窗 -->
+		<uni-popup :show="activityDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="activityChange">
+			<view class="activity_block">
+				<!-- 未标注活动 -->
+				<view class="moon_block" v-if="!userInfo.is_direct">
+					<image src="/static/activity/dialog.png" mode="widthFix"></image>
+					<view class="look btn" @click.stop="goNext('moon')">立即查看</view>
+				</view>
+				<!-- 已标注活动 -->
+				<view class="national_day" v-else>
+					<image src="/static/activity/zhi_dialog.png" mode="widthFix"></image>
+					<view class="look btn" @click.stop="goNext('national')">立即查看</view>
+				</view>
+			</view>
+			<image class="close" src="/static/index/close.png" mode="" @click="activityCancel"></image>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
+	import { mapState, mapMutations } from 'vuex';
 	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
+	import lodash from '@/common/lodash.js';
 	import Json from '@/Json';
 	export default {
 		components: {
@@ -122,6 +140,7 @@
 				timer: null, //定时器
 				showDailog: false, // 是否显示信息弹窗
 				showDailog1: false, // 是否显示展示弹窗
+				activityDailog: false, //活动弹窗
 				hasOrder: false, // 控制进行中订单显示
 				current: 0, // 轮播index
 				guest: {},  // 表单信息
@@ -130,6 +149,9 @@
 				checkItems: []  // 地图数组
 			}
 		},
+		computed: {
+    		...mapState(['userInfo'])
+  		},
 		onShow() {
 			// uni.hideTabBar()
 			this.noticeList = Json.noticeList
@@ -164,15 +186,26 @@
 					console.log('no value!+++++++++')
 					// this.getUserMsg()
 				}
-				let obj = uni.getStorageSync('postMsg')
+				let obj = this.userInfo
+				if (obj.hasOwnProperty('mobile')) {
+					this.guest.tel = obj.mobile,
+					this.guest.company_name = obj.company,
+					this.guest.address = obj.address
+				} else {
+					this.guest = uni.getStorageSync('postMsg')
+				}
 				let open = uni.getStorageSync('openPost')
-				obj ? this.guest = obj : false
 				// 根据编辑信息控制弹窗显示
-				if (open) {
+				if (open === true) {
 					this.$nextTick(() => {
 						this.showDailog = true;
 					})
 					uni.removeStorageSync('openPost');
+				} else {
+					console.log(111);
+					this.$nextTick(() => {
+						this.activityDailog = true
+					})
 				}
 			},
 			// 根据url获取参数
@@ -224,19 +257,6 @@
 							}
 						}
 					})
-			},
-			// 获取进行中订单信息并下单
-			getOrder() {
-				if (this.order_sn) {
-					uni.navigateTo({
-						url: '/pages/pay/pay?order_sn='+this.order_sn
-					})
-				} else {
-					uni.showToast({
-						title: '下单失败',
-						icon: 'none'
-					})
-				}
 			},
 			// 获取进行中订单
 			getloadingOrder() {
@@ -316,6 +336,10 @@
 			cancel1() {
 				this.showDailog1 = false;
 			},
+			// 关闭展示弹窗
+			activityCancel() {
+				this.activityDailog = false;
+			},
 			// 监听信息弹窗状态
 			change(e) {
 				// console.log(e.show)
@@ -343,6 +367,12 @@
 					this.showDailog1 = false;
 					this.current = 0;
 					this.showItems = []
+				}
+			},
+			// 监听展示弹窗状态
+			activityChange(e) {
+				if (!e.show) {
+					this.activityDailog = false;
 				}
 			},
 			// 全屏展示图片
@@ -387,6 +417,7 @@
 					key: "postMsg",
 					data: obj
 				});
+				this.uniteUserMsg()
 			},
 			// 监听手机号输入
 			getDetail(e) {
@@ -402,6 +433,41 @@
 					this.postMobile(this.guest.tel)
 				}
 			},
+			// 获取进行中订单信息并下单
+			getOrder() {
+				if (this.order_sn) {
+					uni.navigateTo({
+						url: '/pages/pay/pay?order_sn='+this.order_sn
+					})
+				} else {
+					uni.showToast({
+						title: '下单失败',
+						icon: 'none'
+					})
+				}
+			},
+			// 节流同步
+			uniteUserMsg: lodash.debounce(function() {
+				let obj = {
+					tel: this.guest.tel,
+					company_name: this.guest.company_name || '',
+					address: this.guest.address || ''
+				}
+				let value = uni.getStorageSync('userMsg')
+				if(value.hasOwnProperty('wxid')) {
+					this.$test
+						.post(`/?r=api/user/part`, {
+							wxid: value.wxid,
+							company: obj.company_name,
+							address: obj.address
+						})
+						.then(response => {
+							// console.log(response)
+							if (response.code === 200) {
+							}
+						});
+				}
+			}, 800),
 			// 调用微信自定义分享
 			goShare() {
 				let obj = {
@@ -526,10 +592,25 @@
 						}
 					})
 			},
-			goNext() {
-				uni.navigateTo({
-					url: '/pages/outweb/outweb'
-				})
+			goNext(type) {
+				switch (type) {
+					case 'moon':
+						uni.navigateTo({
+							url: '/pages/activity/moon_festival',
+						})
+						this.activityDailog = false
+						break;
+					case 'national':
+						uni.navigateTo({
+							url: '/pages/activity/national_day',
+						})
+						this.activityDailog = false
+						break;
+					default:
+						uni.navigateTo({
+							url: '/pages/outweb/outweb'
+						})
+				}
 			}
 		}
 	}
@@ -906,6 +987,49 @@
 
 				.right {
 					right: -56rpx;
+				}
+			}
+		}
+
+		// 活动弹窗
+		.activity_block {
+			padding: 0 20rpx;
+
+			image {
+				display: block;
+				width: 100%;
+			}
+
+			.btn {
+				position: absolute;
+				bottom: 30rpx;
+				left: 11%;
+				width: 80%;
+				font-weight: bold;
+				text-align: center;
+				font-size: 38rpx;
+				line-height: 86rpx;
+				border-radius: 130rpx;
+				animation: mymove 5s infinite;
+				animation-direction: alternate;
+				animation-timing-function: ease-in-out;
+			}
+
+			.moon_block {
+				position: relative;
+
+				.look {
+					color: #F34122;
+					background: linear-gradient(90deg, #FFCF95, #FFF6B8);
+				}
+			}
+
+			.national_day {
+				position: relative;
+
+				.look {
+					color: #B9081A;
+					background: linear-gradient(90deg, #F3BC70, #FFB64B);
 				}
 			}
 		}

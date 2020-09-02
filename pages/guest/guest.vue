@@ -76,15 +76,15 @@
 						</view> -->
 						<view class="my_item">
 							<view class="label">手机号码</view>
-							<input id="tel" type="number" v-model="guest.tel" @blur="saveMsg" maxlength="11" placeholder="电话（预留在地图的电话）" />
+							<input id="tel" type="number" v-model="guest.tel" @input="saveMsg" maxlength="11" placeholder="电话（预留在地图的电话）" />
 						</view>
 						<view class="my_item">
 							<view class="label">店铺/公司名称</view>
-							<input type="text" v-model="guest.company_name" @blur="saveMsg" placeholder="店名（招牌名称）" />
+							<input type="text" v-model="guest.company_name" @input="saveMsg" placeholder="店名（招牌名称）" />
 						</view>
 						<view class="my_item">
 							<view class="label">店铺/公司地址</view>
-							<input type="text" v-model="guest.address" @blur="saveMsg" placeholder="地址（x省x市x区x镇x街x号）" />
+							<input type="text" v-model="guest.address" @input="saveMsg" placeholder="地址（x省x市x区x镇x街x号）" />
 						</view>
 						<view class="form-btn1" @click="submit">立即标注地图 客户轻松上门</view>
 						<!-- <view class="form-btn" @click="submit">
@@ -110,8 +110,10 @@
 </template>
 
 <script>
+	import { mapState, mapMutations } from 'vuex';
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
+	import lodash from '@/common/lodash.js';
 	import Json from '@/Json';
 	export default {
 		components: {
@@ -155,12 +157,13 @@
 				showItems: [],
 			}
 		},
+		computed: {
+    		...mapState(['userInfo'])
+  		},
 		onShow() {
 			this.loadingMore = false
 			this.noticeList = Json.noticeList
-			this.setObj = uni.getStorageSync('userMsg')
-			let obj = uni.getStorageSync('postMsg')
-			obj ? this.guest = obj : false
+			this.getUserdata()
 			this.getShow()
 			this.getloadingOrder()
 			this.goShare()
@@ -173,6 +176,28 @@
 			})
 		},
 		methods: {
+			// 获取用户信息
+			getUserdata() {
+				var value = uni.getStorageSync('userMsg')
+				if (Object.keys(value).length == 4) {
+					this.setObj = value
+					console.log('has value!+++++++++')
+					console.log(value)
+					console.log('has value!+++++++++')
+					this.getloadingOrder()
+				} else {
+					console.log('no value!+++++++++')
+					// this.getUserMsg()
+				}
+				let obj = this.userInfo
+				if (obj.hasOwnProperty('mobile')) {
+					this.guest.tel = obj.mobile,
+					this.guest.company_name = obj.company,
+					this.guest.address = obj.address
+				} else {
+					this.guest = uni.getStorageSync('postMsg')
+				}
+			},
 			// 上传合法手机号
 			postMobile(tel) {
 				this.$test
@@ -367,9 +392,6 @@
 					}
 					this.postMobile(this.guest.tel)
 				} else {
-					if (!(/^1[3456789]\d{9}$/.test(this.guest.tel))) {
-						return false
-					}
 					let obj = {
 						tel: this.guest.tel,
 						company_name: this.guest.company_name,
@@ -380,7 +402,30 @@
 						data: obj
 					});
 				}
+				this.uniteUserMsg()
 			},
+			// 节流同步
+			uniteUserMsg: lodash.debounce(function() {
+				let obj = {
+					tel: this.guest.tel,
+					company_name: this.guest.company_name || '',
+					address: this.guest.address || ''
+				}
+				let value = uni.getStorageSync('userMsg')
+				if(value.hasOwnProperty('wxid')) {
+					this.$test
+						.post(`/?r=api/user/part`, {
+							wxid: value.wxid,
+							company: obj.company_name,
+							address: obj.address
+						})
+						.then(response => {
+							// console.log(response)
+							if (response.code === 200) {
+							}
+						});
+				}
+			}, 800),
 			// 提交信息
 			submit() {
 				let str = uni.getStorageSync('mapStr')

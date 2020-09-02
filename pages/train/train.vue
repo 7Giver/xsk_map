@@ -11,14 +11,14 @@
 			<image :src="guest.avatar || setObj.headimgurl" mode="widthFix">
 			<view class="right">
 				<view class="item">
-					<view class="left">商户名称：
+					<view class="left must">商户名称：
 						<text v-if="!editName && guest.company">{{guest.company}}</text>
 						<input v-else type="text" v-model="guest.company" @blur="saveMsg('company')" placeholder="请填写店铺/公司名称" />
 					</view>
 					<view class="edit" @click="eidtMsg('name')" v-if="guest.company">修改</view>
 				</view>
 				<view class="item">
-					<view class="left">联系电话：
+					<view class="left must">联系电话：
 						<text v-if="!editTel && guest.mobile">{{guest.mobile}}</text>
 						<input v-else type="number" v-model="guest.mobile" @input="getDetail" @blur="saveMsg('mobile')" maxlength="11" placeholder="请填写真实有效的手机号码" />
 					</view>
@@ -27,7 +27,7 @@
 				<view class="item">
 					<view class="left">商户地址：
 						<text v-if="!editAddress && guest.address">{{guest.address}}</text>
-						<textarea v-else v-model="guest.address" @blur="saveMsg('address')" placeholder="请填写真实有效店铺/公司地址" style="height: 100rpx" />
+						<textarea v-else v-model="guest.address" @blur="saveMsg('address')" placeholder="请填写真实有效店铺/公司地址（选填）" style="height: 100rpx" />
 					</view>
 					<view class="edit" @click="eidtMsg('address')" v-if="guest.address">修改</view>
 				</view>
@@ -195,7 +195,6 @@
 			},
 			// 获取用户信息
 			getUserInfo() {
-				let msg = uni.getStorageSync('postMsg')
 				let value = uni.getStorageSync('userMsg')
 				if (Object.keys(value).length == 4) {
 					this.setObj = value
@@ -207,13 +206,12 @@
 							if (response.code === 200) {
 								this.$set(response.data, 'wxid', value.wxid)
 								this.setUserInfo(response.data)
-								this.guest = this.userInfo
-								if (msg) {
-									this.guest.company = msg.company_name
-									this.guest.mobile = msg.tel
-									this.guest.address = msg.address
+								let obj = this.userInfo
+								if (obj.hasOwnProperty('mobile')) {
+									this.guest = obj
+								} else {
+									this.guest = uni.getStorageSync('postMsg')
 								}
-								// console.log(this.guest)
 							}
 						})
 				} else {
@@ -335,15 +333,28 @@
 						this.editAddress = false;
 						break;
 				}
-				// let obj = {
-				// 	tel: this.guest.mobile,
-				// 	company_name: this.guest.company,
-				// 	address: this.guest.address
-				// }
-				// uni.setStorage({
-				// 	key: "postMsg",
-				// 	data: obj
-				// })
+				let obj = {
+					tel: this.guest.mobile,
+					company_name: this.guest.company,
+					address: this.guest.address
+				}
+				uni.setStorage({
+					key: "postMsg",
+					data: obj
+				})
+				let value = uni.getStorageSync('userMsg')
+				this.$test
+					.post(`/?r=api/user/part`, {
+						wxid: value.wxid,
+						company: obj.company_name,
+						address: obj.address
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							
+						}
+					});
 			},
 			// 同意协议
 			checkagree() {
@@ -479,13 +490,13 @@
 					});
 					return false
 				}
-				if (!this.guest.address) {
-					uni.showToast({
-						title: '请输入商户地址',
-						icon: 'none'
-					});
-					return false
-				}
+				// if (!this.guest.address) {
+				// 	uni.showToast({
+				// 		title: '请输入商户地址',
+				// 		icon: 'none'
+				// 	});
+				// 	return false
+				// }
 				// if (!this.agreement) {
 				// 	uni.showToast({
 				// 		title: '请阅读服务协议',
@@ -580,7 +591,7 @@
 		
 		.right {
 			flex: 1;
-			padding-left: 30rpx;
+			padding-left: 22rpx;
 
 			.item {
 				display: flex;
@@ -595,6 +606,11 @@
 					white-space: nowrap;
 					color: #232739;
 					font-weight: bold;
+
+					&::before {
+						content: "";
+						width: 20rpx;
+					}
 
 					input {
 						width: 100%;
@@ -636,6 +652,13 @@
 							margin-top: 12rpx;
 						}
 					}
+				}
+
+				.must::before {
+					content: "*";
+					width: 20rpx;
+					color: #ff2d55;
+					font-size: 28rpx;
 				}
 
 				.edit {
