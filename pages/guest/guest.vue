@@ -189,14 +189,14 @@
 					console.log('no value!+++++++++')
 					// this.getUserMsg()
 				}
-				let obj = this.userInfo
-				if (obj.hasOwnProperty('mobile')) {
-					this.guest.tel = obj.mobile,
-					this.guest.company_name = obj.company,
-					this.guest.address = obj.address
-				} else {
-					this.guest = uni.getStorageSync('postMsg')
-				}
+				setTimeout(() => {
+					let obj = this.userInfo
+					if (obj.mobile !== undefined) {
+						this.guest.tel = obj.mobile,
+						this.guest.company_name = obj.company,
+						this.guest.address = obj.address
+					}
+				})
 			},
 			// 上传合法手机号
 			postMobile(tel) {

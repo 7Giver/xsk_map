@@ -1,7 +1,7 @@
 <template>
 	<view id="app">
         <!-- <view class="block"></view> -->
-		<uni-nav-bar title="编辑信息" left-icon="back" @clickLeft="$back"></uni-nav-bar>
+		<uni-nav-bar title="编辑信息" left-icon="back" @clickLeft="back"></uni-nav-bar>
 		<view class="content">
 			<view class="item">
 				<view class="label">更换头像</view>
@@ -102,7 +102,9 @@
   		},
 		onLoad() {
 			// console.log(this.userInfo)
-			this.guest = this.userInfo
+			setTimeout(() => {
+				this.guest = this.userInfo
+			})
 			this.getAreaList()
 		},
 		methods: {
@@ -121,6 +123,12 @@
 							})
 						}
 					});
+			},
+			// 返回上级页面
+			back() {
+				uni.switchTab({
+					url: '/pages/mine/mine'
+				})
 			},
 			// 跳转首页
 			goNext() {

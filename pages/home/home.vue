@@ -186,14 +186,14 @@
 					console.log('no value!+++++++++')
 					// this.getUserMsg()
 				}
-				let obj = this.userInfo
-				if (obj.hasOwnProperty('mobile')) {
-					this.guest.tel = obj.mobile,
-					this.guest.company_name = obj.company,
-					this.guest.address = obj.address
-				} else {
-					this.guest = uni.getStorageSync('postMsg')
-				}
+				setTimeout(() => {
+					let obj = this.userInfo
+					if (obj.mobile !== undefined) {
+						this.guest.tel = obj.mobile,
+						this.guest.company_name = obj.company,
+						this.guest.address = obj.address
+					}
+				})
 				let open = uni.getStorageSync('openPost')
 				// 根据编辑信息控制弹窗显示
 				if (open === true) {
@@ -202,10 +202,9 @@
 					})
 					uni.removeStorageSync('openPost');
 				} else {
-					console.log(111);
-					this.$nextTick(() => {
-						this.activityDailog = true
-					})
+					// this.$nextTick(() => {
+					// 	this.activityDailog = true
+					// })
 				}
 			},
 			// 根据url获取参数
@@ -524,6 +523,7 @@
 					});
 					return false
 				}
+				console.log(this.guest.tel);
 				if (!this.guest.tel) {
 					uni.showToast({
 						title: '请输入手机号',
