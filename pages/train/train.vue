@@ -1,7 +1,7 @@
 <template>
 	<view id="app" v-cloak>
 		<!-- <uni-nav-bar title="快速获客" left-icon="back" @clickLeft="back"></uni-nav-bar> -->
-		<uni-nav-bar title="搜搜直通车快速获客" left-icon="back" rightText="了解详情" @clickLeft="back" @clickRight="goNext"></uni-nav-bar>
+		<uni-nav-bar title="搜搜直通车快速获客" left-icon="back" rightText="了解详情" @clickLeft="back" @clickRight="goNext('subject')"></uni-nav-bar>
 		<view class="banner">
 			<image src="/static/train/banner.png?v=7" mode="widthFix" @click="posterShow">
 			<image src="/static/train/border.png" mode="widthFix">
@@ -110,6 +110,22 @@
 				</view>
 			</view>
 		</uni-popup>
+		<!-- 活动弹窗 -->
+		<uni-popup :show="activityDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="activityChange">
+			<view class="activity_block">
+				<!-- 未标注活动 -->
+				<!-- <view class="moon_block" v-if="!userInfo.is_direct">
+					<image src="/static/activity/dialog.png" mode="widthFix"></image>
+					<view class="look btn" @click.stop="goNext('moon')">立即查看</view>
+				</view> -->
+				<!-- 已标注活动 -->
+				<view class="national_day">
+					<image src="/static/activity/zhi_dialog.png" mode="widthFix"></image>
+					<view class="look btn" @click.stop="goNext('national')">立即查看</view>
+				</view>
+			</view>
+			<image class="close" src="/static/index/close.png" mode="" @click="activityCancel"></image>
+		</uni-popup>
 	</view>
 </template>
 
@@ -131,6 +147,7 @@
 				clientIndex: 1, // 增加客源
 				timeIndex: 1,  // 投放时长
 				showDailog: false, // 弹窗隐藏显示
+				activityDailog: false, //活动弹窗
 				editName: false, // 编辑名称
 				editTel: false,  // 编辑电话
 				editAddress: false, // 编辑地址
@@ -178,6 +195,10 @@
 			uni.setNavigationBarTitle({
 				title: "搜搜直通车快速获客"
 			})
+			// 活动弹窗显示
+			// this.$nextTick(() => {
+			// 	this.activityDailog = true;
+			// })
 			this.getUserInfo()
 			this.getAreaList()
 			this.goShare()
@@ -460,10 +481,32 @@
 			selectTime(index) {
 				this.timeIndex = index
 			},
-			// 跳转直通车专题页
-			goNext() {
+			// 监听展示弹窗状态
+			activityChange(e) {
+				if (!e.show) {
+					this.activityDailog = false;
+				}
+			},
+			// 关闭展示弹窗
+			activityCancel() {
+				this.activityDailog = false;
+			},
+			// 跳转
+			goNext(type) {
+				let url = ''
+				switch (type) {
+					case 'national':
+						url = '/pages/activity/national_day'
+						this.activityDailog = false
+						break;
+					case 'subject':
+						url: '/pages/train/subject'
+						break;
+					default:
+						url = ''
+				}
 				uni.navigateTo({
-					url: '/pages/train/subject'
+					url: url
 				})
 			},
 			// 立即支付
@@ -881,5 +924,58 @@
 		font-size: 30rpx;
 		font-weight: bold;
 	}
+
+	// 活动弹窗
+    .activity_block {
+        padding: 0 20rpx;
+
+        image {
+            display: block;
+            width: 100%;
+        }
+
+        .btn {
+            position: absolute;
+            bottom: 30rpx;
+            left: 11%;
+            width: 80%;
+            font-weight: bold;
+            text-align: center;
+            font-size: 38rpx;
+            line-height: 86rpx;
+            border-radius: 130rpx;
+            animation: mymove 5s infinite;
+            animation-direction: alternate;
+            animation-timing-function: ease-in-out;
+        }
+
+        .moon_block {
+            position: relative;
+
+            .look {
+                color: #F34122;
+                background: linear-gradient(90deg, #FFCF95, #FFF6B8);
+            }
+        }
+
+        .national_day {
+            position: relative;
+
+            .look {
+                color: #B9081A;
+                background: linear-gradient(90deg, #F3BC70, #FFB64B);
+            }
+        }
+    }
+
+    .close {
+        display: block;
+        position: absolute;
+        left: 50%;
+        bottom: -115rpx;
+        transform: translate(-50%, -50%);
+        width: 60rpx;
+        height: 60rpx;
+    }
 }
 </style>

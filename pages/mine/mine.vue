@@ -128,14 +128,14 @@ export default {
 				},
 			],
 			bannerList: [
-                // {
-                //     id: 3,
-                //     img: '/static/mine/banner03.png'
-                // },
-                // {
-                //     id: 4,
-                //     img: '/static/mine/banner04.png'
-                // },
+                {
+                    id: 3,
+                    img: '/static/mine/banner03.png'
+                },
+                {
+                    id: 4,
+                    img: '/static/mine/banner04.png'
+                },
                 {
                     id: 0,
                     img: '/static/mine/banner.png'
@@ -153,14 +153,16 @@ export default {
 	},
 	computed: {
     	...mapState(['userInfo'])
-  	},
+    },
+    onShow() {
+        // 活动弹窗显示
+        this.$nextTick(() => {
+            this.activityDailog = true;
+        })
+    },
 	onLoad() {
 		// this.iconList = Json.iconList
         this.getLocal()
-        // 活动弹窗显示
-        // this.$nextTick(() => {
-        //     this.activityDailog = true;
-        // })
 
 		// uni.redirectTo({
 		// 	url: '/pages/sousou/sousou'

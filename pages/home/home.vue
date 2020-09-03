@@ -202,9 +202,9 @@
 					})
 					uni.removeStorageSync('openPost');
 				} else {
-					// this.$nextTick(() => {
-					// 	this.activityDailog = true
-					// })
+					this.$nextTick(() => {
+						this.activityDailog = true
+					})
 				}
 			},
 			// 根据url获取参数

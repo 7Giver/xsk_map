@@ -78,7 +78,15 @@
 		</view>
 		<!-- 底部 -->
 		<view class="bottom">
-			<view class="left">实付:<text>￥{{guest.amount}}</text></view>
+			<view class="left">
+				<view class="source">
+					原价:<text>￥{{guest.money}}</text>
+					<view class="coupon">立减: ￥{{guest.money-guest.amount}}</view>
+				</view>
+				<view class="real">
+					实付:<text>￥{{guest.amount}}</text>
+				</view>
+			</view>
 			<view class="right" @click="submit">立即支付</view>
 		</view>
 		<!-- 提示遮罩 -->
@@ -404,24 +412,49 @@
 		bottom: 0;
 		display: flex;
 		width: 100%;
-		line-height: 120rpx;
 		background: #fff;
 		border-top: 1px solid #F0F0F0;
 
 		.left {
 			flex: 2;
-			font-size: 32rpx;
-			padding-left: 40rpx;
-			
-			>text {
-				color: #FF423A;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			font-size: 30rpx;
+			padding: 0 30rpx;
+
+			.source {
+				color: #333;
+				margin-right: 20rpx;
+
+				.coupon {
+					color: #FF423A;
+					font-size: 24rpx;
+					font-weight: bold;
+				}
+
+				>text {
+					color: #999;
+					text-decoration: line-through;
+				}
 			}
+
+			.real {
+				color: #333;
+				>text {
+					color: #FF423A;
+					font-size: 40rpx;
+					font-weight: bold;
+				}
+			}
+			
 		}
 
 		.right {
 			flex: 1;
 			color: #fff;
 			font-size: 32rpx;
+			line-height: 120rpx;
 			text-align: center;
 			background: linear-gradient(90deg, #FF5664, #FF3D2F);
 		}
