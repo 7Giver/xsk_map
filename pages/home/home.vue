@@ -108,15 +108,15 @@
 		<uni-popup :show="activityDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="activityChange">
 			<view class="activity_block">
 				<!-- 未标注活动 -->
-				<view class="moon_block" v-if="!userInfo.is_direct">
+				<view class="moon_block">
 					<image src="/static/activity/dialog.png" mode="widthFix"></image>
 					<view class="look btn" @click.stop="goNext('moon')">立即查看</view>
 				</view>
 				<!-- 已标注活动 -->
-				<view class="national_day" v-else>
+				<!-- <view class="national_day" v-else>
 					<image src="/static/activity/zhi_dialog.png" mode="widthFix"></image>
 					<view class="look btn" @click.stop="goNext('national')">立即查看</view>
-				</view>
+				</view> -->
 			</view>
 			<image class="close" src="/static/index/close.png" mode="" @click="activityCancel"></image>
 		</uni-popup>
@@ -202,9 +202,11 @@
 					})
 					uni.removeStorageSync('openPost');
 				} else {
-					this.$nextTick(() => {
-						this.activityDailog = true
-					})
+					if (!this.userInfo.is_mark) {
+						this.$nextTick(() => {
+							this.activityDailog = true
+						})
+					}
 				}
 			},
 			// 根据url获取参数
