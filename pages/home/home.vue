@@ -173,6 +173,9 @@
 			})
 		},
 		methods: {
+			...mapMutations({
+				setUserInfo: 'setUserInfo'
+			}),
 			// 获取用户信息
 			getUserdata() {
 				var value = uni.getStorageSync('userMsg')
@@ -181,6 +184,7 @@
 					console.log('has value!+++++++++')
 					console.log(value)
 					console.log('has value!+++++++++')
+					this.getUserInfo()
 					this.getloadingOrder()
 				} else {
 					console.log('no value!+++++++++')
@@ -197,10 +201,12 @@
 				let open = uni.getStorageSync('openPost')
 				// 根据编辑信息控制弹窗显示
 				if (open === true) {
-					this.$nextTick(() => {
-						this.showDailog = true;
+					setTimeout(() => {
+						this.$nextTick(() => {
+							this.showDailog = true;
+						})
+						uni.removeStorageSync('openPost');
 					})
-					uni.removeStorageSync('openPost');
 				} else {
 					if (!this.userInfo.is_mark) {
 						this.$nextTick(() => {
@@ -239,6 +245,22 @@
 					});
                 	return result;
             	}
+			},
+			// 获取用户信息
+			getUserInfo() {
+				let value = uni.getStorageSync('userMsg')
+				if (value.hasOwnProperty('wxid')) {
+					this.$test
+						.post(`/?r=api/user/info`, {
+							wxid: value.wxid || this.userInfo.wxid
+						})
+						.then(response => {
+							if (response.code === 200) {
+								this.$set(response.data, 'wxid', value.wxid)
+								this.setUserInfo(response.data)
+							}
+						});
+				}
 			},
 			// 上传合法手机号，获取信息
 			postMobile(tel) {

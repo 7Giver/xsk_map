@@ -85,8 +85,17 @@ Vue.prototype.$getAuthorize = () => {
     })
   } else {
     let url = window.location.href.split('#')[1]
-    // window.location.href = `${baseURL}/api/geMapWxInfo`  // 正式
-    window.location.href = `${testURL}?r=api/user/authorize&path=${url}`  // 测试
+    switch (url) {
+      case '/pages/activity/moon_festival':
+        window.location.href = `${testURL}?r=api/user/authorize`
+        break;
+      case '/pages/activity/national_day':
+        let route = '/pages/train/train'
+        window.location.href = `${testURL}?r=api/user/authorize&path=${route}`
+        break;
+      default:
+        window.location.href = `${testURL}?r=api/user/authorize&path=${url}`
+    }
   }
 
   function getRoute(url) {

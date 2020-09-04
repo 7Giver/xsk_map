@@ -128,14 +128,14 @@ export default {
 				},
 			],
 			bannerList: [
-                {
-                    id: 3,
-                    img: '/static/mine/banner03.png'
-                },
-                {
-                    id: 4,
-                    img: '/static/mine/banner04.png'
-                },
+                // {
+                //     id: 3,
+                //     img: '/static/mine/banner03.png'
+                // },
+                // {
+                //     id: 4,
+                //     img: '/static/mine/banner04.png'
+                // },
                 {
                     id: 0,
                     img: '/static/mine/banner.png'
