@@ -208,7 +208,7 @@
 						uni.removeStorageSync('openPost');
 					})
 				} else {
-					if (!this.userInfo.is_mark) {
+					if (this.userInfo.is_mark == 0) {
 						this.$nextTick(() => {
 							this.activityDailog = true
 						})

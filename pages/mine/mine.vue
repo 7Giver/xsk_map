@@ -128,14 +128,14 @@ export default {
 				},
 			],
 			bannerList: [
-                // {
-                //     id: 3,
-                //     img: '/static/mine/banner03.png'
-                // },
-                // {
-                //     id: 4,
-                //     img: '/static/mine/banner04.png'
-                // },
+                {
+                    id: 3,
+                    img: '/static/mine/banner03.png'
+                },
+                {
+                    id: 4,
+                    img: '/static/mine/banner04.png'
+                },
                 {
                     id: 0,
                     img: '/static/mine/banner.png'
@@ -156,7 +156,7 @@ export default {
     },
     onShow() {
         // 活动弹窗显示
-        if (this.userInfo.is_mark) {
+        if (this.userInfo.is_mark !== 0) {
             this.$nextTick(() => {
                 this.activityDailog = true;
             })
