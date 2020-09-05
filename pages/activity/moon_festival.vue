@@ -1,6 +1,6 @@
 <template>
 	<view id="app">
-		<image src="/static/activity/con01.jpg" mode="widthFix"></image>
+		<image src="/static/activity/con01.jpg?v=7" mode="widthFix"></image>
 		<view class="has_btn" @click.stop="goNext('activity')">立即标注 免费领礼</view>
 	</view>
 </template>

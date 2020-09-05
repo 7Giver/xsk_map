@@ -1,7 +1,7 @@
 <template>
 	<view id="app">
 		<image src="/static/activity/zhi1.jpg" mode="widthFix"></image>
-		<view class="has_btn" @click.stop="goNext('activity')">立即标注 免费领礼</view>
+		<view class="has_btn" @click.stop="goNext('activity')">参与活动 免费领礼</view>
 	</view>
 </template>
 

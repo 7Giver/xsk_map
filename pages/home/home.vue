@@ -188,7 +188,6 @@
 					this.getloadingOrder()
 				} else {
 					console.log('no value!+++++++++')
-					// this.getUserMsg()
 				}
 				setTimeout(() => {
 					let obj = this.userInfo
@@ -197,54 +196,23 @@
 						this.guest.company_name = obj.company,
 						this.guest.address = obj.address
 					}
-				})
-				let open = uni.getStorageSync('openPost')
-				// 根据编辑信息控制弹窗显示
-				if (open === true) {
-					setTimeout(() => {
-						this.$nextTick(() => {
-							this.showDailog = true;
+					let open = uni.getStorageSync('openPost')
+					// 根据编辑信息控制弹窗显示
+					if (open === true) {
+						setTimeout(() => {
+							this.$nextTick(() => {
+								this.showDailog = true;
+							})
+							uni.removeStorageSync('openPost');
 						})
-						uni.removeStorageSync('openPost');
-					})
-				} else {
-					if (this.userInfo.is_mark == 0) {
-						this.$nextTick(() => {
-							this.activityDailog = true
-						})
+					} else {
+						if (this.userInfo.is_mark == 0 || !this.userInfo.is_mark) {
+							this.$nextTick(() => {
+								this.activityDailog = true
+							})
+						}
 					}
-				}
-			},
-			// 根据url获取参数
-			getUserMsg() {
-				var href = window.location.href;
-				var temp = href.split("?")[1]; // 通过拆分链接判断是否获取参数存储
-				if (temp) {
-					let url = decodeURIComponent(window.location.href)
-					uni.setStorage({
-						key: "userMsg",
-						data: getUrlparam(url),
-					});
-					this.setObj = uni.getStorageSync('userMsg');
-					this.$nextTick(() => {
-						this.showDailog = true;
-					})
-					this.getloadingOrder()
-					// console.log(uni.getStorageSync('userMsg'))
-				}
-
-				function getUrlparam(url) {
-					let askText = url.split('?')[1];
-					let result = {};
-					let askAry = askText.split("&");
-					askAry.forEach((item) => {
-						let n = item.split("=");
-						let key = n[0];
-						let value = n[1];
-						result[key] = value;
-					});
-                	return result;
-            	}
+				})
 			},
 			// 获取用户信息
 			getUserInfo() {

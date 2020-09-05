@@ -154,18 +154,9 @@ export default {
 	computed: {
     	...mapState(['userInfo'])
     },
-    onShow() {
-        // 活动弹窗显示
-        if (this.userInfo.is_mark !== 0) {
-            this.$nextTick(() => {
-                this.activityDailog = true;
-            })
-        }
-    },
 	onLoad() {
 		// this.iconList = Json.iconList
         this.getLocal()
-
 		// uni.redirectTo({
 		// 	url: '/pages/sousou/sousou'
 		// })
@@ -215,6 +206,12 @@ export default {
                             this.$set(response.data, 'wxid', value.wxid)
                             this.setUserInfo(response.data)
                             this.getloadingOrder()
+                            // 活动弹窗显示
+                            if (this.userInfo.is_mark !== 0) {
+                                this.$nextTick(() => {
+                                    this.activityDailog = true;
+                                })
+                            }
                         }
                     })
         },
