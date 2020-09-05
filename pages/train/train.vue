@@ -217,7 +217,7 @@
 			// 获取用户信息
 			getUserInfo() {
 				let value = uni.getStorageSync('userMsg')
-				if (Object.keys(value).length == 4) {
+				if (value.wxid) {
 					this.setObj = value
 					this.$test
 						.post(`/?r=api/user/info`, {
@@ -500,7 +500,7 @@
 						this.activityDailog = false
 						break;
 					case 'subject':
-						url: '/pages/train/subject'
+						url = '/pages/train/subject'
 						break;
 					default:
 						url = ''

@@ -20,7 +20,7 @@
 			// 跳转页面
 			goNext(type) {
 				let value = uni.getStorageSync('userMsg')
-				if (!value.hasOwnProperty('wxid')) {
+				if (!value.wxid) {
 					this.$getAuthorize()
 					return false
 				}

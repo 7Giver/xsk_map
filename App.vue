@@ -11,17 +11,18 @@ export default {
         uni.setStorageSync('state_ios_href', location.href)
         // #endif
 
-        //获取用户信息
-        this.getUserInfo()
-
         // 测试用
         // this.testSet()
 
+        // 根据url获取参数
+        this.getUserMsg()
+
+        //获取用户信息
+        this.getUserInfo()
+
         // 进入应用授权
         // this.$getAuthorize()
-
-        // 根据url获取参数
-        // this.getUserMsg()
+        
     },
     onShow: function () {
         // console.log('App Show')
@@ -39,7 +40,7 @@ export default {
                 headimgurl: "http://thirdwx.qlogo.cn/mmopen/vi_32/kFbNaxXYDdlzenEeANr0qW0tDY2WOaQLT1nAtySsEXwia2mITxEDTlRzA8dlUeHsuAYxlTXJicA5gKsp6TicmNaLQ/132",
 				nickname: "Heiz",
 				openid: "o8MX9wwt5ozZ033IVjTqqNsM4c1A",
-				wxid: "wpxgorng"
+				wxid: "wpxgorng#/"
 			};
 			let msg = {
 				address: "无锡锡宁路前村工业园a区23",
@@ -68,25 +69,28 @@ export default {
             }
 
             function getUrlparam(url) {
-                let askText = url.split('?')[1];
-                let result = {};
-                let askAry = askText.split("&");
-                askAry.forEach((item) => {
-                    let n = item.split("=");
+				let askText = url.split('?')[1];
+				let result = {};
+				let newStr = askText.replace('#/','')
+				let askAry = newStr.split('&');
+				askAry.forEach(item => {
+                    let n = item.split('=');
                     let key = n[0];
                     let value = n[1];
                     result[key] = value;
-                });
-                return result;
-            }
+				});
+				return result
+			}
         },
         // 获取用户信息
 		getUserInfo() {
             let value = uni.getStorageSync('userMsg')
-            if (value.hasOwnProperty('wxid')) {
+            if (value.wxid) {
+                value.wxid = value.wxid.replace('#/','');
+                uni.setStorageSync('userMsg', value);
                 this.$test
                     .post(`/?r=api/user/info`, {
-                        wxid: value.wxid || this.userInfo.wxid
+                        wxid: value.wxid
                     })
                     .then(response => {
                         if (response.code === 200) {
@@ -95,7 +99,8 @@ export default {
                         }
                     });
             }
-		},
+            
+        },
     },
 };
 </script>

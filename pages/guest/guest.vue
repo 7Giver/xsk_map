@@ -179,7 +179,7 @@
 			// 获取用户信息
 			getUserdata() {
 				var value = uni.getStorageSync('userMsg')
-				if (Object.keys(value).length == 4) {
+				if (value.wxid) {
 					this.setObj = value
 					console.log('has value!+++++++++')
 					console.log(value)
@@ -366,7 +366,7 @@
 			// 点击按钮
 			_checkItem() {
 				var value = uni.getStorageSync('userMsg')
-				Object.keys(value).length == 4 ? this.showDailog = true : this.$getAuthorize()
+				value.wxid ? this.showDailog = true : this.$getAuthorize()
 			},
 			/** 回退弹窗取消方法 */
 			cancel() {
@@ -412,7 +412,7 @@
 					address: this.guest.address || ''
 				}
 				let value = uni.getStorageSync('userMsg')
-				if(value.hasOwnProperty('wxid')) {
+				if(value.wxid) {
 					this.$test
 						.post(`/?r=api/user/part`, {
 							wxid: value.wxid,

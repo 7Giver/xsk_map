@@ -63,16 +63,16 @@
 				</view>
 				<view class="input-content">
 					<view class="my_item">
-						<view class="label">手机号码</view>
+						<view class="label after">手机号码</view>
 						<input id="tel" type="number" v-model="guest.tel" @input="getDetail" maxlength="11" placeholder="电话（预留在地图的电话）" />
 					</view>
 					<view class="my_item">
 						<view class="label">店铺/公司名称</view>
-						<input id="company_name" type="text" v-model="guest.company_name" @input="saveMsg" placeholder="店名（招牌名称）" />
+						<input id="company_name" type="text" v-model="guest.company_name" @input="saveMsg" placeholder="店名（招牌名称）（选填）" />
 					</view>
 					<view class="my_item">
 						<view class="label">店铺/公司地址</view>
-						<input id="address" type="text" v-model="guest.address" @input="saveMsg" placeholder="地址（x省x市x区x镇x街x号）" />
+						<input id="address" type="text" v-model="guest.address" @input="saveMsg" placeholder="地址（x省x市x区x镇x街x号）（选填）" />
 					</view>
 					<view class="form-btn1" @click="submit">立即标注地图 客户轻松上门</view>
 				</view>
@@ -179,7 +179,7 @@
 			// 获取用户信息
 			getUserdata() {
 				var value = uni.getStorageSync('userMsg')
-				if (Object.keys(value).length == 4) {
+				if (value.wxid) {
 					this.setObj = value
 					console.log('has value!+++++++++')
 					console.log(value)
@@ -188,36 +188,42 @@
 					this.getloadingOrder()
 				} else {
 					console.log('no value!+++++++++')
+					// this.getUserMsg()
+					this.$nextTick(() => {
+						this.activityDailog = true
+					})
 				}
-				setTimeout(() => {
-					let obj = this.userInfo
-					if (obj.mobile !== undefined) {
-						this.guest.tel = obj.mobile,
-						this.guest.company_name = obj.company,
-						this.guest.address = obj.address
-					}
-					let open = uni.getStorageSync('openPost')
-					// 根据编辑信息控制弹窗显示
-					if (open === true) {
-						setTimeout(() => {
-							this.$nextTick(() => {
-								this.showDailog = true;
-							})
-							uni.removeStorageSync('openPost');
-						})
-					} else {
-						if (this.userInfo.is_mark == 0 || !this.userInfo.is_mark) {
-							this.$nextTick(() => {
-								this.activityDailog = true
-							})
-						}
-					}
-				})
+			},
+			// 根据url获取参数
+			getUserMsg() {
+				var href = window.location.href;
+				var temp = href.split("?")[1]; // 通过拆分链接判断是否获取参数存储
+				if (temp) {
+					let url = decodeURIComponent(window.location.href)
+					uni.setStorage({
+						key: "userMsg",
+						data: getUrlparam(url),
+					});
+				}
+
+				function getUrlparam(url) {
+					let askText = url.split('?')[1];
+					let result = {};
+					let newStr = askText.replace('#/','')
+					let askAry = newStr.split('&');
+					askAry.forEach(item => {
+						let n = item.split('=');
+						let key = n[0];
+						let value = n[1];
+						result[key] = value;
+					});
+					return result
+				}
 			},
 			// 获取用户信息
 			getUserInfo() {
 				let value = uni.getStorageSync('userMsg')
-				if (value.hasOwnProperty('wxid')) {
+				if (value.wxid) {
 					this.$test
 						.post(`/?r=api/user/info`, {
 							wxid: value.wxid || this.userInfo.wxid
@@ -226,8 +232,34 @@
 							if (response.code === 200) {
 								this.$set(response.data, 'wxid', value.wxid)
 								this.setUserInfo(response.data)
+								this.messageDialogData()
 							}
 						});
+				}
+			},
+			// 信息弹窗赋值 控制活动弹窗显示
+			messageDialogData() {
+				let obj = this.userInfo
+				if (obj.mobile !== undefined) {
+					this.guest.tel = obj.mobile,
+					this.guest.company_name = obj.company,
+					this.guest.address = obj.address
+				}
+				let open = uni.getStorageSync('openPost')
+				// 根据编辑信息控制弹窗显示
+				if (open === true) {
+					setTimeout(() => {
+						this.$nextTick(() => {
+							this.showDailog = true;
+						})
+						uni.removeStorageSync('openPost');
+					})
+				} else {
+					if (this.userInfo.is_mark == 0 || !this.userInfo.is_mark) {
+						this.$nextTick(() => {
+							this.activityDailog = true
+						})
+					}
 				}
 			},
 			// 上传合法手机号，获取信息
@@ -300,7 +332,7 @@
 				let checkList = this.checkItems;
 				if (index === 'all') {
 					var value = uni.getStorageSync('userMsg')
-					Object.keys(value).length == 4 ? this.showDailog = true : this.$getAuthorize()
+					value.wxid ? this.showDailog = true : this.$getAuthorize()
 				} else {
 					checkList[index].checked ?
 						checkList[index].checked = false :
@@ -445,7 +477,7 @@
 					address: this.guest.address || ''
 				}
 				let value = uni.getStorageSync('userMsg')
-				if(value.hasOwnProperty('wxid')) {
+				if(value.wxid) {
 					this.$test
 						.post(`/?r=api/user/part`, {
 							wxid: value.wxid,
@@ -515,7 +547,6 @@
 					});
 					return false
 				}
-				console.log(this.guest.tel);
 				if (!this.guest.tel) {
 					uni.showToast({
 						title: '请输入手机号',
@@ -867,6 +898,13 @@
 						font-size: 32rpx;
 						padding-left: 6rpx;
 						margin-bottom: 12rpx;
+					}
+
+					.after:after{
+						content: "*";
+						color: #FE6E41;
+						font-size: 30rpx;
+						margin-left: 10rpx;
 					}
 
 					input {

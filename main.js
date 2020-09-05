@@ -107,7 +107,8 @@ Vue.prototype.$getAuthorize = () => {
   function getUrlparam(url) {
     let askText = url.split('?')[1];
     let result = {};
-    let askAry = askText.split('&');
+    let newStr = askText.replace('#/','')
+    let askAry = newStr.split('&');
     askAry.forEach(item => {
       let n = item.split('=');
       let key = n[0];

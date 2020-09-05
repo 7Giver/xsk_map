@@ -129,7 +129,7 @@ export default {
 		// 获取人脉市集
 		getConnection() {
 			let value = uni.getStorageSync('userMsg')
-			if (Object.keys(value).length !== 4) {
+			if (!value.wxid) {
 				this.$getAuthorize()
 				return false
 			}

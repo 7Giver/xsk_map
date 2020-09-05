@@ -174,10 +174,14 @@ export default {
                 let url = decodeURIComponent(href)
                 let result = this.getUrlparam(url)
                 let value = result.hasOwnProperty('wxid') // 有wxid再去覆盖
-                value ? this.$getAuthorize() : false
+                uni.setStorage({
+                    key: "userMsg",
+                    data: result,
+                });
+                value ? this.getUserInfo() : false
             }
             let value = uni.getStorageSync('userMsg')
-            Object.keys(value).length == 4 ? this.getUserInfo() : this.$getAuthorize()
+            value.wxid ? this.getUserInfo() : this.$getAuthorize()
             if (this.userInfo.is_mark) {
                 deleteRow(this.bannerList, 3)
                 deleteRow(this.bannerList, 1)
@@ -244,15 +248,16 @@ export default {
         getUrlparam(url) {
             let askText = url.split('?')[1];
             let result = {};
-            let askAry = askText.split('&');
+            let newStr = askText.replace('#/','')
+            let askAry = newStr.split('&');
             askAry.forEach(item => {
-            let n = item.split('=');
-            let key = n[0];
-            let value = n[1];
-            result[key] = value;
+                let n = item.split('=');
+                let key = n[0];
+                let value = n[1];
+                result[key] = value;
             });
             return result
-        },
+		},
         // 计算倒计时
         countDown(endtime) {
             // var endtime = parseInt(new Date('2020/07/31,11:46').getTime()/1000)
