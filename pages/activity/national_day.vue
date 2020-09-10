@@ -32,7 +32,7 @@
 				let obj = {
 					title: `中秋国庆放狠价`,
 					desc: `双节期间地图标注只需78 更有海量礼品等你来拿`,
-					shareUrl: window.location.href,
+					shareUrl: window.location.href.split('?')[0],
 					imgUrl: `${this.$dataURL}/image/58/580a19df160423578b741b96af3f450c.png`
 				}
 				// #ifdef H5

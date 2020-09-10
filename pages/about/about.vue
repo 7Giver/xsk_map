@@ -158,7 +158,7 @@
 				let obj = {
 					title: `关于我们`,
 					desc: `5000多万人次客源引流 连续六年行业第一`,
-					shareUrl: window.location.href,
+					shareUrl: window.location.href.split('?')[0],
 					imgUrl: `${this.$dataURL}/image/b6/b64d67cc23b73b2555ddb792822d8391.png`
 				}
 				// #ifdef H5

@@ -62,10 +62,13 @@ export default {
             var temp = href.split("?")[1]; // 通过拆分链接判断是否获取参数存储
             if (temp) {
                 let url = decodeURIComponent(window.location.href)
-                uni.setStorage({
-                    key: "userMsg",
-                    data: getUrlparam(url),
-                });
+                let result = getUrlparam(url)
+                if (result.wxid) {
+                    uni.setStorage({
+                        key: "userMsg",
+                        data: getUrlparam(url),
+                    });
+                }
             }
 
             function getUrlparam(url) {

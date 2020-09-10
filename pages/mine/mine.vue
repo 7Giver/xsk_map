@@ -167,19 +167,6 @@ export default {
 		}),
 		// 根据缓存获取用户信息
 		getLocal() {
-            //判断链接是否有参数覆盖
-            let href = window.location.href
-            let temp = href.split('?')[1];
-            if (temp) {
-                let url = decodeURIComponent(href)
-                let result = this.getUrlparam(url)
-                let value = result.hasOwnProperty('wxid') // 有wxid再去覆盖
-                uni.setStorage({
-                    key: "userMsg",
-                    data: result,
-                });
-                value ? this.getUserInfo() : false
-            }
             let value = uni.getStorageSync('userMsg')
             value.wxid ? this.getUserInfo() : this.$getAuthorize()
             if (this.userInfo.is_mark) {

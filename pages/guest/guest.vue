@@ -264,7 +264,7 @@
 				let obj = {
 					title: `增加客源`,
 					desc: `立即标注 给您增加海量客源`,
-					shareUrl: window.location.href,
+					shareUrl: window.location.href.split('?')[0],
 					imgUrl: `${this.$dataURL}/image/16/16b244d0c4094b003e8f412f8ac8013d.png`
 				}
 				// #ifdef H5

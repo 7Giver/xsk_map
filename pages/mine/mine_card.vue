@@ -310,7 +310,7 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = window.location.href.split('#')[0]
+				let url = window.location.href.split('?')[0].split('#')[0]
 				let obj = {
 					title: `${this.userInfo.name}的名片请惠存`,
 					desc: `姓名：${this.userInfo.name}  商户：${this.userInfo.company}`,

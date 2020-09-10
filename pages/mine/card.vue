@@ -168,7 +168,7 @@
 				let obj = {
 					title: `${this.guest.name}的电子微名片`,
 					desc: `姓名：${this.guest.name}  商户：${this.guest.company}`,
-					shareUrl: `${window.location.href}&share=1`,
+					shareUrl: `${window.location.href.split('?')[0]}&share=1`,
 					imgUrl: this.guest.avatar
 				}
 				// #ifdef H5

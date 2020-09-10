@@ -284,7 +284,7 @@ export default {
 			let obj = {
 				title: `人脉市集`,
 				desc: `重新定义销售 帮助企业获客`,
-				shareUrl: window.location.href,
+				shareUrl: window.location.href.split('?')[0],
 				imgUrl: `${this.$dataURL}/image/c4/c4977d8fe898027b50d8a5f2420c60dc.png`
 			}
 			// #ifdef H5

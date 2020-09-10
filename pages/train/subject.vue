@@ -32,7 +32,7 @@
 			</view>
 		</view>
 		<view class="container">
-			<view class="train_block">
+			<view class="train_block" style="padding-bottom:40rpx">
 				<view class="title">搜搜直通车简介</view>
 				<view class="content">
 					<view class="text">搜搜集团旗下搜搜直通车，于2015年起，已累计为17万客户提供了<text>2500多万客源</text>，以及超过5亿人次的品牌曝光。与<text>百度</text>、<text>360</text>、<text>搜狗</text>建立稳定持续的战略合作关系。搜索引擎代理投放产业发起者，树立了行业品牌标杆持续引领行业发展。</view>
@@ -44,7 +44,7 @@
 				<view class="content">
 					<scroll-view class="scroll-view" scroll-x="true" @scroll="scroll">
 						<view class="scroll-view-item" v-for="(item, index) in showList" :key="index" @click="fullImg">
-							<image :src="item" mode="widthFix"></image>
+							<image :src="item" mode=""></image>
 						</view>
                 	</scroll-view>
 				</view>
@@ -176,12 +176,23 @@
 			uni.setNavigationBarTitle({
 				title: "搜搜直通车快速获客"
 			})
+			this.getShowList()
 			this.setRandom()
 			this.goRandom()
 			this.goShare()
 			this.goShareCircle()
 		},
 		methods: {
+			getShowList() {
+				this.$test
+                    .post(`/?r=api/index/safe`, {})
+                    .then(response => {
+                        if (response.code === 200) {
+							console.log(response);
+                            this.showList = response.data.list
+                        }
+                    })
+			},
 			scroll(e) {
 				// console.log(e)
 				this.old.scrollTop = e.detail.scrollTop
@@ -231,7 +242,7 @@
 				let obj = {
 					title: `搜搜直通车快速获客`,
 					desc: `精准获取本地人脉 开启无限获客新模式`,
-					shareUrl: window.location.href,
+					shareUrl: window.location.href.split('?')[0],
 					imgUrl: `${this.$dataURL}/image/ed/ed3413bfbcb35385ee657537d71a98ab.png`
 				}
 				// #ifdef H5
@@ -392,7 +403,6 @@
 		.train_block {
 			position: relative;
 			margin: 74rpx auto 0;
-			padding-bottom: 40rpx;
 			border-radius: 20rpx;
 			background: #B9DCFF;
 
@@ -460,6 +470,7 @@
 						color: #fff;
 						display: inline-block;
 						width: 360rpx;
+						height: 650rpx;
 
 						&:not(:last-child) {
 							margin-right: 20rpx;

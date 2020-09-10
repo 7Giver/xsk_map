@@ -496,7 +496,7 @@
 				let obj = {
 					title: `地图定位标注`,
 					desc: `地图搜索推广  客户轻松来访`,
-					shareUrl: window.location.href,
+					shareUrl: window.location.href.split('?')[0],
 					imgUrl: `${this.$dataURL}/image/ac/acd236b509b370efe5e57d238bd81011.png`
 				}
 				// #ifdef H5

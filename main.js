@@ -39,17 +39,22 @@ Vue.prototype.$getAuthorize = () => {
   let href = window.location.href
   // let href = 'http://dt.sousou.com/#/pages/mine/connection?nickname=Heiz&openid=o8MX9wwt5ozZ033IVjTqqNsM4c1A&headimgurl=http%3A%2F%2Fthirdwx.qlogo.cn%2Fmmopen%2Fvi_32%2FkFbNaxXYDdlzenEeANr0qW0tDY2WOaQLT1nAtySsEXwia2mITxEDTlRzA8dlUeHsuhOxyVHISU2oMhvGBtRdLxw%2F132&wxid=wpxgorng'
   let temp = href.split('?')[1]; // 通过拆分链接判断是否获取参数存储
+  let route = getRoute(href)
   if (temp) {
     let url = decodeURIComponent(href)
+    let urlObj = getUrlparam(url)
+    if (!urlObj.wxid) {
+      window.location.href = `${testURL}?r=api/user/authorize&path=${route}`
+      return false
+    }
     uni.setStorage({
       key: 'userMsg',
-      data: getUrlparam(url),
+      data: urlObj,
       success: () => {
-        let url = getRoute(href)
         switch (url) {
           case '/pages/guest/guest':
             uni.switchTab({
-              url: url,
+              url: route,
               success: function(e) {
                 location.reload();
               }
@@ -57,7 +62,7 @@ Vue.prototype.$getAuthorize = () => {
             break;
           case '/pages/mine/mine':
             uni.switchTab({
-              url: url,
+              url: route,
               success: function(e) {
                 location.reload();
               }
@@ -65,12 +70,12 @@ Vue.prototype.$getAuthorize = () => {
             break;
           case '/pages/train/train':
             uni.redirectTo({
-              url: url
+              url: route
             })
             break;
           case '/pages/mine/connection':
             uni.redirectTo({
-              url: url
+              url: route
             })
             break;
           default:
@@ -96,6 +101,10 @@ Vue.prototype.$getAuthorize = () => {
       default:
         window.location.href = `${testURL}?r=api/user/authorize&path=${url}`
     }
+    uni.setStorage({
+      key: "openPost",
+      data: true
+    })
   }
 
   function getRoute(url) {
