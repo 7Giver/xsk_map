@@ -493,10 +493,11 @@
 			}, 800),
 			// 调用微信自定义分享
 			goShare() {
+				let url = location.origin + location.hash
 				let obj = {
 					title: `地图定位标注`,
 					desc: `地图搜索推广  客户轻松来访`,
-					shareUrl: window.location.href.split('?')[0],
+					shareUrl: url,
 					imgUrl: `${this.$dataURL}/image/ac/acd236b509b370efe5e57d238bd81011.png`
 				}
 				// #ifdef H5
@@ -517,9 +518,10 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
+				let url = location.origin + location.hash
 				let obj = {
 					title: `地图定位标注`,
-					shareUrl: window.location.href,
+					shareUrl: url,
 					imgUrl: `${this.$dataURL}/image/ac/acd236b509b370efe5e57d238bd81011.png`
 				}
 				// #ifdef H5

@@ -236,11 +236,12 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
+				let url = location.origin + location.hash
 				let obj = {
 					title: `订制您的专属商务彩铃`,
 					desc: `每一次通话都是一次广告收益 给客户带来美的听觉享受`,
-					shareUrl: window.location.href.split('?')[0],
-					imgUrl: 'http://cdn.tuku658.com/image/01/019a1ba2b70fabd8631ee9905824cbf6.jpg'
+					shareUrl: url,
+					imgUrl: `${this.$dataURL}/image/01/019a1ba2b70fabd8631ee9905824cbf6.jpg`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {
@@ -260,10 +261,11 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
+				let url = location.origin + location.hash
 				let obj = {
 					title: `订制您的专属商务彩铃`,
-					shareUrl: window.location.href,
-					imgUrl: 'http://cdn.tuku658.com/image/01/019a1ba2b70fabd8631ee9905824cbf6.jpg'
+					shareUrl: url,
+					imgUrl: `${this.$dataURL}/image/01/019a1ba2b70fabd8631ee9905824cbf6.jpg`
 				}
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {

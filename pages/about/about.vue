@@ -155,10 +155,11 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
+				let url = location.origin + location.hash
 				let obj = {
 					title: `关于我们`,
 					desc: `5000多万人次客源引流 连续六年行业第一`,
-					shareUrl: window.location.href.split('?')[0],
+					shareUrl: url,
 					imgUrl: `${this.$dataURL}/image/b6/b64d67cc23b73b2555ddb792822d8391.png`
 				}
 				// #ifdef H5
@@ -179,9 +180,10 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
+				let url = location.origin + location.hash
 				let obj = {
 					title: `关于我们`,
-					shareUrl: window.location.href,
+					shareUrl: url,
 					imgUrl: `${this.$dataURL}/image/b6/b64d67cc23b73b2555ddb792822d8391.png`
 				}
 				// #ifdef H5

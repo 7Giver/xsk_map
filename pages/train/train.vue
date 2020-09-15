@@ -277,12 +277,14 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
+				let url = location.origin + '/#' + location.href.split('#')[1]
 				let obj = {
 					title: `快速获客`,
 					desc: `海量精准客源等你来领`,
-					shareUrl: window.location.href.split('?')[0],
+					shareUrl: url,
 					imgUrl: `${this.$dataURL}/image/d7/d7fadb2c8ee2b68a8d43f693b4027527.png`
 				}
+				console.log(obj);
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {
 					this.$jwx.initJssdk(res => {
@@ -301,9 +303,10 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
+				let url = location.origin + '?' +location.hash
 				let obj = {
 					title: `快速获客`,
-					shareUrl: window.location.href,
+					shareUrl: url,
 					imgUrl: `${this.$dataURL}/image/d7/d7fadb2c8ee2b68a8d43f693b4027527.png`
 				}
 				// #ifdef H5

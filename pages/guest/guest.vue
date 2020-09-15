@@ -261,10 +261,11 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
+				let url = location.origin + location.hash
 				let obj = {
 					title: `增加客源`,
 					desc: `立即标注 给您增加海量客源`,
-					shareUrl: window.location.href.split('?')[0],
+					shareUrl: url,
 					imgUrl: `${this.$dataURL}/image/16/16b244d0c4094b003e8f412f8ac8013d.png`
 				}
 				// #ifdef H5
@@ -285,9 +286,10 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
+				let url = location.origin + location.hash
 				let obj = {
 					title: `增加客源`,
-					shareUrl: window.location.href,
+					shareUrl: url,
 					imgUrl: `${this.$dataURL}/image/16/16b244d0c4094b003e8f412f8ac8013d.png`
 				}
 				// #ifdef H5

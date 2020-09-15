@@ -39,7 +39,7 @@
 					</view>
 				</view>
 			</view>
-			<uni-load-more v-if="userList.length > 0" :status="loadingType"></uni-load-more>
+			<uni-load-more v-if="loadmore" :status="loadingType"></uni-load-more>
 		</scroll-view>
 		<!-- 弹出层 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
@@ -281,10 +281,11 @@ export default {
 		},
 		// 调用微信自定义分享
 		goShare() {
+			let url = location.origin + location.hash
 			let obj = {
 				title: `人脉市集`,
 				desc: `重新定义销售 帮助企业获客`,
-				shareUrl: window.location.href.split('?')[0],
+				shareUrl: url,
 				imgUrl: `${this.$dataURL}/image/c4/c4977d8fe898027b50d8a5f2420c60dc.png`
 			}
 			// #ifdef H5
@@ -305,9 +306,10 @@ export default {
 		},
 		// 调用微信分享朋友圈
 			goShareCircle() {
+				let url = location.origin + location.hash
 				let obj = {
 					title: `人脉市集`,
-					shareUrl: window.location.href,
+					shareUrl: url,
 					imgUrl: `${this.$dataURL}/image/c4/c4977d8fe898027b50d8a5f2420c60dc.png`
 				}
 				// #ifdef H5
