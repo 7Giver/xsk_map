@@ -113,7 +113,7 @@
 			}
 		},
 		computed: {
-    		...mapState(['userInfo'])
+    		...mapState(['wxid','userInfo'])
   		},
 		onLoad(option) {
 			uni.setNavigationBarTitle({
@@ -161,10 +161,9 @@
 			},
 			// 获取订单详情
 			getDetail() {
-				let value = uni.getStorageSync('userMsg')
 				this.$test
 					.post(`/?r=api/order/direct-detail`, {
-						wxid: this.userInfo.wxid || value.wxid
+						wxid: this.wxid
 					})
 					.then(response => {
 						// console.log(response)
@@ -175,7 +174,6 @@
 			},
 			// 获取客源列表
 			getClientList() {
-				let value = uni.getStorageSync('userMsg')
 				if (this.loadingType === 'noMore') {
 				  //防止重复加载
 				  return false;
@@ -183,7 +181,7 @@
 				this.loadingType = 'loading';
 				this.$test
 					.post(`/?r=api/order/customer-list`, {
-						wxid: this.userInfo.wxid || value.wxid,
+						wxid: this.wxid,
 						page: this.page
 					})
 					.then(response => {

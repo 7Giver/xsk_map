@@ -122,7 +122,6 @@
 		},
 		data() {
 			return {
-				setObj: {}, // 授权后用户信息对象
 				guest: {},  // 表单信息对象
 				loadingType: "loading",
 				order_sn: '', // 待支付单号
@@ -158,14 +157,13 @@
 			}
 		},
 		computed: {
-    		...mapState(['userInfo'])
+    		...mapState(['wxid', 'userInfo'])
   		},
 		onShow() {
 			this.loadingMore = false
 			this.noticeList = Json.noticeList
 			this.getUserdata()
 			this.getShow()
-			this.getloadingOrder()
 			this.goShare()
 			this.goShareCircle()
 		},
@@ -176,33 +174,47 @@
 			})
 		},
 		methods: {
+			...mapMutations({
+				setWxid: "setWxid",
+				setUserInfo: 'setUserInfo'
+			}),
 			// 获取用户信息
 			getUserdata() {
-				var value = uni.getStorageSync('userMsg')
-				if (value.wxid) {
-					this.setObj = value
+				var value = uni.getStorageSync('wxid')
+				if (value) {
+					this.setWxid(value)
 					console.log('has value!+++++++++')
 					console.log(value)
 					console.log('has value!+++++++++')
 					this.getloadingOrder()
+					setTimeout(() => {
+						let obj = this.userInfo
+						if (obj.mobile !== undefined) {
+							this.guest.tel = obj.mobile,
+							this.guest.company_name = obj.company,
+							this.guest.address = obj.address
+						}
+					}, 400)
 				} else {
 					console.log('no value!+++++++++')
+					this.getUrlWxid()
 					// this.getUserMsg()
 				}
-				setTimeout(() => {
-					let obj = this.userInfo
-					if (obj.mobile !== undefined) {
-						this.guest.tel = obj.mobile,
-						this.guest.company_name = obj.company,
-						this.guest.address = obj.address
-					}
-				})
+			},
+			// 根据url获取wxid
+			getUrlWxid() {
+				if (location.href.indexOf("wxid") >= 0) {
+					let wxid = this.$common.getQueryString("wxid")
+					this.setWxid(wxid)
+					uni.setStorageSync('wxid', wxid)
+					location.reload();
+				}
 			},
 			// 上传合法手机号
 			postMobile(tel) {
 				this.$test
 					.post(`/?r=api/index/mobile`, {
-						wxid: this.setObj.wxid,
+						wxid: this.wxid,
 						mobile: tel
 					})
 					.then(response => {
@@ -236,32 +248,29 @@
 			},
 			// 获取进行中订单
 			getloadingOrder() {
-				let value = this.setObj
-				if (value) {
-					this.$test
-						.post(`/?r=api/index/index`, {
-							wxid: value.wxid
-						})
-						.then(response => {
-							// console.log(response)
-							if (response.code === 200) {
-								if (response.data.order_sn) {
-									let endtime = response.data.end_time
-									this.order_sn = response.data.order_sn
-									if (endtime) {
-										this.timer = setInterval(() => {
-											this.hasOrder = true
-											this.countDown(endtime)
-										}, 1000)
-									}
+				this.$test
+					.post(`/?r=api/index/index`, {
+						wxid: this.wxid
+					})
+					.then(response => {
+						// console.log(response)
+						if (response.code === 200) {
+							if (response.data.order_sn) {
+								let endtime = response.data.end_time
+								this.order_sn = response.data.order_sn
+								if (endtime) {
+									this.timer = setInterval(() => {
+										this.hasOrder = true
+										this.countDown(endtime)
+									}, 1000)
 								}
 							}
-						})
-				}
+						}
+					})
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `增加客源`,
 					desc: `立即标注 给您增加海量客源`,
@@ -286,7 +295,7 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `增加客源`,
 					shareUrl: url,
@@ -367,8 +376,8 @@
 			},
 			// 点击按钮
 			_checkItem() {
-				var value = uni.getStorageSync('userMsg')
-				value.wxid ? this.showDailog = true : this.$getAuthorize()
+				var value = uni.getStorageSync('wxid')
+				value ? this.showDailog = true : this.$getAuthorize()
 			},
 			/** 回退弹窗取消方法 */
 			cancel() {
@@ -413,11 +422,11 @@
 					company_name: this.guest.company_name || '',
 					address: this.guest.address || ''
 				}
-				let value = uni.getStorageSync('userMsg')
-				if(value.wxid) {
+				let value = uni.getStorageSync('wxid')
+				if(value) {
 					this.$test
 						.post(`/?r=api/user/part`, {
-							wxid: value.wxid,
+							wxid: value,
 							company: obj.company_name,
 							address: obj.address
 						})
@@ -481,7 +490,7 @@
 				});
 				let str = uni.getStorageSync('mapStr')
 				let result = {
-					wxid: this.setObj.wxid,
+					wxid: this.wxid,
 					name: this.guest.company_name,
 					tel: this.guest.tel,
 					map: str,

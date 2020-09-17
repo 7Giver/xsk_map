@@ -98,10 +98,9 @@
 			}
 		},
 		computed: {
-    		...mapState(['userInfo'])
+    		...mapState(['wxid','userInfo'])
   		},
 		onLoad() {
-			// console.log(this.userInfo)
 			setTimeout(() => {
 				this.guest = this.userInfo
 			})
@@ -285,6 +284,7 @@
 					});
 					return false
 				}
+				this.$set(this.guest, 'wxid', this.wxid)
 				this.$test
 					.post(`/?r=api/user/edit`, this.guest)
 					.then(response => {

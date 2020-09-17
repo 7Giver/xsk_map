@@ -186,7 +186,7 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `搜搜集团旗下直通车简介`,
 					desc: `立志成为中国企业的强壮翅膀，专业的团队为您提供优质商业服务！`,
@@ -211,7 +211,7 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `搜搜集团旗下直通车简介`,
 					shareUrl: url,

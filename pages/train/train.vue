@@ -8,7 +8,7 @@
 			<!-- <image @click="posterShow" class="finger" src="/static/train/finger.gif" mode="widthFix"> -->
 		</view>
 		<view class="top_block">
-			<image :src="guest.avatar || setObj.headimgurl" mode="widthFix">
+			<image :src="guest.avatar" mode="widthFix">
 			<view class="right">
 				<view class="item">
 					<view class="left must">商户名称：
@@ -141,7 +141,6 @@
 		},
 		data() {
 			return {
-				setObj: {}, // 缓存信息
 				guest: {},  // 表单信息
 				total_cash: 1699, // 总价
 				clientIndex: 1, // 增加客源
@@ -189,7 +188,7 @@
 			}
 		},
 		computed: {
-    		...mapState(['userInfo'])
+    		...mapState(['wxid','userInfo'])
   		},
 		onShow() {
 			uni.setNavigationBarTitle({
@@ -206,6 +205,7 @@
 		},
 		methods: {
 			...mapMutations({
+				setWxid: "setWxid",
 				setUserInfo: 'setUserInfo'
 			}),
 			// 返回我的页面
@@ -216,19 +216,18 @@
 			},
 			// 获取用户信息
 			getUserInfo() {
-				let value = uni.getStorageSync('userMsg')
-				if (value.wxid) {
-					this.setObj = value
+				let value = uni.getStorageSync('wxid')
+				if (value) {
+					this.setWxid(value)
 					this.$test
 						.post(`/?r=api/user/info`, {
-							wxid: value.wxid
+							wxid: value || this.wxid
 						})
 						.then(response => {
 							if (response.code === 200) {
-								this.$set(response.data, 'wxid', value.wxid)
 								this.setUserInfo(response.data)
 								let obj = this.userInfo
-								if (obj.hasOwnProperty('mobile')) {
+								if (obj.mobile) {
 									this.guest = obj
 								} else {
 									this.guest = uni.getStorageSync('postMsg')
@@ -264,7 +263,7 @@
 					}
 					this.$test
 						.post(`/?r=api/index/mobile`, {
-							wxid: this.userInfo.wxid || this.setObj.wxid,
+							wxid: this.wxid || uni.getStorageSync('wxid'),
 							mobile: value,
 							type: 2
 						})
@@ -277,7 +276,7 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + '/#' + location.href.split('#')[1]
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `快速获客`,
 					desc: `海量精准客源等你来领`,
@@ -303,7 +302,7 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
-				let url = location.origin + '?' +location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `快速获客`,
 					shareUrl: url,
@@ -366,10 +365,9 @@
 					key: "postMsg",
 					data: obj
 				})
-				let value = uni.getStorageSync('userMsg')
 				this.$test
 					.post(`/?r=api/user/part`, {
-						wxid: value.wxid,
+						wxid: this.wxid || uni.getStorageSync('wxid'),
 						company: obj.company_name,
 						address: obj.address
 					})
@@ -574,13 +572,12 @@
 					data: setObj
 				})
 				let str = uni.getStorageSync('mapStr')
-				let wxid = uni.getStorageSync('userMsg').wxid
 				let obj = {
 					company: this.guest.company,
 					tel: this.guest.mobile,
 					address: this.guest.address,
 					map: str,
-					wxid: wxid,
+					wxid: this.wxid || uni.getStorageSync('wxid'),
 					area: this.checkList,
 					customers: this.clientList[this.clientIndex].value,
 					type: this.timeList[this.timeIndex].value

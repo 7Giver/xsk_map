@@ -144,10 +144,9 @@
 			}
 		},
 		computed: {
-    		...mapState(['userInfo'])
+    		...mapState(['wxid','userInfo'])
   		},
 		onShow() {
-			this.setObj = uni.getStorageSync('userMsg')
 			this.getMineInfo()
 		},
 		onLoad() {
@@ -159,7 +158,7 @@
 			},
 			// 获取本人信息
 			getMineInfo() {
-                let value = uni.getStorageSync('userMsg').wxid || this.userInfo.wxid
+                let value = uni.getStorageSync('wxid') || this.wxid
 				if (value) {
 					this.$test
 						.post(`/?r=api/user/card`, {

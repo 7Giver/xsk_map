@@ -136,7 +136,6 @@
 			return {
 				order_sn: '',  // 待支付订单号
 				count: '', // 倒计时
-				setObj: {}, // 授权后用户信息对象
 				timer: null, //定时器
 				showDailog: false, // 是否显示信息弹窗
 				showDailog1: false, // 是否显示展示弹窗
@@ -150,7 +149,7 @@
 			}
 		},
 		computed: {
-    		...mapState(['userInfo'])
+    		...mapState(['wxid','userInfo'])
   		},
 		onShow() {
 			// uni.hideTabBar()
@@ -174,67 +173,36 @@
 		},
 		methods: {
 			...mapMutations({
+				setWxid: "setWxid",
 				setUserInfo: 'setUserInfo'
 			}),
 			// 获取用户信息
 			getUserdata() {
-				var value = uni.getStorageSync('userMsg')
-				if (value.wxid) {
-					this.setObj = value
+				var value = uni.getStorageSync('wxid') || this.wxid
+				if (value) {
+					this.setWxid(value)
 					console.log('has value!+++++++++')
 					console.log(value)
 					console.log('has value!+++++++++')
-					this.getUserInfo()
 					this.getloadingOrder()
+					setTimeout(() => {
+						this.messageDialogData()
+					}, 400)
 				} else {
 					console.log('no value!+++++++++')
-					// this.getUserMsg()
+					this.getUrlWxid()
 					this.$nextTick(() => {
 						this.activityDailog = true
 					})
 				}
 			},
-			// 根据url获取参数
-			getUserMsg() {
-				var href = window.location.href;
-				var temp = href.split("?")[1]; // 通过拆分链接判断是否获取参数存储
-				if (temp) {
-					let url = decodeURIComponent(window.location.href)
-					uni.setStorage({
-						key: "userMsg",
-						data: getUrlparam(url),
-					});
-				}
-
-				function getUrlparam(url) {
-					let askText = url.split('?')[1];
-					let result = {};
-					let newStr = askText.replace('#/','')
-					let askAry = newStr.split('&');
-					askAry.forEach(item => {
-						let n = item.split('=');
-						let key = n[0];
-						let value = n[1];
-						result[key] = value;
-					});
-					return result
-				}
-			},
-			// 获取用户信息
-			getUserInfo() {
-				let value = uni.getStorageSync('userMsg')
-				if (value.wxid) {
-					this.$test
-						.post(`/?r=api/user/info`, {
-							wxid: value.wxid || this.userInfo.wxid
-						})
-						.then(response => {
-							if (response.code === 200) {
-								this.$set(response.data, 'wxid', value.wxid)
-								this.setUserInfo(response.data)
-								this.messageDialogData()
-							}
-						});
+			// 根据url获取wxid
+			getUrlWxid() {
+				if (location.href.indexOf("wxid") >= 0) {
+					let wxid = this.$common.getQueryString("wxid")
+					this.setWxid(wxid)
+					uni.setStorageSync('wxid', wxid)
+					location.reload();
 				}
 			},
 			// 信息弹窗赋值 控制活动弹窗显示
@@ -266,7 +234,7 @@
 			postMobile(tel) {
 				this.$test
 					.post(`/?r=api/index/mobile`, {
-						wxid: this.setObj.wxid,
+						wxid: this.wxid,
 						mobile: tel
 					})
 					.then(response => {
@@ -285,7 +253,7 @@
 			getloadingOrder() {
 				this.$test
 					.post(`/?r=api/index/index`, {
-						wxid: this.setObj.wxid
+						wxid: this.wxid
 					})
 					.then(response => {
 						// console.log(response)
@@ -331,8 +299,8 @@
 			_checkItem(index) {
 				let checkList = this.checkItems;
 				if (index === 'all') {
-					var value = uni.getStorageSync('userMsg')
-					value.wxid ? this.showDailog = true : this.$getAuthorize()
+					var value = uni.getStorageSync('wxid')
+					value ? this.showDailog = true : this.$getAuthorize()
 				} else {
 					checkList[index].checked ?
 						checkList[index].checked = false :
@@ -476,11 +444,9 @@
 					company_name: this.guest.company_name || '',
 					address: this.guest.address || ''
 				}
-				let value = uni.getStorageSync('userMsg')
-				if(value.wxid) {
-					this.$test
+				this.$test
 						.post(`/?r=api/user/part`, {
-							wxid: value.wxid,
+							wxid: this.wxid,
 							company: obj.company_name,
 							address: obj.address
 						})
@@ -489,11 +455,24 @@
 							if (response.code === 200) {
 							}
 						});
-				}
+				// let value = uni.getStorageSync('wxid')
+				// if(value) {
+				// 	this.$test
+				// 		.post(`/?r=api/user/part`, {
+				// 			wxid: this.wxid,
+				// 			company: obj.company_name,
+				// 			address: obj.address
+				// 		})
+				// 		.then(response => {
+				// 			// console.log(response)
+				// 			if (response.code === 200) {
+				// 			}
+				// 		});
+				// }
 			}, 800),
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `地图定位标注`,
 					desc: `地图搜索推广  客户轻松来访`,
@@ -518,7 +497,7 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `地图定位标注`,
 					shareUrl: url,
@@ -593,7 +572,7 @@
 				});
 				let str = uni.getStorageSync('mapStr')
 				let result = {
-					wxid: this.setObj.wxid,
+					wxid: this.wxid,
 					name: obj.company_name,
 					tel: obj.tel,
 					map: str,

@@ -2,7 +2,7 @@
     <view id="app">
 		<scroll-view class="scroll_content" scroll-y @scrolltolower="getConnection">
 			<view class="fixed_block">
-				<uni-nav-bar title="人脉市集" left-icon="back" @clickLeft="$back">
+				<uni-nav-bar title="人脉市集" left-icon="back" @clickLeft="back">
 					<view slot="right">
 						<image class="area" src="/static/sousou/address.png" mode="widthFix">
 						<picker
@@ -39,7 +39,7 @@
 					</view>
 				</view>
 			</view>
-			<uni-load-more v-if="loadmore" :status="loadingType"></uni-load-more>
+			<uni-load-more v-if="userList.length>0" :status="loadingType"></uni-load-more>
 		</scroll-view>
 		<!-- 弹出层 -->
 		<uni-popup :show="showDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="change">
@@ -97,7 +97,7 @@ export default {
 		};
 	},
 	computed: {
-    	...mapState(['userInfo'])
+    	...mapState(['wxid','userInfo'])
   	},
 	onLoad() {
 		// this.userList = Json.userList
@@ -128,8 +128,8 @@ export default {
 		},
 		// 获取人脉市集
 		getConnection() {
-			let value = uni.getStorageSync('userMsg')
-			if (!value.wxid) {
+			let value = uni.getStorageSync('wxid')
+			if (!value) {
 				this.$getAuthorize()
 				return false
 			}
@@ -140,7 +140,7 @@ export default {
 			this.loadingType = 'loading';
 			this.$test
 				.post(`/?r=api/user/relations`, {
-					wxid: this.userInfo.wxid || value.wxid,
+					wxid: this.wxid || uni.getStorageSync('wxid'),
 					page: this.page,
 					city: this.name == '全国' ? '' : this.name
 				})
@@ -179,7 +179,7 @@ export default {
 		addfriend(id, item) {
 			this.$test
 				.post(`/?r=api/user/add-relation`, {
-					wxid: this.userInfo.wxid,
+					wxid: this.wxid,
 					relation_id: id
 				})
 				.then(response => {
@@ -195,27 +195,6 @@ export default {
 					}
 				});
 		},
-		// 添加人脉
-		// goAdd(id, index) {
-		// 	let checkList = this.checkList
-		// 	if (this.userInfo.is_mark) {
-		// 		if(this.userInfo.is_direct) {
-		// 			this.addfriend(id)
-		// 		} else {
-		// 			if(checkList.length > 5) {
-		// 				this.showDailog = true
-		// 			} else {
-		// 				this.addfriend(id)
-		// 			}
-		// 		}
-		// 	} else {
-		// 		if(checkList.length > 0) {
-		// 			this.showDailog = true
-		// 		} else {
-		// 			this.addfriend(id)
-		// 		}
-		// 	}
-		// },
 		// 跳转名片页面
 		goCard(id) {
 			uni.navigateTo({
@@ -239,6 +218,12 @@ export default {
 		// 关闭信息弹窗
 		cancel() {
 			this.showDailog = false;
+		},
+		// 返回我的页面
+		back() {
+			uni.switchTab({
+				url: '/pages/mine/mine'
+			})
 		},
 		// 去开通
 		submit() {
@@ -281,7 +266,7 @@ export default {
 		},
 		// 调用微信自定义分享
 		goShare() {
-			let url = location.origin + location.hash
+			let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 			let obj = {
 				title: `人脉市集`,
 				desc: `重新定义销售 帮助企业获客`,
@@ -306,7 +291,7 @@ export default {
 		},
 		// 调用微信分享朋友圈
 			goShareCircle() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `人脉市集`,
 					shareUrl: url,

@@ -35,7 +35,7 @@ export default {
 		}
 	},
 	computed: {
-    	...mapState(['userInfo'])
+    	...mapState(['wxid','userInfo'])
   	},
 	onLoad() {
 		this.getCardImgs()
@@ -88,7 +88,7 @@ export default {
 		getCardImgs() {
 			this.$test
 				.post(`/?r=api/user/card-show`, {
-					wxid: this.userInfo.wxid
+					wxid: this.wxid
 				})
 				.then(response => {
 					// console.log(response)
@@ -117,7 +117,7 @@ export default {
 				return false
 			}
 			let obj = {
-				wxid: this.userInfo.wxid,
+				wxid: this.wxid,
 				bg_image: this.path,
 				show_pics: this.targetArray
 			}

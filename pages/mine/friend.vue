@@ -1,7 +1,7 @@
 <template>
 	<view id="app">
 		<scroll-view class="scroll_content" scroll-y @scrolltolower="getDataList">
-			<uni-nav-bar title="我的人脉" left-icon="back" @clickLeft="$back"></uni-nav-bar>
+			<uni-nav-bar title="我的人脉" left-icon="back" @clickLeft="back"></uni-nav-bar>
 			<!-- 空白页 -->
 			<empty v-if="userList.length==0"></empty>
 			<view class="list_block">
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+	import { mapState, mapMutations } from 'vuex';
 	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	import empty from "@/components/empty/empty.vue";
@@ -43,17 +44,14 @@
 				loadingType: "more",
 			}
 		},
+		computed: {
+    		...mapState(['wxid','userInfo'])
+  		},
 		mounted() {
 			// this.userList = Json.userList
-			this.getLocal()
+			this.getDataList()
 		},
 		methods: {
-			// 获取缓存
-			getLocal() {
-				let value = uni.getStorageSync('userMsg')
-				value ? this.setObj = value : false
-				this.getDataList()
-			},
 			// 调起电话
 			goCall(tel) {
 				uni.makePhoneCall({
@@ -66,6 +64,12 @@
 					url: `/pages/mine/card?id=${id}`
 				})
 			},
+			// 返回我的页面
+			back() {
+				uni.switchTab({
+					url: '/pages/mine/mine'
+				})
+			},
 			// 获取人脉列表
 			getDataList() {
 				if (this.loadingType === 'noMore') {
@@ -75,7 +79,7 @@
 				this.loadingType = 'loading';
 				this.$test
 					.post(`/?r=api/user/my-relation`, {
-						wxid: this.setObj.wxid,
+						wxid: this.wxid,
 						page: this.page
 					})
 					.then(response => {

@@ -133,7 +133,7 @@ export default {
 			this.loadingType = 'loading';
 			this.$test
 				.post(`/?r=api/user/relations`, {
-					wxid: this.userInfo.wxid,
+					wxid: this.wxid,
 					page: this.page,
 					city: this.name == '全国' ? '' : this.name
 				})
@@ -169,7 +169,7 @@ export default {
 		addfriend(id) {
 			this.$test
 				.post(`/?r=api/user/add-relation`, {
-					wxid: this.userInfo.wxid,
+					wxid: this.wxid,
 					relation_id: id
 				})
 				.then(response => {

@@ -77,6 +77,7 @@
 </template>
 
 <script>
+	import { mapState, mapMutations } from 'vuex';
 	import uniNavBar from "@/components/uni-nav-bar/uni-nav-bar.vue";
 	import UniPopup from '@/components/uni-dialog/uni-dialog.vue';
 	export default {
@@ -97,6 +98,9 @@
 				ringList: [] //显示数组
 			};
 		},
+		computed: {
+    		...mapState(['wxid', 'userInfo'])
+  		},
 		onLoad() {
 			this.getBellList()
 			this.goShare()
@@ -236,7 +240,7 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `订制您的专属商务彩铃`,
 					desc: `每一次通话都是一次广告收益 给客户带来美的听觉享受`,
@@ -261,7 +265,7 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `订制您的专属商务彩铃`,
 					shareUrl: url,
@@ -306,10 +310,9 @@
 					});
 					return false
 				}
-				let value = uni.getStorageSync('userMsg')
 				this.$test
 					.post(`/?r=api/index/mobile`, {
-						wxid: value.wxid,
+						wxid: this.wxid || uni.getStorageSync('wxid'),
 						mobile: this.guest.phone,
 						type: 1
 					})
@@ -324,10 +327,9 @@
 			},
 			// 提交
 			submit() {
-				let value = uni.getStorageSync('userMsg')
 				this.$test
 					.post(`/?r=api/index/ring`, {
-						wxid: value.wxid,
+						wxid: this.wxid || uni.getStorageSync('wxid'),
 						mobile: this.guest.phone,
 						mark: this.guest.mark || '',
 						id: this.guest.id

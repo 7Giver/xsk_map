@@ -43,7 +43,7 @@
 				<view class="title">每日签单真实案例</view>
 				<view class="content">
 					<scroll-view class="scroll-view" scroll-x="true" @scroll="scroll">
-						<view class="scroll-view-item" v-for="(item, index) in showList" :key="index" @click="fullImg">
+						<view class="scroll-view-item" v-for="(item, index) in showList" :key="index" @click="fullImg(index)">
 							<image :src="item" mode=""></image>
 						</view>
                 	</scroll-view>
@@ -53,7 +53,7 @@
 				<view class="title">直通车投放效果展示</view>
 				<view class="content">
 					<scroll-view class="scroll-view" scroll-x="true" @scroll="scroll_video">
-						<view class="video_block" v-for="(item, index) in videoList" :key="index">
+						<!-- <view class="video_block" v-for="(item, index) in videoList" :key="index">
 							<video 
 								id="myVideo"
 								:src="item.video"
@@ -66,6 +66,9 @@
 								controls
 							>
 							</video>
+						</view> -->
+						<view class="effect_block" v-for="(item, index) in effectList" :key="index" @click="effectFullImg(index)">
+							<image :src="item" mode=""></image>
 						</view>
                 	</scroll-view>
 				</view>
@@ -111,6 +114,14 @@
 				old: {
 					scrollTop: 0
 				},
+				effectList: [
+					'/static/train/subject/show1.png',
+					'/static/train/subject/show2.png',
+					'/static/train/subject/show3.png',
+					'/static/train/subject/show4.png',
+					'/static/train/subject/show5.png',
+					'/static/train/subject/show6.png',
+				],
 				videoList: [
 					{
 						video: `${this.$dataURL}/video/e7/e71468eca4550533548846b5f85bd8ba.mp4`,
@@ -201,10 +212,16 @@
 
 			},
 			// 全屏展示图片
-			fullImg(url) {
+			fullImg(index) {
 				uni.previewImage({
 					urls: this.showList,
-					current: 0
+					current: index
+				})
+			},
+			effectFullImg(index) {
+				uni.previewImage({
+					urls: this.effectList,
+					current: index
 				})
 			},
 			//首页随机数
@@ -239,7 +256,7 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `搜搜直通车快速获客`,
 					desc: `精准获取本地人脉 开启无限获客新模式`,
@@ -264,7 +281,7 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `搜搜直通车快速获客`,
 					shareUrl: url,
@@ -501,6 +518,21 @@
 					}
 
 					#myVideo {
+						width: 100%;
+						height: 100%;
+					}
+				}
+
+				.effect_block {
+					width: 510rpx;
+					height: 370rpx;
+					display: inline-block;
+
+					&:not(:last-child) {
+						margin-right: 20rpx;
+					}
+
+					image {
 						width: 100%;
 						height: 100%;
 					}

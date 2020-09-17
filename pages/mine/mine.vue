@@ -104,7 +104,6 @@ export default {
             hasOrder: false, //延迟订单显示
             activityDailog: false,
 			current: 0,
-            setObj: {},
 			iconList: [
 				{
 					icon: '/static/mine/icon01.png',
@@ -152,7 +151,7 @@ export default {
 		}
 	},
 	computed: {
-    	...mapState(['userInfo'])
+    	...mapState(['wxid', 'userInfo'])
     },
 	onLoad() {
 		// this.iconList = Json.iconList
@@ -164,11 +163,21 @@ export default {
 	methods: {
         ...mapMutations({
 			setUserInfo: 'setUserInfo'
-		}),
+        }),
+        // 根据url获取wxid
+        getUrlWxid() {
+            if (location.href.indexOf("wxid") >= 0) {
+                let wxid = this.$common.getQueryString("wxid")
+                this.setWxid(wxid)
+                uni.setStorageSync('wxid', wxid)
+                location.reload();
+            }
+            this.getloadingOrder()
+        },
 		// 根据缓存获取用户信息
 		getLocal() {
-            let value = uni.getStorageSync('userMsg')
-            value.wxid ? this.getUserInfo() : this.$getAuthorize()
+            let value = uni.getStorageSync('wxid')
+            value ? this.getUrlWxid() : this.$getAuthorize()
             if (this.userInfo.is_mark) {
                 deleteRow(this.bannerList, 3)
                 deleteRow(this.bannerList, 1)
@@ -184,35 +193,13 @@ export default {
                 }
             }
         },
-        // 获取用户信息
-		getUserInfo() {
-            let value = uni.getStorageSync('userMsg')
-            this.setObj = value
-                this.$test
-                    .post(`/?r=api/user/info`, {
-                        wxid: value.wxid || this.userInfo.wxid
-                    })
-                    .then(response => {
-                        if (response.code === 200) {
-                            this.$set(response.data, 'wxid', value.wxid)
-                            this.setUserInfo(response.data)
-                            this.getloadingOrder()
-                            // 活动弹窗显示
-                            if (this.userInfo.is_mark !== 0) {
-                                this.$nextTick(() => {
-                                    this.activityDailog = true;
-                                })
-                            }
-                        }
-                    })
-        },
         // 获取进行中订单
         getloadingOrder() {
-            let value = this.setObj
+            let value = this.wxid || uni.getStorageSync('wxid')
             if (value) {
                 this.$test
                     .post(`/?r=api/index/index`, {
-                        wxid: value.wxid
+                        wxid: value
                     })
                     .then(response => {
                         // console.log(response)
@@ -308,11 +295,10 @@ export default {
         },
         //验证是否下单
         testPost() {
-            let guest = uni.getStorageSync('postMsg')
-            if (!guest.tel) {
+            if (!this.userInfo.mobile) {
                 return false
             }
-            if (!(/^1[3456789]\d{9}$/.test(guest.tel))) {
+            if (!(/^1[3456789]\d{9}$/.test(this.userInfo.mobile))) {
                 return false
             }
             // if (!guest.company_name) {
@@ -328,12 +314,12 @@ export default {
             let guest = uni.getStorageSync('postMsg')
             let str = uni.getStorageSync('mapStr')
             let result = {
-                wxid: this.setObj.wxid,
-                name: guest.company_name,
-                tel: guest.tel,
+                wxid: this.wxid,
+                name: this.userInfo.company,
+                tel: this.userInfo.mobile,
                 map: str,
-                address: guest.address,
-                company_id: guest.company_id
+                address: this.userInfo.address,
+                company_id: this.userInfo.company_id || ''
             }
             // console.log(result)
             this.$test

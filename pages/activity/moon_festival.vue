@@ -19,8 +19,8 @@
 		methods: {
 			// 跳转页面
 			goNext(type) {
-				let value = uni.getStorageSync('userMsg')
-				if (!value.wxid) {
+				let value = uni.getStorageSync('wxid')
+				if (!value) {
 					this.$getAuthorize()
 					return false
 				}
@@ -37,7 +37,7 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `喜迎中秋 欢度国庆`,
 					desc: `双节期间地图标注只需78 更有海量礼品等你来拿`,
@@ -62,7 +62,7 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `喜迎中秋 欢度国庆`,
 					shareUrl: url,

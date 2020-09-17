@@ -103,7 +103,7 @@
 			}
 		},
 		computed: {
-    		...mapState(['userInfo'])
+    		...mapState(['wxid', 'userInfo'])
   		},
 		mounted() {
 			this.getMineInfo()
@@ -114,7 +114,7 @@
 			},
 			// 获取本人信息
 			getMineInfo() {
-                let value = uni.getStorageSync('userMsg').wxid || this.userInfo.wxid
+                let value = uni.getStorageSync('wxid') || this.wxid
 				if (value) {
 					this.$test
 						.post(`/?r=api/user/card`, {

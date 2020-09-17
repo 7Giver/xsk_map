@@ -3,6 +3,9 @@ import { mapState, mapMutations } from 'vuex';
 var testjs = require("@/common/vconsole.min.js");
 // new testjs()
 export default {
+    computed: {
+    	...mapState(['userInfo', 'wxid'])
+  	},
     onLaunch: function () {
         // console.log('App Launch')
         // uni.removeStorageSync('postMsg');
@@ -13,9 +16,6 @@ export default {
 
         // 测试用
         // this.testSet()
-
-        // 根据url获取参数
-        this.getUserMsg()
 
         //获取用户信息
         this.getUserInfo()
@@ -32,6 +32,7 @@ export default {
     },
     methods: {
         ...mapMutations({
+            setWxid: "setWxid",
 			setUserInfo: 'setUserInfo'
 		}),
         // 测试用缓存
@@ -56,53 +57,22 @@ export default {
                 data: msg,
             });
         },
-        // 根据url获取参数
-        getUserMsg() {
-            var href = window.location.href;
-            var temp = href.split("?")[1]; // 通过拆分链接判断是否获取参数存储
-            if (temp) {
-                let url = decodeURIComponent(window.location.href)
-                let result = getUrlparam(url)
-                if (result.wxid) {
-                    uni.setStorage({
-                        key: "userMsg",
-                        data: getUrlparam(url),
-                    });
-                }
-            }
-
-            function getUrlparam(url) {
-				let askText = url.split('?')[1];
-				let result = {};
-				let newStr = askText.replace('#/','')
-				let askAry = newStr.split('&');
-				askAry.forEach(item => {
-                    let n = item.split('=');
-                    let key = n[0];
-                    let value = n[1];
-                    result[key] = value;
-				});
-				return result
-			}
-        },
         // 获取用户信息
 		getUserInfo() {
-            let value = uni.getStorageSync('userMsg')
-            if (value.wxid) {
-                value.wxid = value.wxid.replace('#/','');
-                uni.setStorageSync('userMsg', value);
+            let value = uni.getStorageSync('wxid')
+            if (value) {
+                this.setWxid(value)
                 this.$test
                     .post(`/?r=api/user/info`, {
-                        wxid: value.wxid
+                        wxid: value
                     })
                     .then(response => {
                         if (response.code === 200) {
-                            this.$set(response.data, 'wxid', value.wxid)
+                            this.setWxid(value)
                             this.setUserInfo(response.data)
                         }
                     });
             }
-            
         },
     },
 };

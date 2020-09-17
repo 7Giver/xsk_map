@@ -130,11 +130,11 @@
 			},
 			// 获取进行中订单
 			getloadingOrder() {
-				let value = uni.getStorageSync('userMsg');
+				let value = uni.getStorageSync('wxid');
 				if (value) {
 					this.$test
 						.post(`/?r=api/index/index`, {
-							wxid: value.wxid
+							wxid: value
 						})
 						.then(response => {
 							// console.log(response)
@@ -155,7 +155,7 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `关于我们`,
 					desc: `5000多万人次客源引流 连续六年行业第一`,
@@ -180,7 +180,7 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `关于我们`,
 					shareUrl: url,

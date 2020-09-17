@@ -29,7 +29,7 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `中秋国庆放狠价`,
 					desc: `双节期间地图标注只需78 更有海量礼品等你来拿`,
@@ -54,7 +54,7 @@
 			},
 			// 调用微信分享朋友圈
 			goShareCircle() {
-				let url = location.origin + location.hash
+				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `中秋国庆放狠价`,
 					shareUrl: url,

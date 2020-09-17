@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App'
 import uni_request from 'js_sdk/songGQ-req/uni_request/uni_request.js'
 import store from './store'
+import * as Common from './common/api.js'
 
 const baseURL = 'http://dt.sousou.com' // 正式地址
 const testURL = 'http://server.yingku878.com' // 测试地址
@@ -34,24 +35,48 @@ import jwx from './common/jwx.js'
 Vue.prototype.$jwx = jwx
 // #endif
 
+
+//获取前端路由
+function getRoute(url) {
+  let route = url.split('#')[1].split('?')[0]
+  return route
+}
+
+//获取所有url参数
+function getUrlparam(url) {
+  let askText = url.split('?')[1];
+  let result = {};
+  let newStr = askText.replace('#/','')
+  let askAry = newStr.split('&');
+  askAry.forEach(item => {
+    let n = item.split('=');
+    let key = n[0];
+    let value = n[1];
+    result[key] = value;
+  });
+  return result
+}
+
 // 跳转授权
 Vue.prototype.$getAuthorize = () => {
   let href = window.location.href
-  // let href = 'http://dt.sousou.com/#/pages/mine/connection?nickname=Heiz&openid=o8MX9wwt5ozZ033IVjTqqNsM4c1A&headimgurl=http%3A%2F%2Fthirdwx.qlogo.cn%2Fmmopen%2Fvi_32%2FkFbNaxXYDdlzenEeANr0qW0tDY2WOaQLT1nAtySsEXwia2mITxEDTlRzA8dlUeHsuhOxyVHISU2oMhvGBtRdLxw%2F132&wxid=wpxgorng'
-  let temp = href.split('?')[1]; // 通过拆分链接判断是否获取参数存储
   let route = getRoute(href)
-  if (temp) {
-    let url = decodeURIComponent(href)
-    let urlObj = getUrlparam(url)
-    if (!urlObj.wxid) {
-      window.location.href = `${testURL}?r=api/user/authorize&path=${route}`
-      return false
-    }
+  // console.log(route);
+  if (location.href.indexOf("wxid") >= 0) {
+    let wxid = Common.getQueryString("wxid")
     uni.setStorage({
-      key: 'userMsg',
-      data: urlObj,
+      key: 'wxid',
+      data: wxid,
       success: () => {
-        switch (url) {
+        switch (route) {
+          case '/':
+            uni.switchTab({
+              url: '/pages/home/home',
+              success: function(e) {
+                location.reload();
+              }
+            })
+            break;
           case '/pages/guest/guest':
             uni.switchTab({
               url: route,
@@ -89,42 +114,23 @@ Vue.prototype.$getAuthorize = () => {
       }
     })
   } else {
-    let url = window.location.href.split('#')[1]
+    let url = location.href.split('#')[1]
+    let origin = location.origin
     switch (url) {
       case '/pages/activity/moon_festival':
         window.location.href = `${testURL}?r=api/user/authorize`
         break;
       case '/pages/activity/national_day':
-        let route = '/pages/train/train'
+        let route = `${origin}/#/pages/train/train`
         window.location.href = `${testURL}?r=api/user/authorize&path=${route}`
         break;
       default:
-        window.location.href = `${testURL}?r=api/user/authorize&path=${url}`
+        Common.authH5()
     }
     uni.setStorage({
       key: "openPost",
       data: true
     })
-  }
-
-  function getRoute(url) {
-    let test = url.split('#')[1]
-    let route = test.split('?')[0];
-    return route
-  }
-
-  function getUrlparam(url) {
-    let askText = url.split('?')[1];
-    let result = {};
-    let newStr = askText.replace('#/','')
-    let askAry = newStr.split('&');
-    askAry.forEach(item => {
-      let n = item.split('=');
-      let key = n[0];
-      let value = n[1];
-      result[key] = value;
-    });
-    return result
   }
 }
 
@@ -148,6 +154,8 @@ Vue.prototype.$dataURL = dataURL
 Vue.prototype.$store = store
 Vue.prototype.$http = http
 Vue.prototype.$test = test
+Vue.prototype.$common = Common;
+
 Vue.config.productionTip = false
 
 App.mpType = 'app'

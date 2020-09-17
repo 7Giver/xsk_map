@@ -34,7 +34,7 @@ export default {
 		}
 	},
 	computed: {
-    	...mapState(['userInfo'])
+    	...mapState(['wxid','userInfo'])
 	},
 	onShow() {
 		this.getServiceCode()
@@ -48,10 +48,9 @@ export default {
 		},
 		// 获取订单详情
 		getServiceCode() {
-			let value = uni.getStorageSync('userMsg')
 			this.$test
 				.post(`/?r=api/user/server`, {
-					wxid: this.userInfo.wxid || value.wxid
+					wxid: this.wxid
 				})
 				.then(response => {
 					// console.log(response)
