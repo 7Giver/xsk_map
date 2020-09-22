@@ -50,7 +50,7 @@
 		methods: {
 			// 获取客源详情
 			getSourceDetail(id) {
-				this.$test
+				this.$http
 					.post(`/?r=api/customer/detail`, {
 						id: id
 					})
@@ -86,7 +86,7 @@
 					is_tention: this.sourceIndex
 				}
 				// console.log(obj)
-				this.$test
+				this.$http
 					.post(`/?r=api/customer/remark`, obj)
 					.then(response => {
 						// console.log(response)

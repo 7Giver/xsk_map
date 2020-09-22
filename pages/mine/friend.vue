@@ -77,7 +77,7 @@
 				  return false;
 				}
 				this.loadingType = 'loading';
-				this.$test
+				this.$http
 					.post(`/?r=api/user/my-relation`, {
 						wxid: this.wxid,
 						page: this.page

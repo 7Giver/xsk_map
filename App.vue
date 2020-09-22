@@ -62,7 +62,7 @@ export default {
             let value = uni.getStorageSync('wxid')
             if (value) {
                 this.setWxid(value)
-                this.$test
+                this.$http
                     .post(`/?r=api/user/info`, {
                         wxid: value
                     })

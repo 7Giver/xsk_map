@@ -160,7 +160,7 @@
 			getMineInfo() {
                 let value = uni.getStorageSync('wxid') || this.wxid
 				if (value) {
-					this.$test
+					this.$http
 						.post(`/?r=api/user/card`, {
 							id: '',
 							wxid: value

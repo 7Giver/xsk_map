@@ -94,7 +94,7 @@
             "disableHostCheck": true,
             "proxy": {
                 "/api": {
-                    "target": "http://server.yingku878.com",
+                    "target": "http://ztc1.st712.com",
                     "changeOrigin": true,
                     "secure": false,
                     "pathRewrite": {

@@ -138,7 +138,7 @@
 			}),
 			// 获取客户信息
 			getClientInfo(id) {
-				this.$test
+				this.$http
 					.post(`/?r=api/user/card`, {
 						id: id,
 						wxid: ''

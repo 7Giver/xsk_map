@@ -55,7 +55,7 @@ export default {
 			this.path = ev.path;
 			this.url = "";
 			uni.uploadFile({
-				url: `${this.$testURL}?r=api/index/upload`,
+				url: `${this.$baseURL}?r=api/index/upload`,
 				// url: `/api/?r=api/index/upload`, //开发
 				filePath: ev.path,
 				name: 'image',
@@ -86,7 +86,7 @@ export default {
 		},
 		// 获取名片管理图片
 		getCardImgs() {
-			this.$test
+			this.$http
 				.post(`/?r=api/user/card-show`, {
 					wxid: this.wxid
 				})
@@ -121,7 +121,7 @@ export default {
 				bg_image: this.path,
 				show_pics: this.targetArray
 			}
-			this.$test
+			this.$http
 				.post(`/?r=api/user/card-fix`, obj)
 				.then(response => {
 					// console.log(response)

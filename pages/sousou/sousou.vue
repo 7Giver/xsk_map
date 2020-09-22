@@ -48,7 +48,7 @@
 			},
 			getUserInfo() {
 				// console.log('getUserInfo')
-				this.$test
+				this.$http
 					.post(`/?r=api/user/info`, {
 						wxid: uni.getStorageSync('userMsg').wxid || this.userInfo.wxid
 					})

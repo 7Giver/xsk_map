@@ -135,7 +135,7 @@
 					default:
 						type = 0
 				}
-				this.$test
+				this.$http
 					.post(`/?r=api/index/ring-list`, {
 						type: type
 					})
@@ -310,7 +310,7 @@
 					});
 					return false
 				}
-				this.$test
+				this.$http
 					.post(`/?r=api/index/mobile`, {
 						wxid: this.wxid || uni.getStorageSync('wxid'),
 						mobile: this.guest.phone,
@@ -327,7 +327,7 @@
 			},
 			// 提交
 			submit() {
-				this.$test
+				this.$http
 					.post(`/?r=api/index/ring`, {
 						wxid: this.wxid || uni.getStorageSync('wxid'),
 						mobile: this.guest.phone,

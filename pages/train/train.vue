@@ -219,7 +219,7 @@
 				let value = uni.getStorageSync('wxid')
 				if (value) {
 					this.setWxid(value)
-					this.$test
+					this.$http
 						.post(`/?r=api/user/info`, {
 							wxid: value || this.wxid
 						})
@@ -240,7 +240,7 @@
 			},
 			// 获取省市信息
 			getAreaList() {
-				this.$test
+				this.$http
 					.post(`/?r=api/index/district`, {})
 					.then(response => {
 						if (response.code === 200) {
@@ -261,7 +261,7 @@
 						});
 						return false
 					}
-					this.$test
+					this.$http
 						.post(`/?r=api/index/mobile`, {
 							wxid: this.wxid || uni.getStorageSync('wxid'),
 							mobile: value,
@@ -365,7 +365,7 @@
 					key: "postMsg",
 					data: obj
 				})
-				this.$test
+				this.$http
 					.post(`/?r=api/user/part`, {
 						wxid: this.wxid || uni.getStorageSync('wxid'),
 						company: obj.company_name,
@@ -583,7 +583,7 @@
 					type: this.timeList[this.timeIndex].value
 				}
 				// console.log(obj)
-				this.$test
+				this.$http
 					.post(`/?r=api/order/direct-submit`, obj)
 					.then(response => {
 						// console.log(response)
@@ -591,7 +591,7 @@
 							uni.navigateTo({
 								url: `/pages/train/train_pay?order_sn=${response.data.order_sn}`
 							})
-							// window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${response.data.order_sn}`
+							// window.location.href = `${this.$baseURL}?r=api/order/go&order_sn=${response.data.order_sn}`
 						}
 					});
 			}

@@ -213,7 +213,7 @@
 					this.pageShow = true
 				} else {
 					// console.log('普通浏览器')
-					window.location.href = `${this.$testURL}?r=api/alipay/pay&order_sn=${this.order_sn}`  //支付宝
+					window.location.href = `${this.$baseURL}?r=api/alipay/pay&order_sn=${this.order_sn}`  //支付宝
 				}
 			}
 		},
@@ -284,7 +284,7 @@
 			},
 			// 根据单号获取详情
 			getOrderDetail() {
-				this.$test
+				this.$http
 					.post(`/?r=api/order/map-detail`, {
 						order_sn: this.order_sn
 					})
@@ -310,7 +310,7 @@
 				}
 				if (this.order_sn) {
 					this.payType == 1
-						? window.location.href = `${this.$testURL}?r=api/order/go&order_sn=${this.order_sn}`  //微信支付
+						? window.location.href = `${this.$baseURL}?r=api/order/go&order_sn=${this.order_sn}`  //微信支付
 						: this.showMask = true //支付宝 显示遮罩
 				} else {
 					uni.showToast({

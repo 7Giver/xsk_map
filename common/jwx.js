@@ -20,7 +20,7 @@ export default {
 		let url = href.split('#')[0]
 		// var uri = encodeURIComponent(url); //获取当前url然后传递给后台获取授权和签名信息
 		uni.request({
-			url: 'http://server.yingku878.com/?r=api/index/jsapi-config', //你的接口地址  
+			url: 'http://ztc1.st712.com/?r=api/index/jsapi-config', //你的接口地址  
 			method: 'POST', 
 			data: {
 				url: url

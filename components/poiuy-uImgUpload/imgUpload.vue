@@ -245,7 +245,7 @@
 			uploadImg(item, callback) {
 				const _this = this;
 				uni.uploadFile({
-					url: `${this.$testURL}/?r=api/index/upload`, // 正式
+					url: `${this.$baseURL}/?r=api/index/upload`, // 正式
 					// url: `/api/?r=api/index/upload`, //开发
 					filePath: item,
 					name: 'file',

@@ -106,7 +106,7 @@ export default {
     methods: {
 		// 获取省市信息
 		getAreaList() {
-			this.$test
+			this.$http
 				.post(`/?r=api/index/district`, {})
 				.then(response => {
 					if (response.code === 200) {
@@ -131,7 +131,7 @@ export default {
 				return false;
 			}
 			this.loadingType = 'loading';
-			this.$test
+			this.$http
 				.post(`/?r=api/user/relations`, {
 					wxid: this.wxid,
 					page: this.page,
@@ -167,7 +167,7 @@ export default {
 		},
 		// 添加人脉请求
 		addfriend(id) {
-			this.$test
+			this.$http
 				.post(`/?r=api/user/add-relation`, {
 					wxid: this.wxid,
 					relation_id: id

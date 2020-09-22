@@ -1,4 +1,4 @@
-const baseURL = 'http://server.yingku878.com/'
+const baseURL = 'http://ztc1.st712.com/'
 
 //把obj对象里的值覆盖到newobj里面
 function deepCopy(newobj, obj) {

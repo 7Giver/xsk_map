@@ -4,12 +4,12 @@ import uni_request from 'js_sdk/songGQ-req/uni_request/uni_request.js'
 import store from './store'
 import * as Common from './common/api.js'
 
-const baseURL = 'http://dt.sousou.com' // 正式地址
-const testURL = 'http://server.yingku878.com' // 测试地址
+const baseURL = 'http://ztc1.st712.com' // 正式地址
+// const testURL = 'http://server.yingku878.com' // 测试地址
 const dataURL = 'http://cdn.tuku658.com' // 引用资源地址
+
 const http = uni_request({
     baseURL: baseURL, 
-    // baseURL: testURL,  // 测试
     header:{
       'content-type':'multipart/form-data',
     },
@@ -118,11 +118,11 @@ Vue.prototype.$getAuthorize = () => {
     let origin = location.origin
     switch (url) {
       case '/pages/activity/moon_festival':
-        window.location.href = `${testURL}?r=api/user/authorize`
+        window.location.href = `${baseURL}?r=api/user/authorize`
         break;
       case '/pages/activity/national_day':
         let route = `${origin}/#/pages/train/train`
-        window.location.href = `${testURL}?r=api/user/authorize&path=${route}`
+        window.location.href = `${baseURL}?r=api/user/authorize&path=${route}`
         break;
       default:
         Common.authH5()

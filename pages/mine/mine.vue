@@ -197,7 +197,7 @@ export default {
         getloadingOrder() {
             let value = this.wxid || uni.getStorageSync('wxid')
             if (value) {
-                this.$test
+                this.$http
                     .post(`/?r=api/index/index`, {
                         wxid: value
                     })
@@ -322,7 +322,7 @@ export default {
                 company_id: this.userInfo.company_id || ''
             }
             // console.log(result)
-            this.$test
+            this.$http
                 .post(`/?r=api/order/map-submit`, result)
                 .then(response => {
                     // console.log(response)

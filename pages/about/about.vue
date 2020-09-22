@@ -132,7 +132,7 @@
 			getloadingOrder() {
 				let value = uni.getStorageSync('wxid');
 				if (value) {
-					this.$test
+					this.$http
 						.post(`/?r=api/index/index`, {
 							wxid: value
 						})

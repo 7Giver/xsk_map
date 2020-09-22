@@ -48,7 +48,7 @@ export default {
 		},
 		// 获取订单详情
 		getServiceCode() {
-			this.$test
+			this.$http
 				.post(`/?r=api/user/server`, {
 					wxid: this.wxid
 				})

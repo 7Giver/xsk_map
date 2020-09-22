@@ -161,7 +161,7 @@
 			},
 			// 获取订单详情
 			getDetail() {
-				this.$test
+				this.$http
 					.post(`/?r=api/order/direct-detail`, {
 						wxid: this.wxid
 					})
@@ -179,7 +179,7 @@
 				  return false;
 				}
 				this.loadingType = 'loading';
-				this.$test
+				this.$http
 					.post(`/?r=api/order/customer-list`, {
 						wxid: this.wxid,
 						page: this.page

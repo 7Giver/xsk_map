@@ -232,7 +232,7 @@
 			},
 			// 上传合法手机号，获取信息
 			postMobile(tel) {
-				this.$test
+				this.$http
 					.post(`/?r=api/index/mobile`, {
 						wxid: this.wxid,
 						mobile: tel
@@ -251,7 +251,7 @@
 			},
 			// 获取进行中订单
 			getloadingOrder() {
-				this.$test
+				this.$http
 					.post(`/?r=api/index/index`, {
 						wxid: this.wxid
 					})
@@ -340,7 +340,7 @@
 			},
 			// 展示效果图事件
 			_showItem(id) {
-				this.$test
+				this.$http
 					.post(`/?r=api/index/poster`, {
 						type: id
 					})
@@ -444,7 +444,7 @@
 					company_name: this.guest.company_name || '',
 					address: this.guest.address || ''
 				}
-				this.$test
+				this.$http
 						.post(`/?r=api/user/part`, {
 							wxid: this.wxid,
 							company: obj.company_name,
@@ -457,7 +457,7 @@
 						});
 				// let value = uni.getStorageSync('wxid')
 				// if(value) {
-				// 	this.$test
+				// 	this.$http
 				// 		.post(`/?r=api/user/part`, {
 				// 			wxid: this.wxid,
 				// 			company: obj.company_name,
@@ -580,7 +580,7 @@
 					company_id: obj.company_id
 				}
 				// console.log(result)
-				this.$test
+				this.$http
 					.post(`/?r=api/order/map-submit`, result)
 					.then(response => {
 						// console.log(response)

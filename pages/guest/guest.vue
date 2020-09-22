@@ -212,7 +212,7 @@
 			},
 			// 上传合法手机号
 			postMobile(tel) {
-				this.$test
+				this.$http
 					.post(`/?r=api/index/mobile`, {
 						wxid: this.wxid,
 						mobile: tel
@@ -237,7 +237,7 @@
 				// 		}
 				// 	});
 
-				this.$test
+				this.$http
 					.post(`/?r=api/index/banner`, {})
 					.then(response => {
 						if (response.code === 200) {
@@ -248,7 +248,7 @@
 			},
 			// 获取进行中订单
 			getloadingOrder() {
-				this.$test
+				this.$http
 					.post(`/?r=api/index/index`, {
 						wxid: this.wxid
 					})
@@ -424,7 +424,7 @@
 				}
 				let value = uni.getStorageSync('wxid')
 				if(value) {
-					this.$test
+					this.$http
 						.post(`/?r=api/user/part`, {
 							wxid: value,
 							company: obj.company_name,
@@ -497,7 +497,7 @@
 					address: this.guest.address
 				}
 				// console.log(result)
-				this.$test
+				this.$http
 					.post(`/?r=api/order/map-submit`, result)
 					.then(response => {
 						// console.log(response)

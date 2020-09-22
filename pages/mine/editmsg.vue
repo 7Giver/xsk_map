@@ -109,7 +109,7 @@
 		methods: {
 			// 获取省市信息
 			getAreaList() {
-				this.$test
+				this.$http
 					.post(`/?r=api/index/district`, {})
 					.then(response => {
 						if (response.code === 200) {
@@ -229,7 +229,7 @@
                 this.guest.avatar = ev.path;
 				this.url = "";
 				uni.uploadFile({
-					url: `${this.$testURL}/?r=api/index/upload`,
+					url: `${this.$baseURL}/?r=api/index/upload`,
 					// url: '/api/?r=api/index/upload', // 开发
 					filePath: ev.path,
 					name: 'image',
@@ -285,7 +285,7 @@
 					return false
 				}
 				this.$set(this.guest, 'wxid', this.wxid)
-				this.$test
+				this.$http
 					.post(`/?r=api/user/edit`, this.guest)
 					.then(response => {
 						// console.log(response)

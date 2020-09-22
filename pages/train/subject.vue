@@ -195,7 +195,7 @@
 		},
 		methods: {
 			getShowList() {
-				this.$test
+				this.$http
                     .post(`/?r=api/index/safe`, {})
                     .then(response => {
                         if (response.code === 200) {
