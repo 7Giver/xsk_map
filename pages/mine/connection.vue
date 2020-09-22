@@ -1,6 +1,6 @@
 <template>
     <view id="app">
-		<scroll-view class="scroll_content" scroll-y @scrolltolower="getConnection">
+		<scroll-view class="scroll_content" :scroll-y="true" @scrolltolower="getConnection">
 			<view class="fixed_block">
 				<uni-nav-bar title="人脉市集" left-icon="back" @clickLeft="back">
 					<view slot="right">

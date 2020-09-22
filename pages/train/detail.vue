@@ -1,6 +1,6 @@
 <template>
 	<view id="app">
-		<scroll-view class="scroll_content" scroll-y @scrolltolower="getMoreList">
+		<scroll-view class="scroll_content" :scroll-y="true" @scrolltolower="getMoreList">
 			<uni-nav-bar title="搜搜直通车快速获客" left-icon="back" @clickLeft="back"></uni-nav-bar>
 			<view class="banner">
 				<image src="/static/train/banner02.png" mode="widthFix">

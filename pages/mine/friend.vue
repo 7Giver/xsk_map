@@ -1,6 +1,6 @@
 <template>
 	<view id="app">
-		<scroll-view class="scroll_content" scroll-y @scrolltolower="getDataList">
+		<scroll-view class="scroll_content" :scroll-y="true" @scrolltolower="getDataList">
 			<uni-nav-bar title="我的人脉" left-icon="back" @clickLeft="back"></uni-nav-bar>
 			<!-- 空白页 -->
 			<empty v-if="userList.length==0"></empty>
