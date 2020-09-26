@@ -158,7 +158,6 @@
 							})
 							if (this.share) {
 								this.goShare()
-								this.goShareCircle()
 							}
 						}
 					});
@@ -181,28 +180,15 @@
 							imgUrl: obj.imgUrl, // 分享图标
 						}
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
-							console.log('response', response)
+							// console.log('response', response)
 						})
-					})
-				}
-				// #endif
-			},
-			// 调用微信分享朋友圈
-			goShareCircle() {
-				let obj = {
-					title: `${this.guest.name}的电子微名片`,
-					shareUrl: `${window.location.href}&share=1`,
-					imgUrl: this.guest.avatar
-				}
-				// #ifdef H5
-				if (this.$jwx && this.$jwx.isWechat()) {
-					this.$jwx.initJssdk(res => {
-						let shareData = {
+						//朋友圈分享
+						let shareData1 = {
 							title: obj.title, // 分享标题
 							shareUrl: obj.shareUrl, // 分享链接
 							imgUrl: obj.imgUrl, // 分享图标
 						}
-						this.$jwx.onMenuShareTimeline(shareData, function(response) {
+						this.$jwx.onMenuShareTimeline(shareData1, function(response) {
 							// console.log('response', response)
 						})
 					})

@@ -115,7 +115,6 @@
 		},
 		onLoad() {
 			this.goShare()
-			this.goShareCircle()
 		},
 		methods: {
 			// 监听轮播事件
@@ -186,11 +185,10 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `搜搜集团旗下直通车简介`,
 					desc: `立志成为中国企业的强壮翅膀，专业的团队为您提供优质商业服务！`,
-					shareUrl: url,
+					shareUrl: this.$common.WxShareUrl(),
 					imgUrl: `${this.$dataURL}/image/ed/dtgsjs.png`
 				}
 				// #ifdef H5
@@ -205,27 +203,13 @@
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
 							// console.log('response', response)
 						})
-					})
-				}
-				// #endif
-			},
-			// 调用微信分享朋友圈
-			goShareCircle() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
-				let obj = {
-					title: `搜搜集团旗下直通车简介`,
-					shareUrl: url,
-					imgUrl: `${this.$dataURL}/image/ed/dtgsjs.png`
-				}
-				// #ifdef H5
-				if (this.$jwx && this.$jwx.isWechat()) {
-					this.$jwx.initJssdk(res => {
-						let shareData = {
+						//朋友圈分享
+						let shareData1 = {
 							title: obj.title, // 分享标题
 							shareUrl: obj.shareUrl, // 分享链接
 							imgUrl: obj.imgUrl, // 分享图标
 						}
-						this.$jwx.onMenuShareTimeline(shareData, function(response) {
+						this.$jwx.onMenuShareTimeline(shareData1, function(response) {
 							// console.log('response', response)
 						})
 					})

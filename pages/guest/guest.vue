@@ -165,7 +165,6 @@
 			this.getUserdata()
 			this.getShow()
 			this.goShare()
-			this.goShareCircle()
 		},
 		onTabItemTap() {
 			uni.pageScrollTo({
@@ -270,11 +269,10 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `增加客源`,
 					desc: `立即标注 给您增加海量客源`,
-					shareUrl: url,
+					shareUrl: this.$common.WxShareUrl(),
 					imgUrl: `${this.$dataURL}/image/16/16b244d0c4094b003e8f412f8ac8013d.png`
 				}
 				// #ifdef H5
@@ -289,27 +287,13 @@
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
 							// console.log('response', response)
 						})
-					})
-				}
-				// #endif
-			},
-			// 调用微信分享朋友圈
-			goShareCircle() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
-				let obj = {
-					title: `增加客源`,
-					shareUrl: url,
-					imgUrl: `${this.$dataURL}/image/16/16b244d0c4094b003e8f412f8ac8013d.png`
-				}
-				// #ifdef H5
-				if (this.$jwx && this.$jwx.isWechat()) {
-					this.$jwx.initJssdk(res => {
-						let shareData = {
+						//朋友圈分享
+						let shareData1 = {
 							title: obj.title, // 分享标题
 							shareUrl: obj.shareUrl, // 分享链接
 							imgUrl: obj.imgUrl, // 分享图标
 						}
-						this.$jwx.onMenuShareTimeline(shareData, function(response) {
+						this.$jwx.onMenuShareTimeline(shareData1, function(response) {
 							// console.log('response', response)
 						})
 					})

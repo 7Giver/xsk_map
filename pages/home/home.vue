@@ -157,7 +157,6 @@
 			this.checkItems = Json.checkItems
 			this.getUserdata()
 			this.goShare()
-			this.goShareCircle()
 			// 设置选中地图
 			uni.setStorage({
 				key: "mapStr",
@@ -472,11 +471,10 @@
 			}, 800),
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `地图定位标注`,
 					desc: `地图搜索推广  客户轻松来访`,
-					shareUrl: url,
+					shareUrl: this.$common.WxShareUrl(),
 					imgUrl: `${this.$dataURL}/image/ac/acd236b509b370efe5e57d238bd81011.png`
 				}
 				// #ifdef H5
@@ -491,27 +489,15 @@
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
 							// console.log('response', response)
 						})
-					})
-				}
-				// #endif
-			},
-			// 调用微信分享朋友圈
-			goShareCircle() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
-				let obj = {
-					title: `地图定位标注`,
-					shareUrl: url,
-					imgUrl: `${this.$dataURL}/image/ac/acd236b509b370efe5e57d238bd81011.png`
-				}
-				// #ifdef H5
-				if (this.$jwx && this.$jwx.isWechat()) {
-					let shareData = {
-						title: obj.title, // 分享标题
-						shareUrl: obj.shareUrl, // 分享链接
-						imgUrl: obj.imgUrl, // 分享图标
-					}
-					this.$jwx.onMenuShareTimeline(shareData, function(response) {
-						// console.log('response', response)
+						//朋友圈分享
+						let shareData1 = {
+							title: obj.title, // 分享标题
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareTimeline(shareData1, function(response) {
+							// console.log('response', response)
+						})
 					})
 				}
 				// #endif

@@ -14,7 +14,6 @@
 		},
 		onShow() {
 			this.goShare()
-			this.goShareCircle()
 		},
 		methods: {
 			// 跳转页面
@@ -29,11 +28,10 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `中秋国庆放狠价`,
 					desc: `双节期间地图标注只需78 更有海量礼品等你来拿`,
-					shareUrl: url,
+					shareUrl: this.$common.WxShareUrl(),
 					imgUrl: `${this.$dataURL}/image/58/580a19df160423578b741b96af3f450c.png`
 				}
 				// #ifdef H5
@@ -48,27 +46,15 @@
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
 							// console.log('response', response)
 						})
-					})
-				}
-				// #endif
-			},
-			// 调用微信分享朋友圈
-			goShareCircle() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
-				let obj = {
-					title: `中秋国庆放狠价`,
-					shareUrl: url,
-					imgUrl: `${this.$dataURL}/image/58/580a19df160423578b741b96af3f450c.png`
-				}
-				// #ifdef H5
-				if (this.$jwx && this.$jwx.isWechat()) {
-					let shareData = {
-						title: obj.title, // 分享标题
-						shareUrl: obj.shareUrl, // 分享链接
-						imgUrl: obj.imgUrl, // 分享图标
-					}
-					this.$jwx.onMenuShareTimeline(shareData, function(response) {
-						// console.log('response', response)
+						//朋友圈分享
+						let shareData1 = {
+							title: obj.title, // 分享标题
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareTimeline(shareData1, function(response) {
+							// console.log('response', response)
+						})
 					})
 				}
 				// #endif

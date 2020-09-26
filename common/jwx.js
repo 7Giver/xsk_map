@@ -23,7 +23,8 @@ export default {
 			url: 'http://ztc1.st712.com/?r=api/index/jsapi-config', //你的接口地址  
 			method: 'POST', 
 			data: {
-				url: url
+				url: url,
+				type: 'soso'
 			},
 			success: (res) => {
 				// console.log('initJssdk:', res.data)

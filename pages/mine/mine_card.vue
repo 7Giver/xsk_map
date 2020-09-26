@@ -180,7 +180,6 @@
 								})
 								this.getMap()
 								this.goShare()
-								this.goShareCircle()
 							}
 						})
 				}
@@ -332,12 +331,12 @@
 				}
 				// #endif
 			},
-			// 调用微信分享朋友圈
-			goShareCircle() {
-				let url = window.location.href.split('#')[0]
+			// 调用微信自定义分享
+			goShare() {
 				let obj = {
-					title: `${this.userInfo.name}的电子微名片`,
-					shareUrl: `${url}#/pages/mine/card?id=${this.guest.id}&share=1`,
+					title: `${this.userInfo.name}的名片请惠存`,
+					desc: `姓名：${this.userInfo.name}  商户：${this.userInfo.company}`,
+					shareUrl: `${location.origin}/#/pages/mine/card?id=${this.guest.id}&share=1`,
 					imgUrl: this.guest.avatar
 				}
 				// #ifdef H5
@@ -345,10 +344,20 @@
 					this.$jwx.initJssdk(res => {
 						let shareData = {
 							title: obj.title, // 分享标题
+							desc: obj.desc, // 分享描述
 							shareUrl: obj.shareUrl, // 分享链接
 							imgUrl: obj.imgUrl, // 分享图标
 						}
-						this.$jwx.onMenuShareTimeline(shareData, function(response) {
+						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
+							// console.log('response', response)
+						})
+						//朋友圈分享
+						let shareData1 = {
+							title: obj.title, // 分享标题
+							shareUrl: obj.shareUrl, // 分享链接
+							imgUrl: obj.imgUrl, // 分享图标
+						}
+						this.$jwx.onMenuShareTimeline(shareData1, function(response) {
 							// console.log('response', response)
 						})
 					})

@@ -104,8 +104,6 @@
 		onLoad() {
 			this.getBellList()
 			this.goShare()
-			this.goShareCircle()
-			// this.innerAudioContext = uni.createInnerAudioContext();
 		},
 		onUnload() {
 			this.ringList.forEach(item => {
@@ -240,11 +238,10 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `订制您的专属商务彩铃`,
 					desc: `每一次通话都是一次广告收益 给客户带来美的听觉享受`,
-					shareUrl: url,
+					shareUrl: this.$common.WxShareUrl(),
 					imgUrl: `${this.$dataURL}/image/01/019a1ba2b70fabd8631ee9905824cbf6.jpg`
 				}
 				// #ifdef H5
@@ -259,27 +256,13 @@
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
 							// console.log('response', response)
 						})
-					})
-				}
-				// #endif
-			},
-			// 调用微信分享朋友圈
-			goShareCircle() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
-				let obj = {
-					title: `订制您的专属商务彩铃`,
-					shareUrl: url,
-					imgUrl: `${this.$dataURL}/image/01/019a1ba2b70fabd8631ee9905824cbf6.jpg`
-				}
-				// #ifdef H5
-				if (this.$jwx && this.$jwx.isWechat()) {
-					this.$jwx.initJssdk(res => {
-						let shareData = {
+						//朋友圈分享
+						let shareData1 = {
 							title: obj.title, // 分享标题
 							shareUrl: obj.shareUrl, // 分享链接
 							imgUrl: obj.imgUrl, // 分享图标
 						}
-						this.$jwx.onMenuShareTimeline(shareData, function(response) {
+						this.$jwx.onMenuShareTimeline(shareData1, function(response) {
 							// console.log('response', response)
 						})
 					})

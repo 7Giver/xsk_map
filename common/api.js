@@ -60,6 +60,14 @@ function authH5() {
     return false;
 }
 
+/**
+ * 微信分享链接
+ */
+function WxShareUrl() {
+    let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
+    return url
+}
+
 // 提示框
 function modelShow(
     title = "提示",
@@ -129,4 +137,5 @@ export {
     isWeiXinBrowser,
     getQueryString,
     authH5,
+    WxShareUrl,
 };

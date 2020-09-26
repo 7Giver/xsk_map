@@ -162,6 +162,7 @@ export default {
 	},
 	methods: {
         ...mapMutations({
+            setWxid: "setWxid",
 			setUserInfo: 'setUserInfo'
         }),
         // 根据url获取wxid

@@ -112,7 +112,6 @@
 		onShow() {
 			this.getloadingOrder()
 			this.goShare()
-			this.goShareCircle()
 		},
 		methods: {
 			// 调起电话
@@ -155,13 +154,13 @@
 			},
 			// 调用微信自定义分享
 			goShare() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
 				let obj = {
 					title: `关于我们`,
 					desc: `5000多万人次客源引流 连续六年行业第一`,
-					shareUrl: url,
+					shareUrl: this.$common.WxShareUrl(),
 					imgUrl: `${this.$dataURL}/image/b6/b64d67cc23b73b2555ddb792822d8391.png`
 				}
+				// console.log(obj);
 				// #ifdef H5
 				if (this.$jwx && this.$jwx.isWechat()) {
 					this.$jwx.initJssdk(res => {
@@ -174,27 +173,13 @@
 						this.$jwx.onMenuShareAppMessage(shareData, function(response) {
 							// console.log('response', response)
 						})
-					})
-				}
-				// #endif
-			},
-			// 调用微信分享朋友圈
-			goShareCircle() {
-				let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
-				let obj = {
-					title: `关于我们`,
-					shareUrl: url,
-					imgUrl: `${this.$dataURL}/image/b6/b64d67cc23b73b2555ddb792822d8391.png`
-				}
-				// #ifdef H5
-				if (this.$jwx && this.$jwx.isWechat()) {
-					this.$jwx.initJssdk(res => {
-						let shareData = {
+						//朋友圈分享
+						let shareData1 = {
 							title: obj.title, // 分享标题
 							shareUrl: obj.shareUrl, // 分享链接
 							imgUrl: obj.imgUrl, // 分享图标
 						}
-						this.$jwx.onMenuShareTimeline(shareData, function(response) {
+						this.$jwx.onMenuShareTimeline(shareData1, function(response) {
 							// console.log('response', response)
 						})
 					})

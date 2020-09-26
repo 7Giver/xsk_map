@@ -5,7 +5,7 @@ import store from './store'
 import * as Common from './common/api.js'
 
 const baseURL = 'http://ztc1.st712.com' // 正式地址
-// const testURL = 'http://server.yingku878.com' // 测试地址
+const testURL = 'http://server.yingku878.com' // 测试地址
 const dataURL = 'http://cdn.tuku658.com' // 引用资源地址
 
 const http = uni_request({
