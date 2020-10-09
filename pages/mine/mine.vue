@@ -171,7 +171,7 @@ export default {
                 let wxid = this.$common.getQueryString("wxid")
                 this.setWxid(wxid)
                 uni.setStorageSync('wxid', wxid)
-                location.reload();
+                // location.reload();
             }
             this.getloadingOrder()
         },

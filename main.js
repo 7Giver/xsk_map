@@ -6,8 +6,7 @@ import * as Common from './common/api.js'
 
 const baseURL = 'http://ztc1.st712.com' // 正式地址
 const testURL = 'http://server.yingku878.com' // 测试地址
-const dataURL = 'http://cdn.tuku658.com' // 引用资源地址
-
+const dataURL = 'http://ztc2.st712.com' // 引用资源地址
 const http = uni_request({
     baseURL: baseURL, 
     header:{
@@ -59,70 +58,20 @@ function getUrlparam(url) {
 
 // 跳转授权
 Vue.prototype.$getAuthorize = () => {
-  let href = window.location.href
-  let route = getRoute(href)
-  // console.log(route);
   if (location.href.indexOf("wxid") >= 0) {
     let wxid = Common.getQueryString("wxid")
-    uni.setStorage({
-      key: 'wxid',
-      data: wxid,
-      success: () => {
-        switch (route) {
-          case '/':
-            uni.switchTab({
-              url: '/pages/home/home',
-              success: function(e) {
-                location.reload();
-              }
-            })
-            break;
-          case '/pages/guest/guest':
-            uni.switchTab({
-              url: route,
-              success: function(e) {
-                location.reload();
-              }
-            })
-            break;
-          case '/pages/mine/mine':
-            uni.switchTab({
-              url: route,
-              success: function(e) {
-                location.reload();
-              }
-            })
-            break;
-          case '/pages/train/train':
-            uni.redirectTo({
-              url: route
-            })
-            break;
-          case '/pages/mine/connection':
-            uni.redirectTo({
-              url: route
-            })
-            break;
-          default:
-            uni.switchTab({
-              url: '/pages/home/home',
-              success: function(e) {
-                location.reload();
-              }
-            })
-        }
-      }
-    })
+    uni.setStorageSync("wxid", wxid);
+    location.reload()
   } else {
     let url = location.href.split('#')[1]
     let origin = location.origin
     switch (url) {
       case '/pages/activity/moon_festival':
-        window.location.href = `${baseURL}?r=api/user/authorize`
+        location.href = `${baseURL}?r=api/user/authorize`
         break;
       case '/pages/activity/national_day':
         let route = `${origin}/#/pages/train/train`
-        window.location.href = `${baseURL}?r=api/user/authorize&path=${route}`
+        location.href = `${baseURL}?r=api/user/authorize&path=${route}`
         break;
       default:
         Common.authH5()

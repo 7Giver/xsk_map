@@ -30,7 +30,7 @@
 			goShare() {
 				let obj = {
 					title: `中秋国庆放狠价`,
-					desc: `双节期间地图标注只需78 更有海量礼品等你来拿`,
+					desc: `双节期间开通搜搜直通车，领取价值千元礼包`,
 					shareUrl: this.$common.WxShareUrl(),
 					imgUrl: `${this.$dataURL}/image/58/580a19df160423578b741b96af3f450c.png`
 				}

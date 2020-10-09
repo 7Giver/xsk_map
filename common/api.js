@@ -55,8 +55,8 @@ function isWeiXinBrowser() {
  * H5授权跳转
  */
 function authH5() {
-    let url = encodeURIComponent(location.href);
-    location.href = `${baseURL}?r=api/direct/authorize&path=${url}`;
+    let url = location.origin + '/' + location.hash.split('?')[0]
+    location.href = `${baseURL}?r=api/direct/authorize&path=${encodeURIComponent(url)}`;
     return false;
 }
 
@@ -64,7 +64,7 @@ function authH5() {
  * 微信分享链接
  */
 function WxShareUrl() {
-    let url = location.origin + '/#' + location.href.split('#')[1].split('?')[0]
+    let url = location.origin + '/' + location.hash.split('?')[0]
     return url
 }
 
