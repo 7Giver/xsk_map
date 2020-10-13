@@ -171,16 +171,7 @@
 						title: '灵活可控'
 					}
 				],
-				showList: [
-					'/static/train/page02.png',
-					'/static/train/page03.png',
-					'/static/train/page04.png',
-					'/static/train/page05.png',
-					'/static/train/page06.png',
-					'/static/train/zsal_1.png',
-					'/static/train/zsal_2.png',
-					'/static/train/page01.png',
-				]
+				showList: []
 			};
 		},
 		onShow() {
