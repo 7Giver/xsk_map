@@ -127,14 +127,14 @@ export default {
 				},
 			],
 			bannerList: [
-                {
-                    id: 3,
-                    img: '/static/mine/banner03.png'
-                },
-                {
-                    id: 4,
-                    img: '/static/mine/banner04.png'
-                },
+                // {
+                //     id: 3,
+                //     img: '/static/mine/banner03.png'
+                // },
+                // {
+                //     id: 4,
+                //     img: '/static/mine/banner04.png'
+                // },
                 {
                     id: 0,
                     img: '/static/mine/banner.png'
@@ -367,7 +367,8 @@ export default {
 					break;
 				case 'train':
                     let value = this.userInfo.is_direct
-                    value ? url = '/pages/train/detail' : url = '/pages/train/train'
+                    // value ? url = '/pages/train/detail' : url = '/pages/train/train'
+                    value ? url = '/pages/train/detail_new' : url = '/pages/train/train_new'
                     break;
                 case 'moon':
                     url = '/pages/activity/moon_festival'

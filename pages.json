@@ -102,6 +102,18 @@
             "path" : "pages/activity/national_day",
             "style" : {}
         }
+        ,{
+            "path" : "pages/train/train_new",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/train/detail_new",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/train/train_pay_new",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

@@ -190,9 +190,9 @@
 				} else {
 					console.log('no value!+++++++++')
 					this.getUrlWxid()
-					this.$nextTick(() => {
-						this.activityDailog = true
-					})
+					// this.$nextTick(() => {
+					// 	this.activityDailog = true
+					// })
 				}
 			},
 			// 根据url获取wxid
@@ -223,9 +223,9 @@
 					})
 				} else {
 					if (this.userInfo.is_mark == 0 || !this.userInfo.is_mark) {
-						this.$nextTick(() => {
-							this.activityDailog = true
-						})
+						// this.$nextTick(() => {
+						// 	this.activityDailog = true
+						// })
 					}
 				}
 			},
