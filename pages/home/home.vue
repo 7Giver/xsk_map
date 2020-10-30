@@ -105,21 +105,29 @@
 			</view>
 		</uni-popup>
 		<!-- 活动弹窗 -->
-		<uni-popup :show="activityDailog" type="center" :animation="true" :custom="true" :mask-click="true" @change="activityChange">
-			<view class="activity_block">
-				<!-- 未标注活动 -->
-				<view class="moon_block">
-					<image src="/static/activity/dialog.png" mode="widthFix"></image>
-					<view class="look btn" @click.stop="goNext('moon')">立即查看</view>
-				</view>
-				<!-- 已标注活动 -->
-				<!-- <view class="national_day" v-else>
-					<image src="/static/activity/zhi_dialog.png" mode="widthFix"></image>
-					<view class="look btn" @click.stop="goNext('national')">立即查看</view>
-				</view> -->
-			</view>
-			<image class="close" src="/static/index/close.png" mode="" @click="activityCancel"></image>
-		</uni-popup>
+    <uni-popup
+      :show="activityDailog"
+      type="center"
+      :animation="true"
+      :custom="true"
+      :mask-click="true"
+      @change="activityChange"
+    >
+      <view class="activity_block">
+        <view class="activity">
+          <image :src="activity.poster" mode="widthFix"></image>
+          <view class="look btn" @click.stop="goNext('double_day')">
+            {{ activity.btn }}
+          </view>
+        </view>
+        <image
+          class="close"
+          src="/static/index/close.png"
+          mode=""
+          @click="activityClose"
+        ></image>
+      </view>
+    </uni-popup>
 	</view>
 </template>
 
@@ -145,7 +153,13 @@
 				guest: {},  // 表单信息
 				showItems: [],  // 展示轮播数组
 				noticeList: [], // 公告信息
-				checkItems: []  // 地图数组
+				checkItems: [],  // 地图数组
+				activityDailog: false, //活动弹窗
+				activityTimer: null, // 活动定时器
+				activity: {
+					poster: "/static/activity/double_dialog.png",
+					btn: "立即标注 免费领礼",
+				}, //活动对象
 			}
 		},
 		computed: {
@@ -162,6 +176,9 @@
 				key: "mapStr",
 				data: '1,2,3,4,5,6'
 			});
+		},
+		onHide() {
+			this.clearTimer();
 		},
 		// 点击tabbar切换事件
 		onTabItemTap() {
@@ -190,9 +207,7 @@
 				} else {
 					console.log('no value!+++++++++')
 					this.getUrlWxid()
-					// this.$nextTick(() => {
-					// 	this.activityDailog = true
-					// })
+					this.initActivity();
 				}
 			},
 			// 根据url获取wxid
@@ -222,10 +237,8 @@
 						uni.removeStorageSync('openPost');
 					})
 				} else {
-					if (this.userInfo.is_mark == 0 || !this.userInfo.is_mark) {
-						// this.$nextTick(() => {
-						// 	this.activityDailog = true
-						// })
+					if (!this.userInfo.is_mark) {
+						this.initActivity();
 					}
 				}
 			},
@@ -327,7 +340,7 @@
 				this.showDailog1 = false;
 			},
 			// 关闭展示弹窗
-			activityCancel() {
+			activityClose() {
 				this.activityDailog = false;
 			},
 			// 监听信息弹窗状态
@@ -596,12 +609,76 @@
 						})
 						this.activityDailog = false
 						break;
+					case 'double_day':
+						uni.navigateTo({
+							url: '/pages/activity/double_day',
+						})
+						this.activityDailog = false
+						break;
 					default:
 						uni.navigateTo({
 							url: '/pages/outweb/outweb'
 						})
 				}
-			}
+			},
+			// 监听展示弹窗状态
+			activityChange(e) {
+				if (!e.show) {
+					this.activityClose()
+				}
+			},
+			// 关闭活动弹窗
+			activityClose() {
+				this.activityDailog = false;
+				this.clearTimer()
+			},
+			// 是否在活动期间
+			isActivity(start, end) {
+				let startTime = new Date(start).getTime() / 1000;
+				let endTime = new Date(end).getTime() / 1000;
+				let nowTime = new Date().getTime() / 1000;
+				let startDiff = parseInt(nowTime - startTime);
+				let endDiff = parseInt(nowTime - endTime);
+				let result = false;
+
+				if (startDiff >= 0 && endDiff <= 0) {
+					result = true;
+				}
+				return result;
+			},
+			// 载入活动定时器
+			initActivity() {
+				let start = "2020/11/1 00:00:00";
+				let end = "2020/11/11 23:59:59";
+				
+				// let start = "2020/10/30 18:55:10";
+				// let end = "2020/11/11 18:59:20";
+
+				this.activityTimer = setInterval(() => {
+					let nowTime = new Date().getTime() / 1000;
+					let endTime = new Date(end).getTime() / 1000;
+					let flag = this.isActivity(start, end);
+					// console.log(flag);
+					if (!this.userInfo.is_direct && flag) {
+						this.$nextTick(() => {
+							this.activityDailog = true;
+						})
+					}
+					if (nowTime > endTime) {
+						this.$nextTick(() => {
+							this.activityClose()
+						})
+					}
+				}, 1000);
+			},
+			// 清除定时器
+			clearTimer() {
+				clearInterval(this.activityTimer);
+				clearInterval(this.timer)
+				this.timer = null
+				this.activityTimer = null;
+				console.log("clear");
+			},
 		}
 	}
 </script>
@@ -984,49 +1061,6 @@
 
 				.right {
 					right: -56rpx;
-				}
-			}
-		}
-
-		// 活动弹窗
-		.activity_block {
-			padding: 0 20rpx;
-
-			image {
-				display: block;
-				width: 100%;
-			}
-
-			.btn {
-				position: absolute;
-				bottom: 30rpx;
-				left: 11%;
-				width: 80%;
-				font-weight: bold;
-				text-align: center;
-				font-size: 38rpx;
-				line-height: 86rpx;
-				border-radius: 130rpx;
-				animation: mymove 5s infinite;
-				animation-direction: alternate;
-				animation-timing-function: ease-in-out;
-			}
-
-			.moon_block {
-				position: relative;
-
-				.look {
-					color: #F34122;
-					background: linear-gradient(90deg, #FFCF95, #FFF6B8);
-				}
-			}
-
-			.national_day {
-				position: relative;
-
-				.look {
-					color: #B9081A;
-					background: linear-gradient(90deg, #F3BC70, #FFB64B);
 				}
 			}
 		}

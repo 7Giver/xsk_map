@@ -24,7 +24,8 @@
 			<view class="cash_block">
 				<view class="title">限时优惠</view>
 				<view class="number">
-					<view>地图批量标注<text>（买一送一）</text></view>
+					<!-- <view>地图批量标注<text>（买一送一）</text></view> -->
+					<view>地图批量标注</view>
 					<view><text>￥</text>{{origin_cost}}</view>
 				</view>
 			</view>

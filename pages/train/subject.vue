@@ -92,16 +92,46 @@
 				</view>
 			</view>
 		</view>
-		<view class="confim_btn" @click="goNext()">
+		<view class="confim_btn" @click="goNext('train')">
 			<view>点击立即开启直通车</view>
 			<text>无限量自动领取精准客户</text>
 			<image class="finger" src="/static/train/finger.gif" mode="widthFix">
 		</view>
+		<!-- 活动弹窗 -->
+    <uni-popup
+      :show="activityDailog"
+      type="center"
+      :animation="true"
+      :custom="true"
+      :mask-click="true"
+      @change="activityChange"
+    >
+      <view class="activity_block">
+        <view class="activity">
+          <image :src="activity.poster" mode="widthFix"></image>
+          <view class="look btn" @click.stop="goNext('train')">
+            {{ activity.btn }}
+          </view>
+        </view>
+        <image
+          class="close"
+          src="/static/index/close.png"
+          mode=""
+          @click="activityClose"
+        ></image>
+      </view>
+    </uni-popup>
 	</view>
 </template>
 
 <script>
+	import { mapState, mapMutations } from "vuex";
+	import UniPopup from "@/components/uni-dialog/uni-dialog.vue";
+
 	export default {
+		components: {
+			UniPopup,
+		},
 		data() {
 			return {
 				randomObj: {  //随机数对象
@@ -171,28 +201,41 @@
 						title: '灵活可控'
 					}
 				],
-				showList: []
+				showList: [],
+				activityDailog: false, //活动弹窗
+				activityTimer: null, // 活动定时器
+				activity: {
+					poster: "/static/train/double11.png",
+					btn: "立即参与",
+				}, //活动对象
 			};
 		},
+		computed: {
+    	...mapState(['userInfo', 'wxid'])
+  	},
 		onShow() {
 			uni.setNavigationBarTitle({
 				title: "搜搜直通车快速获客"
 			})
+			this.initActivity();
 			this.getShowList()
 			this.setRandom()
 			this.goRandom()
 			this.goShare()
 		},
+		onUnload() {
+			this.clearTimer();
+		},
 		methods: {
 			getShowList() {
 				this.$http
-                    .post(`/?r=api/index/safe`, {})
-                    .then(response => {
-                        if (response.code === 200) {
-							console.log(response);
-                            this.showList = response.data.list
-                        }
-                    })
+					.post(`/?r=api/index/safe`, {})
+					.then(response => {
+						if (response.code === 200) {
+							// console.log(response);
+							this.showList = response.data.list
+						}
+					})
 			},
 			scroll(e) {
 				// console.log(e)
@@ -239,10 +282,17 @@
 			goRandom() {
 				this.randomTime = Math.floor(Math.random()*(30-5))+5
 			},
-			goNext() {
-				uni.navigateTo({
-					url: '/pages/train/train'
-				})
+			//跳转页面
+			goNext(type) {
+				switch (type) {
+					case "train":
+						uni.navigateTo({
+							url: "/pages/train/train_new",
+						});
+						break;
+					default:
+						break;
+				}
 			},
 			// 调用微信自定义分享
 			goShare() {
@@ -289,7 +339,63 @@
 				uni.navigateTo({
 					url: '/pages/train/train_introduce'
 				})
-			}
+			},
+			// 监听展示弹窗状态
+			activityChange(e) {
+				if (!e.show) {
+					this.activityClose()
+				}
+			},
+			// 关闭活动弹窗
+			activityClose() {
+				this.activityDailog = false;
+				this.clearTimer()
+			},
+			// 是否在活动期间
+			isActivity(start, end) {
+				let startTime = new Date(start).getTime() / 1000;
+				let endTime = new Date(end).getTime() / 1000;
+				let nowTime = new Date().getTime() / 1000;
+				let startDiff = parseInt(nowTime - startTime);
+				let endDiff = parseInt(nowTime - endTime);
+				let result = false;
+
+				if (startDiff >= 0 && endDiff <= 0) {
+					result = true;
+				}
+				return result;
+			},
+			// 载入活动定时器
+			initActivity() {
+				let start = "2020/11/1 00:00:00";
+				let end = "2020/11/11 23:59:59";
+				
+				// let start = "2020/10/30 18:55:10";
+				// let end = "2020/10/30 20:19:00";
+
+				this.activityTimer = setInterval(() => {
+					let nowTime = new Date().getTime() / 1000;
+					let endTime = new Date(end).getTime() / 1000;
+					let flag = this.isActivity(start, end);
+					// console.log(flag);
+					if (!this.userInfo.is_direct && flag) {
+						this.$nextTick(() => {
+							this.activityDailog = true;
+						})
+					}
+					if (nowTime > endTime) {
+						this.$nextTick(() => {
+							this.activityClose()
+						})
+					}
+				}, 1000);
+			},
+			// 清除定时器
+			clearTimer() {
+				clearInterval(this.activityTimer);
+				this.activityTimer = null;
+				console.log("clear");
+			},
 		}
 	}
 </script>

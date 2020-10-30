@@ -55,7 +55,8 @@ function isWeiXinBrowser() {
  * H5授权跳转
  */
 function authH5() {
-    let url = location.origin + '/' + location.hash.split('?')[0]
+    // let url = location.origin + '/' + location.hash.split('?')[0]
+    let url = location.href
     location.href = `${baseURL}?r=api/direct/authorize&path=${encodeURIComponent(url)}`;
     return false;
 }

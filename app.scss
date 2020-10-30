@@ -22,65 +22,104 @@ audio,
 camera,
 image,
 video {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .clamp {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 .clamp_two {
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    word-break: break-all;
-    overflow: hidden;
-    white-space: normal;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-all;
+  overflow: hidden;
+  white-space: normal;
 }
 
 .my_btn {
-    position: fixed;
-    bottom: 150rpx;
-    left: 7.5%;
-    width: 85%;
-    color: #fff;
-    height: 90rpx;
-    margin-top: -20rpx;
-    text-align: center;
-    font-size: 32rpx;
-    line-height: 90rpx;
-    letter-spacing: 2px;
-    border-radius: 30rpx;
-    background: linear-gradient(90deg, #ff5764, #ff3328);
-    animation: mymove 5s infinite;
-    animation-direction: alternate;
-    animation-timing-function: ease-in-out;
+  position: fixed;
+  bottom: 150rpx;
+  left: 7.5%;
+  width: 85%;
+  color: #fff;
+  height: 90rpx;
+  margin-top: -20rpx;
+  text-align: center;
+  font-size: 32rpx;
+  line-height: 90rpx;
+  letter-spacing: 2px;
+  border-radius: 30rpx;
+  background: linear-gradient(90deg, #ff5764, #ff3328);
+  animation: mymove 5s infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
 }
 
 @keyframes mymove {
-    0% {
-        transform: scale(1);
-        /*开始为原始大小*/
-    }
+  0% {
+    transform: scale(1);
+    /*开始为原始大小*/
+  }
 
-    25% {
-        transform: scale(1.1);
-        /*放大1.1倍*/
-    }
+  25% {
+    transform: scale(1.1);
+    /*放大1.1倍*/
+  }
 
-    50% {
-        transform: scale(1);
-    }
+  50% {
+    transform: scale(1);
+  }
 
-    75% {
-        transform: scale(1.1);
-    }
+  75% {
+    transform: scale(1.1);
+  }
 }
 
 [v-cloak] {
-    display: none !important;
+  display: none !important;
+}
+
+// 活动弹窗
+.activity_block {
+  padding: 0 20rpx;
+  image {
+    display: block;
+    width: 100%;
+  }
+  .btn {
+    position: absolute;
+    bottom: 30rpx;
+    left: 11%;
+    width: 80%;
+    font-weight: bold;
+    text-align: center;
+    font-size: 38rpx;
+    line-height: 86rpx;
+    border-radius: 130rpx;
+    animation: mymove 5s infinite;
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
+  }
+  .activity {
+    position: relative;
+    .look {
+      color: #e73d17;
+      background: linear-gradient(0deg, #ffac1b, #ffe753, #fff04c);
+    }
+  }
+  .close {
+    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: -115rpx;
+    transform: translate(-50%, -50%);
+    width: 60rpx;
+    height: 60rpx;
+  }
 }

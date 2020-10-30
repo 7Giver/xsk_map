@@ -114,6 +114,10 @@
             "path" : "pages/train/train_pay_new",
             "style" : {}
         }
+        ,{
+            "path" : "pages/activity/double_day",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

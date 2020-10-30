@@ -134,7 +134,11 @@ export default {
                 // {
                 //     id: 4,
                 //     img: '/static/mine/banner04.png'
-                // },
+				// },
+				{
+                    id: 5,
+                    img: '/static/mine/banner05.png'
+                },
                 {
                     id: 0,
                     img: '/static/mine/banner.png'
@@ -177,12 +181,16 @@ export default {
         },
 		// 根据缓存获取用户信息
 		getLocal() {
-            let value = uni.getStorageSync('wxid')
+			let value = uni.getStorageSync('wxid')
+			let start = "2020/11/1 00:00:00";
+			let end = "2020/11/11 23:59:59";
             value ? this.getUrlWxid() : this.$getAuthorize()
             if (this.userInfo.is_mark) {
+				deleteRow(this.bannerList, 5)
                 deleteRow(this.bannerList, 3)
                 deleteRow(this.bannerList, 1)
             } else {
+				!this.isActivity(start,end) && deleteRow(this.bannerList, 5)
                 deleteRow(this.bannerList, 4)
                 deleteRow(this.bannerList, 2)
             }
@@ -401,10 +409,16 @@ export default {
 				case 2:
 					uni.navigateTo({
 					    url: '/pages/train/train'
-                    })
+					})
+					break;
                 case 3:
 					uni.navigateTo({
 					    url: '/pages/activity/moon_festival'
+				    })
+					break;
+				case 5:
+					uni.navigateTo({
+					    url: '/pages/activity/double_day'
 				    })
 					break;
 			}
@@ -424,7 +438,21 @@ export default {
         // 关闭展示弹窗
         activityCancel() {
             this.activityDailog = false;
-        },
+		},
+		// 是否在活动期间
+		isActivity(start, end) {
+			let startTime = new Date(start).getTime() / 1000;
+			let endTime = new Date(end).getTime() / 1000;
+			let nowTime = new Date().getTime() / 1000;
+			let startDiff = parseInt(nowTime - startTime);
+			let endDiff = parseInt(nowTime - endTime);
+			let result = false;
+
+			if (startDiff >= 0 && endDiff <= 0) {
+				result = true;
+			}
+			return result;
+		},
 	}
 }
 </script>
