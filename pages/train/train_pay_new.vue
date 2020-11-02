@@ -46,7 +46,8 @@
 						<view class="block">
 							<view class="left">
 								<image src="/static/pay/card1.png" mode="widthFix"></image>
-								<text>名片</text>
+								<text class="cash">￥298</text>
+								<text class="text">名片</text>
 							</view>
 							<div class="right">(点击预览)</div>
 						</view>
@@ -56,7 +57,8 @@
 						<view class="block">
 							<view class="left">
 								<image src="/static/pay/ring1.png" mode="widthFix"></image>
-								<text>彩铃</text>
+								<text class="cash">￥128</text>
+								<text class="text">彩铃</text>
 							</view>
 							<div class="right">(点击预览)</div>
 						</view>
@@ -66,10 +68,23 @@
 						<view class="block">
 							<view class="left">
 								<image src="/static/pay/routine.png" mode="widthFix"></image>
-								<text>小程序</text>
+								<text class="cash">￥2999</text>
+								<text class="text">小程序</text>
 							</view>
 							<div class="right">(点击预览)</div>
 						</view>
+					</view>
+				</view>
+				<view class="title">优惠券</view>
+				<view class="coupon_list">
+					<view class="item">
+						<view class="coupon_wrap">
+							<view class="icon_wrap">
+								<image src="/static/pay/coupon.png" alt="" />
+							</view>
+							<view>双十一优惠</view>
+						</view>
+						<view class="right">-￥{{guest.money-guest.amount}}</view>
 					</view>
 				</view>
 				<view class="title">支付方式</view>
@@ -494,23 +509,75 @@
 					}
 				}
 				.block {
+					flex: 1;
 					display: flex;
 					align-items: center;
-					justify-content: space-between;
+					justify-content: flex-end;
 					.left {
+						flex: 1;
 						display: flex;
 						align-items: center;
+						justify-content: flex-end;
 						width: 168rpx;
 						font-size: 28rpx;
 						image {
 							width: 56rpx;
-							margin-right: 14rpx;
+							margin-right: 8rpx;
+						}
+						text {
+							white-space: nowrap;
+						}
+						.cash {
+							color: #FF4948;
+							width: 100rpx;
+						}
+						.text {
+							color: #333;
+							width: 90rpx;
 						}
 					}
 					.right {
 						color: #249CFA;
 						font-size: 24rpx;
 					}
+				}
+			}
+		}
+		.coupon_list {
+			.item {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 10rpx 20rpx;
+				margin: 20rpx auto;
+				border: 1px solid #F0F0F0;
+				border-radius: 10rpx;
+				.coupon_wrap {
+					display: flex;
+					align-items: center;
+					color: #333;
+					font-size: 26rpx;
+					letter-spacing: 2rpx;
+					.icon_wrap {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						width: 46rpx;
+						height: 46rpx;
+						border-radius: 50%;
+						padding: 5.5%;
+						overflow: hidden;
+						margin-right: 14rpx;
+						background: linear-gradient(90deg, #FE8F01, #FD5002);
+						image {
+							width: 100%;
+							height: 100%;
+						}
+					}
+				}
+				.right {
+					color: #FF4948;
+					font-size: 30rpx;
 				}
 			}
 		}
