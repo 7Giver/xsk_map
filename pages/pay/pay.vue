@@ -20,15 +20,18 @@
 			</view>
 		</view>
 		<view class="content">
-            <!-- 优惠 -->
+      <!-- 优惠 -->
 			<view class="cash_block">
-				<view class="title">限时优惠</view>
+				<view class="title">限时抢购</view>
 				<view class="number">
-					<!-- <view>地图批量标注<text>（买一送一）</text></view> -->
-					<view>地图批量标注</view>
-					<view><text>￥</text>{{origin_cost}}</view>
+					<view class="left">地图批量标注<text>（套餐钜惠）</text></view>
+					<view class="right">
+						<view class="payment"><text>￥</text>{{payment}}</view>
+						<view class="orgin_cost"><text>￥</text>{{origin_cost}}</view>
+					</view> 
 				</view>
 			</view>
+			<view class="mytips"><text>*</text>可联系客服标注单个地图价值88元哦~</view>
 			<view class="coupon_block">
 				<view>优惠券</view>
 				<view><text>{{-coupon}}</text>元</view>
@@ -146,9 +149,9 @@
 				map: [], // 选择地图
 				order_sn: '', // 支付订单号
 				current: 0, // 轮播index
-				origin_cost: 1198, //原价
-				coupon: 1000, //优惠价
-				payment: 198, //支付价格
+				origin_cost: 0, //原价
+				coupon: 0, //优惠价
+				payment: 0, //支付价格
 				payType: 1, // 支付方式
 				pageShow: false, // 页面显示
 				showMask: false, // 提示遮罩
@@ -384,7 +387,7 @@
 
 			.cash_block {
 				position: relative;
-				padding: 80rpx 30rpx 40rpx;
+				padding: 65rpx 30rpx 30rpx;
 				border-radius: 30rpx;
 				border: 1px solid #E3CBB6;
 				background: linear-gradient(-12deg, #F7EDD1, #FCF4DD);
@@ -402,28 +405,47 @@
 
 				.number {
 					display: flex;
-					align-items: baseline;
+					align-items: center;
 					justify-content: space-between;
 
-					>:first-child {
+					.left {
 						color: #603814;
 						font-size: 32rpx;
 						font-weight: bold;
-
 						>text {
+							color: #FF9029;
+							font-size: 29rpx;
+						}
+					}
+
+					.right {
+						.payment {
 							color: #FF423A;
-							font-size: 28rpx;
+							font-size: 42rpx;
+							text {
+								font-size: 30rpx;
+							}
+						}
+						.orgin_cost {
+							color: #C5BDA5;
+							font-size: 30rpx;
+							text-align: right;
+    					text-decoration: line-through;
+							text {
+								font-size: 24rpx;
+							}
 						}
 					}
+				}
+			}
 
-					>:last-child {
-						color: #FF423A;
-						font-size: 44rpx;
-
-						text {
-							font-size: 34rpx;
-						}
-					}
+			.mytips {
+				color: #603814;
+				font-size: 28rpx;
+				text-align: right;
+				margin-top: 16rpx;
+				text {
+					color: #FF3F33;
 				}
 			}
 
@@ -432,7 +454,7 @@
 				align-items: center;
 				justify-content: space-between;
 				font-size: 32rpx;
-				margin: 36rpx auto;
+				margin: 24rpx auto 36rpx;
 				padding: 30rpx 20rpx;
 				border: 1px solid #f5f5f5;
 				border-radius: 22rpx;
